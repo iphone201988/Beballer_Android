@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/add_court">
+
+    <action
+        android:id="@+id/navigateCourtsAboutFragment"
+        app:destination="@id/courtsAboutFragment" />
+
+    <action
+        android:id="@+id/navigateAddPhotoFragment"
+        app:destination="@id/addPhotoFragment" />
+
+
+    <fragment
+        android:id="@+id/addCourtFragment"
+        android:name="com.beballer.beballer.ui.player.dash_board.find.game.add_court.AddCourtFragment"
+        tools:layout="@layout/fragment_add_court" />
+
+    <fragment
+        android:id="@+id/courtsAboutFragment"
+        android:name="com.beballer.beballer.ui.player.dash_board.find.game.court_detail.CourtAboutFragment"
+        tools:layout="@layout/fragment_court_about" />
+    <fragment
+        android:id="@+id/addPhotoFragment"
+        android:name="com.beballer.beballer.ui.player.dash_board.find.game.add_photo.AddPhotoFragment"
+        tools:layout="@layout/fragment_add_photo" />
+
+
+</navigation>

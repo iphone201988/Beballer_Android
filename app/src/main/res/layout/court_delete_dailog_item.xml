@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="callback"
+            type="com.beballer.beballer.utils.BaseCustomDialog.Listener" />
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_10sdp"
+        android:background="@drawable/btn_bg_5_radius"
+        android:backgroundTint="@color/white">
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvApply"
+            style="@style/TextView.InterSemiBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_18sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_18sdp"
+            android:gravity="start"
+            android:lineSpacingExtra="@dimen/_2sdp"
+            android:text="@string/are_you_sure_you_want_to_report_that_this_court_does_not_exits"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvNotification"
+            style="@style/TextView.InterMedium"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:gravity="start"
+            android:text="This court will br removed after\n verification."
+            android:textColor="@color/grey"
+            android:textSize="@dimen/_12ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvApply"
+            app:layout_constraintTop_toBottomOf="@+id/tvApply" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCancel"
+            style="@style/GreenButton"
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginBottom="@dimen/_20sdp"
+            android:background="@drawable/chat_et_bg"
+            android:backgroundTint="@color/view_color"
+            android:fontFamily="@font/inter_semi_bold"
+            android:onClick="@{v->callback.onViewClick(v)}"
+            android:text="Cancel"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_13ssp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/deleteCourtDialogItem"
+            app:layout_constraintStart_toStartOf="@+id/deleteCourtDialogItem"
+            app:layout_constraintTop_toBottomOf="@+id/deleteCourtDialogItem" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/deleteCourtDialogItem"
+            style="@style/GreenButton"
+            android:layout_width="0dp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_18sdp"
+            android:background="@drawable/chat_et_bg"
+            android:backgroundTint="@color/view_color"
+            android:fontFamily="@font/inter_semi_bold"
+            android:onClick="@{v->callback.onViewClick(v)}"
+            android:text="@string/this_court_does_not_exist"
+            android:textColor="@color/eight_color"
+            android:textSize="@dimen/_13ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvNotification" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

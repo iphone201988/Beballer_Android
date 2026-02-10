@@ -187,5 +187,11 @@
     <string name="this_court_does_not_exist">This court does not exist</string>
     <string name="addicon">addIcon</string>
     <string name="add_a_court">Add a court</string>
+    <string name="games">Games</string>
+    <string name="tournaments">Tournaments</string>
+    <string name="camps">Camps</string>
+    <string name="court_search">Court search</string>
+    <string name="no_search_results_found">No search results found</string>
+    <string name="ticketing">Ticketing</string>
 
 </resources>

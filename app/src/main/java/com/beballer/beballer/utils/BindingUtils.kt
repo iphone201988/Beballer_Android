@@ -20,6 +20,7 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.UnderlineSpan
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
@@ -220,6 +221,28 @@ object BindingUtils {
             image.setImageResource(R.drawable.ic_round_account_circle_40)
         }
     }
+
+
+    @BindingAdapter("setImageFromUrlList")
+    @JvmStatic
+    fun setImageFromUrlList(imageView: ImageView, photos: List<String?>?) {
+        val rawUrl = photos?.firstOrNull()
+        val imageUrl = rawUrl
+            ?.trim()
+            ?.removePrefix("/")
+            ?.takeIf { it.isNotEmpty() }
+        if (imageUrl != null) {
+            Glide.with(imageView.context)
+                .load(Constants.IMAGE_URL + imageUrl)
+                .placeholder(R.drawable.progress_animation_small)
+                .error(R.drawable.ic_beballer_grey_800)
+                .into(imageView)
+        } else {
+            imageView.setImageResource(R.drawable.ic_beballer_grey_800)
+        }
+    }
+
+
 
 
     fun formattedDistance(

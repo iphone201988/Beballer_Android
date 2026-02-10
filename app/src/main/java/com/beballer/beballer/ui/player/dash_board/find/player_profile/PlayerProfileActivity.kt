@@ -10,28 +10,19 @@ import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.data.api.Constants
 import com.beballer.beballer.data.model.CommonResponse
 import com.beballer.beballer.data.model.PlayerProfileByIdResponse
-import com.beballer.beballer.data.model.UserProfile
 import com.beballer.beballer.databinding.ActivityPlayerProfileBinding
-import com.beballer.beballer.databinding.GenderBottomSheetItemBinding
 import com.beballer.beballer.databinding.SubscribeBotomItemBinding
-import com.beballer.beballer.ui.FeedItem
-import com.beballer.beballer.ui.player.dash_board.DashboardActivity
 import com.beballer.beballer.utils.BaseCustomBottomSheet
 import com.beballer.beballer.utils.BindingUtils
-import com.beballer.beballer.utils.CommonBottomSheet
-import com.beballer.beballer.utils.Resource
 import com.beballer.beballer.utils.Status
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 
 @AndroidEntryPoint
 class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
     private val viewModel: PlayerProfileActivityVM by viewModels()
-    var isSubscribed: Boolean  = false
-    var userProfileId : String?=null
+    var isSubscribed: Boolean = false
+    var userProfileId: String? = null
     private lateinit var subscribeBottomItem: BaseCustomBottomSheet<SubscribeBotomItemBinding>
     override fun getLayoutResource(): Int {
         return R.layout.activity_player_profile
@@ -56,10 +47,12 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
         val userId = intent.getStringExtra("playerProfile")
         userId?.let {
             userProfileId = it
-            val useId: String = sharedPrefManager.getLoginData()?.data?.user?._id.takeIf { !it.isNullOrEmpty() } ?: ""
-            if (useId == it){
+            val useId: String =
+                sharedPrefManager.getLoginData()?.data?.user?._id.takeIf { !it.isNullOrEmpty() }
+                    ?: ""
+            if (useId == it) {
                 binding.tvSubscribe.visibility = View.GONE
-            }else{
+            } else {
                 binding.tvSubscribe.visibility = View.VISIBLE
             }
 
@@ -77,9 +70,10 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
     private fun initClick() {
         viewModel.onClick.observe(this@PlayerProfileActivity) {
             when (it?.id) {
-                R.id.cancelImage->{
+                R.id.cancelImage -> {
                     finish()
                 }
+
                 R.id.tvPost -> {
                     binding.pos = 1
                     binding.viewPagerProfile.currentItem = 0
@@ -113,10 +107,9 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
                 }
 
                 R.id.cardView -> {
-                    subscribeBottomSheet(isSubscribed,userProfileId)
+                    subscribeBottomSheet(isSubscribed, userProfileId)
 
                 }
-
 
 
             }
@@ -144,10 +137,11 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
                                 if (myDataModel != null) {
                                     if (myDataModel.data != null) {
                                         isSubscribed = myDataModel.data.user?.isSubscribed == true
-                                     binding.bean = myDataModel.data.user
+                                        binding.bean = myDataModel.data.user
                                         val heightCm = myDataModel.data.user?.height ?: 0
                                         val date = myDataModel.data.user?.birthDate ?: ""
-                                        binding.tvPlayerHeight.text = BindingUtils.convertCmToFeetInchesFormatted(heightCm)
+                                        binding.tvPlayerHeight.text =
+                                            BindingUtils.convertCmToFeetInchesFormatted(heightCm)
                                         val age = BindingUtils.calculateAgeFromIsoLegacy(date)
                                         binding.tvPlayerAge.text = "$age"
                                     }
@@ -162,23 +156,30 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
 
                         "postSubscribeApi" -> {
                             try {
-                            val myDataModel: CommonResponse? =
-                                BindingUtils.parseJson(it.data.toString())
-                            if (myDataModel?.success == true) {
-                                showSuccessToast(myDataModel.message.toString())
-                                // toggle value
-                                isSubscribed = !isSubscribed
-                                if (isSubscribed) {
-                                    binding.tvSubscribe.text = getString(R.string.unsubscribe)
-                                    binding.tvSubscribe.setBackgroundColor(
-                                        ContextCompat.getColor(this@PlayerProfileActivity, R.color.text_light)
-                                    )
-                                } else {
-                                    binding.tvSubscribe.text = getString(R.string.subscribe)
-                                    binding.tvSubscribe.setBackgroundColor(
-                                        ContextCompat.getColor(this@PlayerProfileActivity, R.color.beballer_blue))
+                                val myDataModel: CommonResponse? =
+                                    BindingUtils.parseJson(it.data.toString())
+                                if (myDataModel?.success == true) {
+                                    showSuccessToast(myDataModel.message.toString())
+                                    // toggle value
+                                    isSubscribed = !isSubscribed
+                                    if (isSubscribed) {
+                                        binding.tvSubscribe.text = getString(R.string.unsubscribe)
+                                        binding.tvSubscribe.setBackgroundColor(
+                                            ContextCompat.getColor(
+                                                this@PlayerProfileActivity,
+                                                R.color.text_light
+                                            )
+                                        )
+                                    } else {
+                                        binding.tvSubscribe.text = getString(R.string.subscribe)
+                                        binding.tvSubscribe.setBackgroundColor(
+                                            ContextCompat.getColor(
+                                                this@PlayerProfileActivity,
+                                                R.color.beballer_blue
+                                            )
+                                        )
+                                    }
                                 }
-                            }
                             } catch (e: Exception) {
                                 Log.e("error", "postSubscribeApi: $e")
                             } finally {
@@ -215,8 +216,8 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
                         val subscribeUser = subscribe == true
                         val data = HashMap<String, Any>()
                         userId?.let {
-                                data["subscribed"] = !subscribeUser
-                                viewModel.postSubscribeApi(Constants.USER_SUBSCRIBE + "?id=$it", data)
+                            data["subscribed"] = !subscribeUser
+                            viewModel.postSubscribeApi(Constants.USER_SUBSCRIBE + "?id=$it", data)
                         }
                     }
                 }

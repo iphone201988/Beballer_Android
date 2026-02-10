@@ -14,7 +14,6 @@ import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.data.model.CourtDataById
 import com.beballer.beballer.databinding.FragmentSingleDataBinding
 import com.beballer.beballer.ui.player.dash_board.find.courts.AddCourtActivity
-import com.beballer.beballer.ui.player.dash_board.find.map.cluster.CourtInfoWindowAdapter
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -85,7 +84,7 @@ class SingleDataFragment : BaseFragment<FragmentSingleDataBinding>(), OnMapReady
     @SuppressLint("PotentialBehaviorOverride")
     private fun setupMap() {
         googleMap?.apply {
-            setInfoWindowAdapter(CourtInfoWindowAdapter(requireContext()))
+           // setInfoWindowAdapter(CourtInfoWindowAdapter(requireContext()))
             setOnMarkerClickListener { marker ->
                 marker.showInfoWindow()
                 true

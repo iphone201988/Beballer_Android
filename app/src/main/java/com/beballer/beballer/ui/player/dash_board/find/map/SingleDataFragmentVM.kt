@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.data.api.ApiHelper
 import com.beballer.beballer.data.api.Constants
+import com.beballer.beballer.ui.player.dash_board.find.map.cluster.MapType
 import com.beballer.beballer.utils.Resource
 import com.beballer.beballer.utils.event.SingleRequestEvent
 import com.google.gson.JsonObject
@@ -15,47 +16,71 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
-
 @HiltViewModel
-class SingleDataFragmentVM @Inject constructor(private val apiHelper: ApiHelper) : BaseViewModel() {
+class SingleDataFragmentVM @Inject constructor(
+    private val apiHelper: ApiHelper
+) : BaseViewModel() {
     val observeCommon = SingleRequestEvent<JsonObject>()
     private var mapApiJob: Job? = null
+
     fun getMapBound(
-        northEastLat: Double, northEastLng: Double, southWestLat: Double, southWestLng: Double
+        type: MapType,
+        northEastLat: Double,
+        northEastLng: Double,
+        southWestLat: Double,
+        southWestLng: Double
     ) {
+        val request = createBoundRequest(
+            northEastLat,
+            northEastLng,
+            southWestLat,
+            southWestLng
+        )
+        callMapApi(type, request)
+    }
+
+    fun getSearchMap(search: String) {
         val request = hashMapOf<String, Any>(
-            "northEastLat" to northEastLat,
-            "northEastLng" to northEastLng,
-            "southWestLat" to southWestLat,
-            "southWestLng" to southWestLng,
+            "search" to search,
             "limit" to 100
         )
-        mapApiCall(Constants.COURT_MAP_BOUNDS, request,Constants.COURT_MAP_BOUNDS)
+        callMapApi(MapType.SEARCH, request)
     }
 
 
-    // map bound api
-    fun mapApiCall(url: String, request: HashMap<String, Any>,tag: String) {
+    private fun callMapApi(
+        type: MapType,
+        request: HashMap<String, Any>
+    ) {
         mapApiJob?.cancel()
-        viewModelScope.launch(Dispatchers.IO) {
+        mapApiJob = viewModelScope.launch(Dispatchers.IO) {
             observeCommon.postValue(Resource.loading(null))
-            runCatching {
-                val response = apiHelper.apiGetOnlyAuthToken(url, request)
+            try {
+                val response = apiHelper.apiGetOnlyAuthToken(type.url, request)
                 if (response.isSuccessful) {
-                    observeCommon.postValue(Resource.success(tag, response.body()))
-                } else {
-                    val errorMsg = handleErrorResponse(response.errorBody(), response.code())
-                    observeCommon.postValue(Resource.error(errorMsg, null))
-                }
-            }.onFailure { e ->
-                if (e is CancellationException) {
-                    Log.d("MapAPI", "Previous API cancelled")
+                    observeCommon.postValue(Resource.success(type.tag, response.body()))
                 } else {
                     observeCommon.postValue(
-                        Resource.error(e.message ?: "Something went wrong", null)
-                    )
+                        Resource.error(handleErrorResponse(response.errorBody(), response.code()), null))
                 }
+            } catch (e: CancellationException) {
+                Log.d("MapAPI", "Previous API cancelled")
+            } catch (e: Exception) {
+                observeCommon.postValue(Resource.error(e.message ?: "Something went wrong", null))
             }
         }
     }
+
+    private fun createBoundRequest(
+        northEastLat: Double,
+        northEastLng: Double,
+        southWestLat: Double,
+        southWestLng: Double
+    ): HashMap<String, Any> = hashMapOf(
+        "northEastLat" to northEastLat,
+        "northEastLng" to northEastLng,
+        "southWestLat" to southWestLat,
+        "southWestLng" to southWestLng,
+        "limit" to 100
+    )
 }

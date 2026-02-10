@@ -108,7 +108,7 @@
             app:layout_constraintTop_toBottomOf="@+id/clHeader">
 
             <androidx.appcompat.widget.SearchView
-                android:id="@+id/courtsSearchView"
+                android:id="@+id/mapSearchView"
                 android:layout_width="376dp"
                 android:layout_height="45dp"
                 android:layout_marginHorizontal="16dp"
@@ -150,11 +150,11 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/mapMenusLayout"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:elevation="@dimen/_2sdp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@+id/cardViewFilter"
-            app:layout_constraintStart_toStartOf="@+id/cardViewFilter"
             app:layout_constraintTop_toBottomOf="@+id/cardViewFilter">
 
 
@@ -168,7 +168,6 @@
                 app:cardCornerRadius="@dimen/_50sdp"
                 app:cardElevation="@dimen/_2sdp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -176,30 +175,6 @@
                     android:layout_height="@dimen/_20sdp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_court_24" />
-
-            </androidx.cardview.widget.CardView>
-
-
-
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardViewCourtGame"
-                android:layout_width="@dimen/_40sdp"
-                android:layout_height="@dimen/_40sdp"
-                android:layout_marginTop="@dimen/_6sdp"
-                app:backgroundTint="@color/games_light_color"
-                app:cardBackgroundColor="@color/games_light_color"
-                app:cardCornerRadius="@dimen/_50sdp"
-                app:cardElevation="@dimen/_2sdp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardViewCourt">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="@dimen/_20sdp"
-                    android:layout_height="@dimen/_20sdp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_game_24" />
 
             </androidx.cardview.widget.CardView>
 
@@ -211,6 +186,7 @@
                 android:fontFamily="@font/inter_medium"
                 android:includeFontPadding="false"
                 android:text="Courts"
+                android:onClick="@{v->vm.onClick(v)}"
                 android:textColor="@color/black_000000"
                 android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toBottomOf="@+id/cardViewCourt"
@@ -219,15 +195,52 @@
 
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardViewCourtGame"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_marginTop="@dimen/_6sdp"
+                android:onClick="@{v->vm.onClick(v)}"
+                app:backgroundTint="@color/games_light_color"
+                app:cardBackgroundColor="@color/games_light_color"
+                app:cardCornerRadius="@dimen/_50sdp"
+                app:cardElevation="@dimen/_2sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardViewCourt">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_game_24" />
+
+            </androidx.cardview.widget.CardView>
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvGame"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:fontFamily="@font/inter_medium"
+                android:includeFontPadding="false"
+                android:onClick="@{v->vm.onClick(v)}"
+                android:text="@string/games"
+                android:textColor="@color/black_000000"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardViewCourtGame"
+                app:layout_constraintEnd_toStartOf="@id/cardViewCourtGame"
+                app:layout_constraintTop_toTopOf="@+id/cardViewCourtGame" />
+
+            <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewTicket"
                 android:layout_width="@dimen/_40sdp"
                 android:layout_height="@dimen/_40sdp"
                 android:layout_marginTop="@dimen/_6sdp"
+                android:onClick="@{v->vm.onClick(v)}"
                 app:cardBackgroundColor="@color/ticketing_light_color"
                 app:cardCornerRadius="@dimen/_50sdp"
                 app:cardElevation="@dimen/_2sdp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardViewCourtGame">
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -237,6 +250,21 @@
                     android:src="@drawable/ic_pro_game_24" />
 
             </androidx.cardview.widget.CardView>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTicket"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:fontFamily="@font/inter_medium"
+                android:onClick="@{v->vm.onClick(v)}"
+                android:includeFontPadding="false"
+                android:text="@string/ticketing"
+                android:textColor="@color/black_000000"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardViewTicket"
+                app:layout_constraintEnd_toStartOf="@id/cardViewTicket"
+                app:layout_constraintTop_toTopOf="@+id/cardViewTicket" />
 
 
             <androidx.cardview.widget.CardView
@@ -249,7 +277,6 @@
                 app:cardCornerRadius="@dimen/_50sdp"
                 app:cardElevation="@dimen/_2sdp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardViewTicket">
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -259,6 +286,21 @@
                     android:src="@drawable/ic_tournament_24" />
 
             </androidx.cardview.widget.CardView>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTournaments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:fontFamily="@font/inter_medium"
+                android:includeFontPadding="false"
+                android:onClick="@{v->vm.onClick(v)}"
+                android:text="@string/tournaments"
+                android:textColor="@color/black_000000"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardViewTournaments"
+                app:layout_constraintEnd_toStartOf="@id/cardViewTournaments"
+                app:layout_constraintTop_toTopOf="@+id/cardViewTournaments" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewCamps"
@@ -270,7 +312,6 @@
                 app:cardCornerRadius="@dimen/_50sdp"
                 app:cardElevation="@dimen/_2sdp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardViewTournaments">
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -280,6 +321,21 @@
                     android:src="@drawable/ic_camp_24" />
 
             </androidx.cardview.widget.CardView>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCamps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:fontFamily="@font/inter_medium"
+                android:includeFontPadding="false"
+                android:onClick="@{v->vm.onClick(v)}"
+                android:text="@string/camps"
+                android:textColor="@color/black_000000"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardViewCamps"
+                app:layout_constraintEnd_toStartOf="@id/cardViewCamps"
+                app:layout_constraintTop_toTopOf="@+id/cardViewCamps" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -293,7 +349,7 @@
             android:contentDescription="@string/addicon"
             android:onClick="@{v->vm.onClick(v)}"
             android:src="@drawable/circle"
-            app:layout_constraintBottom_toTopOf="@+id/rvMapBound"
+            app:layout_constraintBottom_toTopOf="@+id/rvCourtMapBound"
             app:layout_constraintEnd_toEndOf="parent" />
 
 
@@ -312,7 +368,7 @@
             app:layout_constraintTop_toTopOf="@+id/AddButton" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvMapBound"
+            android:id="@+id/rvCourtMapBound"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/_10sdp"
@@ -324,9 +380,106 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:itemCount="1"
-            tools:listitem="@layout/rv_map_bound_item" />
+            tools:listitem="@layout/rv_court_map_bound_item" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvGameMapBound"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingHorizontal="@dimen/_5sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:itemCount="1"
+            tools:listitem="@layout/rv_game_map_bound_item" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTicketingMapBound"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingHorizontal="@dimen/_5sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:itemCount="1"
+            tools:listitem="@layout/rv_ticket_map_bound_item" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTournamentsMapBound"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingHorizontal="@dimen/_5sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:itemCount="1"
+            tools:listitem="@layout/rv_tournaments_map_bound_item" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCampsMapBound"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingHorizontal="@dimen/_5sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:itemCount="1"
+            tools:listitem="@layout/rv_camps_map_bound_item" />
 
 
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clMain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bottom_bg"
+                android:nestedScrollingEnabled="false"
+                android:paddingTop="@dimen/_10sdp"
+                android:elevation="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_20sdp"
+                app:behavior_hideable="true"
+                app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+
+                <include
+                    android:id="@+id/searchBottomSheet"
+                    layout="@layout/search_bottom_sheet_layout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:vm="@{vm}" />
+
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
 

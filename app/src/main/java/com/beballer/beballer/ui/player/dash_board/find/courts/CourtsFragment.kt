@@ -177,6 +177,7 @@ class CourtsFragment : BaseFragment<FragmentCourtsBinding>(), OnMapReadyCallback
                 R.id.courtsMapCard , R.id.view->{
                     val intent = Intent(requireContext(), UserProfileActivity::class.java)
                     intent.putExtra("userType", "showMapFragment")
+                    intent.putExtra("mapType", "court")
                     startActivity(intent)
                     requireActivity().overridePendingTransition(
                         R.anim.slide_in_right, R.anim.slide_out_left

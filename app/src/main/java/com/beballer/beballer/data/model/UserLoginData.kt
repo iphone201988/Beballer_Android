@@ -9,11 +9,8 @@ data class CommonResponse(
 )
 
 data class PostCommentResponse(
-    val commentId: String?,
-    val message: String?,
-    val success: Boolean?
+    val commentId: String?, val message: String?, val success: Boolean?
 )
-
 
 
 /** login and signup response ***/
@@ -115,7 +112,7 @@ data class ProfileDataUser(
     val isAdmin: Boolean?,
     val isDeleted: Boolean?,
 
-)
+    )
 
 data class UserFavoriteProTeam(
     val _id: String?, val id: String?, val imageURL: String?, val name: String?
@@ -175,9 +172,11 @@ data class GetUserPostData(
     val role: Int?,
     val proGame: String?,
     val stability: Int?
-    ): Parcelable
+) : Parcelable
+
 @Parcelize
-data class Pagination(val currentPage: Int?, val totalPages: Int?): Parcelable
+data class Pagination(val currentPage: Int?, val totalPages: Int?) : Parcelable
+
 @Parcelize
 data class GetUserPostEvent(
     val _id: String?,
@@ -204,7 +203,8 @@ data class GetUserPostEvent(
     val startDate: String?,
     val type: String?
 
-): Parcelable
+) : Parcelable
+
 @Parcelize
 data class PublisherData(
     val _id: String?,
@@ -219,8 +219,8 @@ data class PublisherData(
     val verified: Boolean?
 
 
+) : Parcelable
 
-): Parcelable
 @Parcelize
 data class UserPostCourt(
     val _id: String?,
@@ -245,8 +245,7 @@ data class UserPostCourt(
     val photos: List<String?>?,
     val region: String?,
     val zipCode: String?
-): Parcelable
-
+) : Parcelable
 
 
 @Parcelize
@@ -275,7 +274,7 @@ data class Game(
     val teamToValidate: Int?,
     val type: String?,
     val visible: Boolean?
-): Parcelable
+) : Parcelable
 
 @Parcelize
 data class Field(
@@ -286,22 +285,22 @@ data class Field(
     val name: String?,
     val postalCode: String?,
     val region: String?
-): Parcelable
+) : Parcelable
+
 @Parcelize
 data class Organizer(
     val ref: GameRef?
-): Parcelable
+) : Parcelable
+
 @Parcelize
 data class Team1Player(
-    val accepted: Boolean?,
-    val collectionName: String?,
-    val id: String?
-): Parcelable
+    val accepted: Boolean?, val collectionName: String?, val id: String?
+) : Parcelable
+
 @Parcelize
 data class GameRef(
-    val collectionName: String?,
-    val id: String?
-): Parcelable
+    val collectionName: String?, val id: String?
+) : Parcelable
 
 /** post comment response **/
 data class GetPostCommentResponse(
@@ -335,14 +334,11 @@ data class CommentData(
 
 /** following response **/
 data class FollowingResponse(
-    val `data`: FollowingData?,
-    val message: String?,
-    val success: Boolean?
+    val `data`: FollowingData?, val message: String?, val success: Boolean?
 )
 
 data class FollowingData(
-    val followingUser: List<FollowingUser?>?,
-    val pagination: Pagination?
+    val followingUser: List<FollowingUser?>?, val pagination: Pagination?
 )
 
 data class FollowingUser(
@@ -362,14 +358,11 @@ data class FollowingUser(
 
 /** following response **/
 data class FollowersResponse(
-    val `data`: FollowersData?,
-    val message: String?,
-    val success: Boolean?
+    val `data`: FollowersData?, val message: String?, val success: Boolean?
 )
 
 data class FollowersData(
-    val followerUser: List<FollowerUser?>?,
-    val pagination: Pagination?
+    val followerUser: List<FollowerUser?>?, val pagination: Pagination?
 )
 
 data class FollowerUser(
@@ -389,9 +382,7 @@ data class FollowerUser(
 /** get suggested response **/
 
 data class GetSuggestedResponse(
-    val `data`: SuggestedData?,
-    val message: String?,
-    val success: Boolean?
+    val `data`: SuggestedData?, val message: String?, val success: Boolean?
 )
 
 data class SuggestedData(
@@ -424,7 +415,8 @@ data class PlayerProfileResponse(
     val message: String?,
     val pagination: Pagination?,
     val success: Boolean?
-): Parcelable
+) : Parcelable
+
 @Parcelize
 data class PlayerData(
     val _id: String?,
@@ -435,13 +427,11 @@ data class PlayerData(
     val postContentHeight: String?,
     val postContentWidth: String?,
     val video: String?
-): Parcelable
+) : Parcelable
 
 /** get player post by id  response **/
 data class PlayerPostBYIdResponse(
-    val `data`: PlayerPostData?,
-    val message: String?,
-    val success: Boolean?
+    val `data`: PlayerPostData?, val message: String?, val success: Boolean?
 )
 
 data class PlayerPostData(
@@ -485,9 +475,7 @@ data class PlayerPublisherData(
 
 /** Player Profile  response **/
 data class PlayerProfileByIdResponse(
-    val `data`: ProfileByIdData?,
-    val message: String?,
-    val success: Boolean?
+    val `data`: ProfileByIdData?, val message: String?, val success: Boolean?
 )
 
 data class ProfileByIdData(
@@ -538,11 +526,8 @@ data class ProfileByUser(
     val verified: Boolean?
 )
 
-data class  ProfileByFavoriteProTeam(
-    val _id: String?,
-    val id: String?,
-    val imageURL: String?,
-    val name: String?
+data class ProfileByFavoriteProTeam(
+    val _id: String?, val id: String?, val imageURL: String?, val name: String?
 )
 
 
@@ -569,17 +554,13 @@ data class GetCourtData(
 )
 
 data class CourtPagination(
-    val currentPage: Int?,
-    val totalCount: Int?,
-    val totalPages: Int?
+    val currentPage: Int?, val totalCount: Int?, val totalPages: Int?
 )
 
 
 /** Get Court Api response **/
 data class GetCourtByIdResponse(
-    val `data`: DataById?,
-    val message: String?,
-    val success: Boolean?
+    val `data`: DataById?, val message: String?, val success: Boolean?
 )
 
 data class DataById(
@@ -612,39 +593,31 @@ data class CourtDataById(
     val photos: List<String?>?,
     val userInformation: UserInformation?,
     val zipCode: String?
-): Parcelable
+) : Parcelable
 
 @Parcelize
 data class UserInformation(
-    val _id: String?,
-    val firstName: String?,
-    val id: String?,
-    val lastName: String?
-): Parcelable
+    val _id: String?, val firstName: String?, val id: String?, val lastName: String?
+) : Parcelable
 
 
 data class AddCourtDataClass(
-    val courtId: String?,
-    val message: String?,
-    val success: Boolean?
+    val courtId: String?, val message: String?, val success: Boolean?
 )
 
 /**
  * Get Map Bounds response
  */
-
-
 data class GetMapBoundData(
     val bounds: Bounds?,
     val count: Int?,
-    val courts: List<MapCourt?>?,
+    val courts: List<MapCourt>?,
     val message: String?,
     val success: Boolean?
 )
 
 data class Bounds(
-    val northEast: NorthEast?,
-    val southWest: SouthWest?
+    val northEast: NorthEast?, val southWest: SouthWest?
 )
 
 data class MapCourt(
@@ -664,18 +637,75 @@ data class MapCourt(
     val postalCode: String?,
     val rating: Double?,
     val region: String?
+
 )
 
 data class NorthEast(
-    val lat: Double?,
-    val lng: Double?
+    val lat: Double?, val lng: Double?
 )
 
 data class SouthWest(
-    val lat: Double?,
-    val lng: Double?
+    val lat: Double?, val lng: Double?
 )
 
 
+/**
+ * search map api response
+ */
+data class SearchCourtApiData(
+    val count: Int?, val courts: List<MapCourt?>?, val message: String?, val success: Boolean?
+)
+
+/**
+ * Get game Map Bounds response
+ */
+data class GetGameMapBoundData(
+    val `data`: GameMapData?, val message: String?, val success: Boolean?
+)
+
+data class GameMapData(
+    val games: List<GameData>?, val pagination: Pagination?
+)
+
+data class GameData(
+    val _id: String?,
+    val createdAt: String?,
+    val date: String?,
+    val `field`: GameField?,
+    val id: String?,
+    val mode: Int?,
+    val status: String?,
+    val totalJoinedPlayers: String?
+)
 
 
+data class GameField(
+    val _id: String?,
+    val address: String?,
+    val id: String?,
+    val lat: Double?,
+    val long: Double?,
+    val name: String?,
+    val photos: List<String?>?
+)
+
+/**
+ * Get Ticket Map Bounds response
+ */
+data class GetTicketMapBoundData(
+    val `data`: MapCourt?, val message: String?, val success: Boolean?
+)
+
+/**
+ * Get Tournaments Map Bounds response
+ */
+data class GetTournamentsMapBoundData(
+    val `data`: MapCourt?, val message: String?, val success: Boolean?
+
+)
+/**
+ * Get Camps Map Bounds response
+ */
+data class GetCampsMapBoundData(
+    val `data`: MapCourt?, val message: String?, val success: Boolean?
+)

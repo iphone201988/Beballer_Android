@@ -1,17 +1,15 @@
 package com.beballer.beballer.ui.player.dash_board.find.map.cluster
 
-import com.beballer.beballer.data.model.MapCourt
+import com.beballer.beballer.ui.interfacess.MapMarkerItem
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 
-class CourtClusterItem(
-    val court: MapCourt
+class MapClusterItem(
+    val item: MapMarkerItem
 ) : ClusterItem {
-
-    override fun getPosition(): LatLng =
-        LatLng(court.lat!!, court.long!!)
-
-    override fun getTitle(): String = court.name ?: ""
-
-    override fun getSnippet(): String? = court.address
+    override fun getPosition(): LatLng = LatLng(item.lat, item.lng)
+    override fun getTitle(): String = item.title
+    override fun getSnippet(): String? = item.address
 }
+
+

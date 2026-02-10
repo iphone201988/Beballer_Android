@@ -4,6 +4,7 @@ package com.beballer.beballer.data.api
 object Constants {
     const val BASE_URL = "http://98.86.12.144:9000/api/v1/"
     const val IMAGE_URL = "https://d3dnkdkyhsfbca.cloudfront.net/"
+    const val IMAGE_URL1 = "https://d3dnkdkyhsfbca.cloudfront.net"
 
     var welcomeDialog = 0
     var userType = 1
@@ -32,7 +33,11 @@ object Constants {
     const val GET_COURTS = "court/get-courts"
     const val GET_COURTS_BY_ID = "court/get-court/"
     const val NEW_COURT = "court/new"
+    const val GAME_MAP_BOUNDS = "game/map-bounds"
     const val COURT_MAP_BOUNDS = "court/map-bounds"
+    const val TICKET_MAP_BOUNDS = "ticket/map-bounds"
+    const val TOURNAMENTS_MAP_BOUNDS = "tournament/map-bounds"
+    const val CAMPS_MAP_BOUNDS = "camps/map-bounds"
 
 
 

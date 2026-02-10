@@ -103,7 +103,7 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
         val put = HashMap<String, Any>()
         put["page"] = currentPage
         put["limit"] = 10
-       // viewModel.getPostApi(Constants.USER_GET_POST, put)
+        viewModel.getPostApi(Constants.USER_GET_POST, put)
         // interFace
         SocialDetailsActivity.commonPostInterface = this
         AddPostActivity.addPostInterface = this

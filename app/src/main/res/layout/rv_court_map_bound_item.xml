@@ -11,17 +11,6 @@
             name="bean"
             type="com.beballer.beballer.data.model.MapCourt" />
 
-        <variable
-            name="pos"
-            type="Integer" />
-
-        <variable
-            name="size"
-            type="Integer" />
-
-        <variable
-            name="callback"
-            type="com.beballer.beballer.base.SimpleRecyclerViewAdapter.SimpleCallback" />
     </data>
 
 
@@ -31,7 +20,6 @@
         android:layout_height="@dimen/_150sdp"
         android:foreground="?android:attr/selectableItemBackground"
         app:cardCornerRadius="10dp"
-         android:onClick="@{v->callback.onItemClick(v,bean,pos)}"
         android:layout_margin="@dimen/_8sdp"
         app:cardElevation="@dimen/_4sdp"
         app:layout_constraintBottom_toBottomOf="parent"

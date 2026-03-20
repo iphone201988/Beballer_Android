@@ -136,6 +136,9 @@ public class SimpleRecyclerViewAdapter<M, B extends ViewDataBinding> extends Rec
             this.binding = binding;
         }
     }
-
+    public void addDataAtTop(@NonNull M data) {
+        dataList.add(0, data);
+        notifyItemInserted(0);
+    }
 
 }

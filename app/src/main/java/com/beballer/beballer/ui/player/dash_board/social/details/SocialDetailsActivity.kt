@@ -1,5 +1,6 @@
 package com.beballer.beballer.ui.player.dash_board.social.details
 
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
@@ -25,8 +27,11 @@ import com.beballer.beballer.data.model.PostCommentResponse
 import com.beballer.beballer.databinding.ActivitySocialDetailsBinding
 import com.beballer.beballer.databinding.SocialRvChatItemBinding
 import com.beballer.beballer.ui.interfacess.CommonPostInterface
+import com.beballer.beballer.ui.player.dash_board.profile.user.UserProfileActivity
 import com.beballer.beballer.utils.BindingUtils
 import com.beballer.beballer.utils.BindingUtils.DateHelper
+import com.beballer.beballer.utils.BindingUtils.gameStatusDisplay
+import com.beballer.beballer.utils.BindingUtils.parseServerDate
 import com.beballer.beballer.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
@@ -39,7 +44,10 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
     private val viewModel: SocialDetailsActivityVM by viewModels()
     private lateinit var chatAdapter: SimpleRecyclerViewAdapter<PostCommentData, SocialRvChatItemBinding>
     private var player: ExoPlayer? = null
+
+    private var userId :String ? = null
     private var commentDataSet: CommentData? = null
+
     private var userLikeId = ""
     private var userPostCommentId = ""
     var userLikeCount: Int = 0
@@ -53,6 +61,13 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
     private var nextPosition = -1
     private var userCommentId = ""
     private var scroll: Int = 0
+
+    private var gameId: String? = " "
+
+    private var courtId : String = ""
+
+
+    private var intentType  : String ? = null
 
     companion object {
         var commonPostInterface: CommonPostInterface? = null
@@ -68,11 +83,16 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
 
     override fun onCreateView() {
         // get intent data
-        val intentType = intent.getStringExtra("socialDetails")
+
+        setupSystemUI()
+        userId = sharedPrefManager.getLoginData()?.data?.user?._id
+        intentType = intent.getStringExtra("socialDetails")
         val item = intent.getParcelableExtra<GetUserPostData>("socialData")
         nextPosition = intent.getIntExtra("socialPos", -1)
         if (item != null) {
             binding.bean = item
+            gameId = item.game?.id
+            courtId = item.court?.id.toString()
             userLikeId = item._id.toString()
             userPostCommentId = item.id.toString()
             userLikeCount = item.likesCount ?: 0
@@ -81,6 +101,72 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
 
             binding.tvLike.text = userLikeCount.toString()
             binding.tvComment.text = postCommentCount.toString()
+
+
+            val dateTime = item?.game?.date
+            if (dateTime?.isNotEmpty() == true) {
+                val (date, time) = BindingUtils.formatDateTime(dateTime.toString())
+                binding.tvGameDate.text = date
+                binding.tvGameTime.text = time
+            }
+
+
+            //game status
+            item?.let { game ->
+
+                // ✅ 1. Parse Date
+                val parsedDate = parseServerDate(game.date)
+
+                // ✅ 2. Calculate Invite Response
+                val team1 = game.game?.team1Players ?: emptyList()
+                val team2 = game.game?.team2Players ?: emptyList()
+
+
+                val needsInviteResponse =
+                    team1.any { it.id == userId && it.accepted == false } ||
+                            team2.any { it.id == userId && it.accepted == false }
+
+
+
+                // ✅ 3. Apply Status Display
+                if (parsedDate != null) {
+
+                    val display = gameStatusDisplay(
+                        parsedDate,
+                        game.game?.status,
+                        needsInviteResponse
+                    )
+
+                    binding.tvGameStatus.text = display.text
+
+                    if (display.iconRes != 0) {
+
+                        val drawable = ContextCompat.getDrawable(
+                            this,
+                            display.iconRes
+                        )
+
+                        drawable?.let {
+
+                            val sizeInDp = 16
+                            val scale = resources.displayMetrics.density
+                            val sizeInPx = (sizeInDp * scale).toInt()
+
+                            it.setBounds(0, 0, sizeInPx, sizeInPx)
+
+                            binding.tvGameStatus.setCompoundDrawables(
+                                null,
+                                it,
+                                null,
+                                null
+                            )
+                        }
+
+                    } else {
+                        binding.tvGameStatus.setCompoundDrawables(null, null, null, null)
+                    }
+                }
+            }
 
 
             when (item.currentUserLikeCount) {
@@ -160,6 +246,7 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
             }
 
             "video" -> {
+
                 binding.clImageType.visibility = View.GONE
                 binding.clGameType.visibility = View.GONE
                 binding.clVideoType.visibility = View.VISIBLE
@@ -168,23 +255,27 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
                 binding.tvTextDescType.visibility = View.GONE
                 binding.clPostHeader.visibility = View.INVISIBLE
                 binding.clSecond.visibility = View.VISIBLE
+
                 item?.video?.takeIf { it.isNotEmpty() }?.let { videoPath ->
+
                     val playerView = binding.playerView
                     playerView.visibility = View.VISIBLE
 
                     player = ExoPlayer.Builder(this).build()
                     playerView.player = player
 
-                    val videoUrl = Constants.IMAGE_URL + videoPath
+                    val videoUrl = if (videoPath.startsWith("/")) {
+                        Constants.IMAGE_URL + videoPath
+                    } else {
+                        Constants.IMAGE_URL + "/$videoPath"
+                    }
+
                     val mediaItem = MediaItem.fromUri(videoUrl)
                     player?.setMediaItem(mediaItem)
                     player?.prepare()
                     player?.playWhenReady = true
                 }
-
-
             }
-
             "game" -> {
                 binding.clImageType.visibility = View.GONE
                 binding.clGameType.visibility = View.VISIBLE
@@ -238,6 +329,11 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
         paginationRecyclerView()
     }
 
+    private fun setupSystemUI() {
+        BindingUtils.applySystemBarMargins(binding.consMain)
+        BindingUtils.statusBarStyleWhite(this)
+
+    }
     /*** all click handel in this method  ***/
     private fun initOnClick() {
         viewModel.onClick.observe(this@SocialDetailsActivity) {
@@ -287,6 +383,30 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
                     }, 1000)
                 }
 
+                R.id.handelAllLayout ->{
+                    when(intentType) {
+                        "court" ->{
+                            val intent = Intent(this, UserProfileActivity::class.java)
+                            intent.putExtra("userType", "courtDetailsFragment")
+                            intent.putExtra("courtId", courtId)
+                            startActivity(intent)
+                            this.overridePendingTransition(
+                                R.anim.slide_in_right, R.anim.slide_out_left
+                            )
+                        }
+                        "game" ->{
+                            val intent = Intent(this, UserProfileActivity::class.java)
+                            intent.putExtra("userType", "gameDetails")
+                            intent.putExtra("gameId", gameId)
+                            startActivity(intent)
+
+                            this.overridePendingTransition(
+                                R.anim.slide_in_right,
+                                R.anim.slide_out_left
+                            )
+                        }
+                    }
+                }
 
                 R.id.postCommentImage -> {
                     binding.etSendMessage.requestFocus()

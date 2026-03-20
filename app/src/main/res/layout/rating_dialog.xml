@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="callback"
+            type="com.beballer.beballer.utils.BaseCustomDialog.Listener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/green_btn_bg"
+        android:paddingVertical="@dimen/_10sdp"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:backgroundTint="@color/white">
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_bold"
+            android:gravity="center"
+            android:text="Rate this court"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_13ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <com.github.bilalnasir9.library.ratingbar.CustomRatingBar
+            android:id="@+id/courtRatingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:iconEmpty="@drawable/ic_basketball_empty"
+            app:iconFilled="@drawable/ic_basketball_filled"
+            app:iconHalf="@drawable/ic_basketball_filled"
+            android:layout_marginStart="@dimen/_2sdp"
+            app:iconSize="20dp"
+            app:stepSize="0.5"
+            android:layout_marginTop="@dimen/_10sdp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvRating"
+            app:iconPadding="@dimen/_8sdp"
+            app:maxRating="5"
+            />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvYourRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:fontFamily="@font/inter_medium"
+            android:text="Your rating :  5.0"
+            android:textColor="@color/beballer_medium_grey"
+            android:textSize="@dimen/_10ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/courtRatingBar" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/btnCreateGame"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_38sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/_30sdp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/inter_medium"
+            android:background="@drawable/green_btn_bg"
+            android:onClick="@{v->callback.onViewClick(v)}"
+            android:text="Validate"
+            android:textSize="@dimen/_14ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvYourRating" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

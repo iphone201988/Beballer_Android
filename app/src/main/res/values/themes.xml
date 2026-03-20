@@ -198,8 +198,6 @@
 
 
 
-
-
     <style name="Theme.AppCompat.Translucent" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:background">@android:color/transparent</item>
         <item name="android:windowNoTitle">true</item>
@@ -213,7 +211,25 @@
     </style>
 
 
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:datePickerDialogTheme">@style/DatePickerDialogTheme</item>
+    </style>
 
+    <style name="DatePickerDialogTheme" parent="ThemeOverlay.AppCompat.Dialog">
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:headerBackground">@color/colorPrimary</item>
+        <item name="android:calendarTextColor">@color/grey</item>
+        <item name="android:datePickerStyle">@style/DatePickerStyle</item>
+    </style>
+
+    <style name="DatePickerStyle" parent="">
+        <item name="android:buttonStyle">@style/DialogButtonStyle</item>
+    </style>
+    <style name="DialogButtonStyle" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:backgroundTint">@color/colorPrimary</item>
+    </style>
 
     <style name="SquareActionButton" parent="">
         <item name="cornerFamily">rounded</item>

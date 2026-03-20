@@ -11,6 +11,9 @@
 
 
         <variable
+            name="bean"
+            type="com.beballer.beballer.data.model.GameDetail" />
+        <variable
             name="pos"
             type="Integer" />
 
@@ -109,6 +112,7 @@
             android:id="@+id/clTab"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_28sdp"
+            android:visibility="gone"
             android:layout_marginHorizontal="@dimen/_15sdp"
             android:layout_marginTop="@dimen/_8sdp"
             android:background="@drawable/tab_bg"
@@ -174,6 +178,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:orientation="vertical"
+                android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toTopOf="@+id/ivProfile"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -273,23 +278,24 @@
                     app:layout_constraintTop_toTopOf="@+id/tvCourtTitle">
 
 
-
                     <com.github.bilalnasir9.library.ratingbar.CustomRatingBar
                         android:id="@+id/courtRatingBar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:rating="@{(float) bean.field.rating}"
+                        android:onClick="@{v -> vm.onClick(v)}"
                         app:iconEmpty="@drawable/ic_basketball_empty"
                         app:iconFilled="@drawable/ic_basketball_filled"
                         app:iconHalf="@drawable/ic_basketball_filled"
-                        android:layout_marginStart="@dimen/_2sdp"
+                        app:iconPadding="4dp"
                         app:iconSize="20dp"
-                        app:stepSize="0.5"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:iconPadding="4dp"
                         app:maxRating="5"
-                        />
-
+                        app:stepSize="0.5" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvCourtRating"
@@ -299,7 +305,7 @@
                         android:layout_marginEnd="4dp"
                         android:fontFamily="@font/inter_bold"
                         android:includeFontPadding="false"
-                        android:text="3.7"
+                        android:text="@{bean.field.rating.toString()}"
                         android:textColor="#BFBFBF"
                         android:textSize="@dimen/_12ssp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -310,7 +316,7 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvGame"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="@dimen/_8sdp"
@@ -320,9 +326,28 @@
                     android:text="Game Info"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvCourtTitle" />
+
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvChat"
+                    android:layout_width="0dp"
+                    style="@style/TextView.InterBold"
+                    android:layout_height="@dimen/_24sdp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/round_corner_bg"
+                    android:backgroundTint="@color/games_dark_color"
+                    android:gravity="center"
+                    android:onClick="@{v->vm.onClick(v)}"
+                    android:text="Chat"
+                    android:paddingHorizontal="@dimen/_10sdp"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="@id/tvGame"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvGame" />
 
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -335,11 +360,11 @@
                     android:background="@drawable/player_bg"
                     android:backgroundTint="@color/white"
                     android:elevation="@dimen/_2sdp"
+                    app:modeFormat="@{bean.mode}"
                     android:fontFamily="@font/inter_bold"
                     android:foreground="@drawable/ripple_effect"
                     android:gravity="bottom|center"
                     android:paddingBottom="@dimen/_10sdp"
-                    android:text="2x2"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10ssp"
                     app:layout_constraintEnd_toStartOf="@id/tvGameOrganizer"
@@ -371,14 +396,15 @@
                     android:fontFamily="@font/inter_bold"
                     android:foreground="@drawable/ripple_effect"
                     android:gravity="center|bottom"
-                    android:paddingBottom="6dp"
-                    android:text="Created by\n@Junior78"
-                    android:textColor="@color/black"
+                    android:singleLine="true"
+                    android:paddingBottom="@dimen/_10sdp"
+                    android:text='@{bean.organizer == null ? "" : (bean.organizer.username == null ? "" : "@" + bean.organizer.username)}'                    android:textColor="@color/blue"
                     android:textSize="@dimen/_10ssp"
                     app:layout_constraintBottom_toBottomOf="@id/tvGameMode"
                     app:layout_constraintEnd_toStartOf="@+id/tvGameReferee"
                     app:layout_constraintStart_toEndOf="@+id/tvGameMode"
-                    app:layout_constraintTop_toTopOf="@id/tvGameMode" />
+                    app:layout_constraintTop_toTopOf="@id/tvGameMode"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/ivGameOrganizer"
@@ -393,6 +419,22 @@
                     app:layout_constraintStart_toStartOf="@id/tvGameOrganizer"
                     app:layout_constraintTop_toTopOf="@id/tvGameOrganizer" />
 
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/createdBy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Created by"
+                    android:textSize="@dimen/_10ssp"
+                    android:textColor="@color/black"
+                    android:visibility='@{bean.organizer == null ? View.GONE : View.VISIBLE}'
+                    android:elevation="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_3sdp"
+                    android:fontFamily="@font/inter_bold"
+                    app:layout_constraintTop_toBottomOf="@id/ivGameOrganizer"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvGameReferee"
                     android:layout_width="0dp"
@@ -405,9 +447,10 @@
                     android:fontFamily="@font/inter_bold"
                     android:foreground="@drawable/ripple_effect"
                     android:gravity="center|bottom"
-                    android:paddingBottom="@dimen/_12sdp"
-                    android:text="Self-refressing"
+                    android:onClick="@{v -> vm.onClick(v)}"
+                    android:paddingBottom="@dimen/_10sdp"
                     android:textColor="@color/black"
+                    android:singleLine="true"
                     android:textSize="@dimen/_10ssp"
                     app:layout_constraintBottom_toBottomOf="@+id/tvGameMode"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -433,7 +476,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="5dp"
                     android:background="@drawable/player_bg"
                     android:backgroundTint="@color/white"
@@ -441,17 +484,17 @@
                     android:fontFamily="@font/inter_bold"
                     android:foreground="@drawable/ripple_effect"
                     android:gravity="center"
+                    android:onClick="@{v -> vm.onClick(v)}"
                     android:paddingVertical="@dimen/_12sdp"
                     android:paddingStart="@dimen/_32sdp"
                     android:paddingEnd="@dimen/_10sdp"
-                    android:text="wednesday 04 june\n2025"
+                    app:formattedGameDate="@{bean.date}"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_8ssp"
                     app:layout_constraintEnd_toStartOf="@+id/tvGameStartTime"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvGameMode" />
-
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="@dimen/_25sdp"
@@ -476,8 +519,10 @@
                     app:layout_constraintTop_toTopOf="@id/tvGameStartTime"
                     app:tint="@color/games_dark_color" />
 
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvGameStartTime"
+                    formattedTime="@{bean.date}"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginStart="5dp"
@@ -496,7 +541,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tvGameStartDate"
                     app:layout_constraintTop_toTopOf="@id/tvGameStartDate" />
-
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/ballers_layout"
@@ -604,7 +648,7 @@
                         android:onClick="@{v->vm.onClick(v)}"
                         android:paddingHorizontal="4dp"
                         android:paddingVertical="10dp"
-                        android:text="By @Rossylan"
+                        android:text='@{"@" + bean.field.contributor.username}'
                         android:textColor="@color/blue"
                         android:textSize="12sp"
                         app:drawableTint="@color/games_dark_color"
@@ -680,6 +724,7 @@
                         android:paddingHorizontal="4dp"
                         android:paddingVertical="10dp"
                         android:text="N/A"
+                        android:onClick="@{v -> vm.onClick(v)}"
                         android:textColor="@color/blue"
                         android:textSize="12sp"
                         app:drawableTint="@color/games_dark_color"
@@ -719,8 +764,9 @@
                         android:foreground="@drawable/ripple_effect"
                         android:gravity="center"
                         android:maxLines="2"
+                        android:onClick="@{v -> vm.onClick(v)}"
                         android:padding="10dp"
-                        android:text="13 Rue des gibiers perdus, 75002 Paris"
+                        android:text="@{bean.field.address}"
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         app:drawableEndCompat="@drawable/ic_round_arrow_outward_24"
@@ -779,8 +825,9 @@
                         android:foreground="@drawable/ripple_effect"
                         android:gravity="center"
                         android:maxLines="2"
+                        android:onClick="@{v -> vm.onClick(v)}"
                         android:padding="10dp"
-                        android:text="3,2 km"
+                        android:text="0 m"
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         app:drawableStartCompat="@drawable/ic_round_directions_walk_40"
@@ -824,7 +871,7 @@
                         android:maxLines="2"
                         android:paddingHorizontal="4dp"
                         android:paddingVertical="10dp"
-                        android:text="@string/findCourts_Paniers"
+                        android:text='@{bean.field.hoopsCount + " Hoopes"}'
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         app:drawableTint="@color/games_dark_color"
@@ -850,7 +897,7 @@
                         android:maxLines="2"
                         android:paddingHorizontal="4dp"
                         android:paddingVertical="10dp"
-                        android:text="No Net"
+                        android:text="@{bean.field.netType}"
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         app:drawableTint="@color/games_dark_color"
@@ -878,7 +925,7 @@
                         android:maxLines="2"
                         android:paddingHorizontal="4dp"
                         android:paddingVertical="10dp"
-                        android:text="Wooden board"
+                        android:text="@{bean.field.boardType}"
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         app:drawableTint="@color/games_dark_color"
@@ -907,7 +954,7 @@
                         android:maxLines="2"
                         android:paddingHorizontal="4dp"
                         android:paddingVertical="10dp"
-                        android:text="Concrete with gravel"
+                        android:text="@{bean.field.floorType}"
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         app:drawableTint="@color/games_dark_color"
@@ -961,7 +1008,7 @@
                         android:maxLines="2"
                         android:paddingHorizontal="4dp"
                         android:paddingVertical="10dp"
-                        android:text="With\nwaterpoinrt"
+                        app:waterPointStatus="@{bean.field.hasWaterPoint}"
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         app:drawableTint="@color/games_dark_color"
@@ -1080,6 +1127,23 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/clMap" />
 
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/btnRefuse"
+                        style="@style/GreenButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_45sdp"
+                        android:layout_marginHorizontal="@dimen/_13sdp"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:backgroundTint="@color/eight_color"
+                        android:background="@drawable/green_btn_bg"
+                        android:onClick="@{v->vm.onClick(v)}"
+                        android:text="Refuse"
+                        android:textSize="@dimen/_14ssp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnNext" />
+
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -1155,6 +1219,32 @@
                     android:tint="@color/black_000000" />
 
             </androidx.cardview.widget.CardView>
+
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/removeCourtFab"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_marginTop="@dimen/_6sdp"
+                app:cardBackgroundColor="@color/tournaments_light_color"
+                app:cardCornerRadius="@dimen/_10sdp"
+                app:cardElevation="@dimen/_2sdp"
+                android:onClick="@{v->vm.onClick(v)}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/shareCourtFab"
+                app:shapeAppearanceOverlay="@style/SquareActionButton">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="@dimen/_22sdp"
+                    android:layout_height="@dimen/_22sdp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/outline_delete_24"
+                    android:tint="@color/grey" />
+
+            </androidx.cardview.widget.CardView>
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -38,7 +38,6 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
         binding.first.visibility = View.INVISIBLE
         binding.second.visibility = View.VISIBLE
         binding.third.visibility = View.VISIBLE
-        //CLick
         initClick()
         // adapter
         val adapter = PlayerProfilePagerAdapter(supportFragmentManager, lifecycle)

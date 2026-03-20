@@ -13,11 +13,13 @@
 
         <variable
             name="bean"
-            type="com.beballer.beballer.data.model.MpvModel" />
+            type="com.beballer.beballer.data.model.Player" />
 
 
         <import type="android.view.View" />
     </data>
+
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/_160sdp"
@@ -29,6 +31,7 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivPerson"
+            setImageFromUrl="@{bean.profilePicture}"
             android:layout_width="@dimen/_60sdp"
             android:layout_height="@dimen/_60sdp"
             android:src="@drawable/ic_round_account_circle_40"
@@ -39,14 +42,15 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvName"
-            style="@style/TextView.InterMedium"
+            style="@style/TextView.InterBold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start"
+            android:singleLine="true"
+            app:layout_constraintEnd_toStartOf="@id/ivCross"
             android:layout_marginEnd="@dimen/_2sdp"
             android:layout_marginStart="@dimen/_8sdp"
-            android:text="Elliot Le \nGall"
-            android:textColor="@color/black_000000"
+            android:text='@{bean.firstName != null ? (bean.lastName != null ? bean.firstName + " " + bean.lastName : bean.firstName) : "User"}'            android:textColor="@color/black_000000"
             android:textSize="@dimen/_11ssp"
             app:layout_constraintStart_toEndOf="@+id/ivPerson"
             app:layout_constraintTop_toTopOf="@+id/ivPerson" />
@@ -58,7 +62,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             android:gravity="start"
-            android:text="Camaret-sur-Mer"
+            android:text="@{bean.city}"
             android:textColor="@color/black_000000"
             android:textSize="@dimen/_9ssp"
             app:layout_constraintStart_toStartOf="@+id/tvName"
@@ -72,27 +76,40 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="@dimen/_1sdp"
             android:gravity="start"
-            android:text="131pts"
+            android:text='@{bean.score + " pts"}'
             android:textColor="@color/black_000000"
             android:textSize="@dimen/_9ssp"
             app:layout_constraintStart_toStartOf="@+id/tvName"
             app:layout_constraintTop_toBottomOf="@+id/tvDesc" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvPoint2"
+            android:id="@+id/tvStatus"
             style="@style/TextView.InterMedium"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="start"
             app:layout_constraintEnd_toEndOf="parent"
-            android:text="+131pts"
-            android:visibility="gone"
+            android:text="Ready"
+            android:visibility="visible"
             android:textColor="@color/green_37df9e"
             android:textSize="@dimen/_9ssp"
             app:layout_constraintStart_toStartOf="@+id/tvName"
             app:layout_constraintTop_toBottomOf="@+id/tvPoint" />
 
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivCross"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
+            android:src="@drawable/iv_cross"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

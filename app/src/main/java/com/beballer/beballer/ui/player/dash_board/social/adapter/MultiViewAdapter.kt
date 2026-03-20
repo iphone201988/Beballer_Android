@@ -1,11 +1,13 @@
 package com.beballer.beballer.ui.player.dash_board.social.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
+import androidx.collection.longIntMapOf
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
@@ -23,6 +25,8 @@ import com.beballer.beballer.data.model.MpvModel
 import com.beballer.beballer.databinding.RvMpvItemLayoutBinding
 import com.beballer.beballer.ui.FeedItem
 import com.beballer.beballer.utils.BindingUtils
+import com.beballer.beballer.utils.BindingUtils.gameStatusDisplay
+import com.beballer.beballer.utils.BindingUtils.parseServerDate
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.imageview.ShapeableImageView
@@ -218,6 +222,7 @@ class MultiViewAdapter(
                     is CourtPostViewHolder -> holder.bind(item.post, listener, position)
                     is EventPostViewHolder -> holder.bind(item.post, listener, position)
                     is GamePostViewHolder -> holder.bind(item.post, listener, position)
+
                 }
             }
 
@@ -298,13 +303,21 @@ class MultiViewAdapter(
             tvCommonPostDesc.text = item?.description
             tvImageLike.text = item?.likesCount.toString()
             tvImageComment.text = item?.commentCount.toString()
-            val imageUrl = Constants.IMAGE_URL + item?.publisherData?.profilePicture
-            val safeImageUrl = imageUrl.takeIf { it.isNotBlank() }
+            val uri = item?.publisherData?.profilePicture.orEmpty()
 
-            Glide.with(ivCommonPostProfile.context).load(safeImageUrl)
+            val imageUrl = if (uri.isNotBlank()) {
+                Constants.IMAGE_URL.trimEnd('/') + "/" + uri.trimStart('/')
+            } else {
+                null
+            }
+
+            Log.i("Fdsfdsfds", "bind: $imageUrl")
+            Glide.with(ivCommonPostProfile.context)
+                .load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
                 .error(R.drawable.ic_round_account_circle_40)
-                .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivCommonPostProfile)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(ivCommonPostProfile)
             //  commentCount.text = item?.likesCount.toString()
 
 
@@ -386,15 +399,29 @@ class MultiViewAdapter(
             tvLike.text = item?.likesCount.toString()
             tvComment.text = item?.commentCount.toString()
             //   tvShare.text = item?.likesCount.toString()
-            val videoUrl = Constants.IMAGE_URL + (item?.video ?: "")
-            currentVideoUrl = videoUrl
-            val imageUrl = Constants.IMAGE_URL + item?.publisherData?.profilePicture
+            val url = item?.video ?: ""
 
-            val safeImageUrl = imageUrl.takeIf { it.isNotBlank() }
-            Glide.with(ivCommonPostProfile.context).load(safeImageUrl)
+            val videoUrl = if (url.startsWith("/")) {
+                Constants.IMAGE_URL + url
+            } else {
+                Constants.IMAGE_URL + "/$url"
+            }
+
+            currentVideoUrl = videoUrl
+            val profilePath = item?.publisherData?.profilePicture
+
+            val imageUrl = profilePath
+                ?.takeIf { it.isNotBlank() }
+                ?.let {
+                    Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
+                }
+
+            Glide.with(ivCommonPostProfile.context)
+                .load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
                 .error(R.drawable.ic_round_account_circle_40)
-                .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivCommonPostProfile)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(ivCommonPostProfile)
             val rawDate = item?.date
             if (rawDate?.isNotEmpty() == true){
                 val date = BindingUtils.convertToDate(rawDate)
@@ -674,12 +701,18 @@ class MultiViewAdapter(
 
             tvCourtSector.text = location.ifBlank { "" }
             tvCourtTextPost.text = item?.description
-            val imageUrl = Constants.IMAGE_URL + item?.publisherData?.profilePicture
-            val safeImageUrl = imageUrl.takeIf { it.isNotBlank() }
-            Glide.with(ivCommonPostProfile.context).load(safeImageUrl)
+            val profilePath = item?.publisherData?.profilePicture
+
+            val imageUrl = profilePath
+                ?.takeIf { it.isNotBlank() }
+                ?.let { Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/') }
+
+            Glide.with(ivCommonPostProfile.context)
+                .load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
                 .error(R.drawable.ic_round_account_circle_40)
-                .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivCommonPostProfile)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(ivCommonPostProfile)
 
             tvLike.text = item?.likesCount.toString()
             tvComment.text = item?.commentCount.toString()
@@ -687,11 +720,20 @@ class MultiViewAdapter(
 
 
             val firstPhoto = item?.court?.photos?.firstOrNull()
-            if (!firstPhoto.isNullOrEmpty()) {
-                val imageUrl = Constants.IMAGE_URL + firstPhoto
-                Glide.with(ivCourt.context).load(imageUrl)
+
+            if (!firstPhoto.isNullOrBlank()) {
+
+                val imageUrl = Constants.IMAGE_URL.trimEnd('/') + "/" + firstPhoto.trimStart('/')
+
+                Glide.with(ivCourt.context)
+                    .load(imageUrl)
                     .placeholder(R.drawable.progress_animation_small)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivCourt)
+                    .error(R.drawable.ic_round_account_circle_40)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(ivCourt)
+
+            } else {
+                ivCourt.setImageResource(R.drawable.ic_round_account_circle_40)
             }
             tvTitleCourtName.text = item?.court?.name
             tvCourtRating.text = "${item?.court?.grade ?: 0.0}"
@@ -767,7 +809,6 @@ class MultiViewAdapter(
 
         fun bind(item: GetUserPostData?, listener: OnItemClickListener, position: Int) {
 
-
             // subscription button handel
             if (userid.equals(item?.publisherData?._id)){
                 tvSubscribe.visibility = View.GONE
@@ -784,14 +825,120 @@ class MultiViewAdapter(
             }
 
 
+            // handle game moder
+            val mode = item?.game?.mode
 
-            val imageUrl = Constants.IMAGE_URL + item?.publisherData?.profilePicture
-            val safeImageUrl = imageUrl.takeIf { it.isNotBlank() }
-            Glide.with(ivCommonPostProfile.context).load(safeImageUrl)
+            tvGameMode.text = if (mode != null) {
+                "${mode}x${mode}"
+            } else {
+                ""
+            }
+
+
+
+            //game status
+            item?.let { game ->
+
+                // ✅ 1. Parse Date
+                val parsedDate = parseServerDate(game.date)
+
+                // ✅ 2. Calculate Invite Response
+                val team1 = game.game?.team1Players ?: emptyList()
+                val team2 = game.game?.team2Players ?: emptyList()
+
+
+                val needsInviteResponse =
+                    team1.any { it.id == userid && it.accepted == false } ||
+                            team2.any { it.id == userid && it.accepted == false }
+
+
+
+                // ✅ 3. Apply Status Display
+                if (parsedDate != null) {
+
+                    val display = gameStatusDisplay(
+                        parsedDate,
+                        game.game?.status,
+                        needsInviteResponse
+                    )
+
+                    tvGameStatus.text = display.text
+
+                    if (display.iconRes != 0) {
+
+                        val drawable = ContextCompat.getDrawable(
+                            itemView.context,
+                            display.iconRes
+                        )
+
+                        drawable?.let {
+
+                            val sizeInDp = 16
+                            val scale = itemView.context.resources.displayMetrics.density
+                            val sizeInPx = (sizeInDp * scale).toInt()
+
+                            it.setBounds(0, 0, sizeInPx, sizeInPx)
+
+                            tvGameStatus.setCompoundDrawables(
+                                null,
+                                it,
+                                null,
+                                null
+                            )
+                        }
+
+                    } else {
+                        tvGameStatus.setCompoundDrawables(null, null, null, null)
+                    }
+                }
+            }
+
+
+
+            if (item?.game?.totalJoinedPlayers != null){
+                tvGamePlayers.text =    item.game.totalJoinedPlayers + " players"
+
+            }
+
+
+            tvGameCity.text = item?.game?.field?.name
+            tvGameCountry.text = item?.game?.field?.country
+            val uri = item?.publisherData?.profilePicture
+
+            val imageUrl = uri?.takeIf { it.isNotBlank() }?.let {
+                Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
+            }
+
+            Glide.with(ivCommonPostProfile.context)
+                .load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
                 .error(R.drawable.ic_round_account_circle_40)
-                .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivCommonPostProfile)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(ivCommonPostProfile)
 
+
+
+
+            val photoList = item?.game?.field?.photos
+
+            val gameImageUrl = photoList
+                ?.firstOrNull()
+                ?.takeIf { it.isNotBlank() }
+                ?.let {
+                    Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
+                }
+
+            Glide.with(ivGame.context)
+                .load(gameImageUrl)
+                .placeholder(R.drawable.progress_animation_small)
+                .error(R.drawable.ic_round_account_circle_40)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(ivGame)
+
+
+
+
+            Log.i("dfdsfds", "bind: $item")
             val fullName = listOfNotNull(
                 item?.publisherData?.firstName?.takeIf { it.isNotBlank() },
                 item?.publisherData?.lastName?.takeIf { it.isNotBlank() }).joinToString(" ")

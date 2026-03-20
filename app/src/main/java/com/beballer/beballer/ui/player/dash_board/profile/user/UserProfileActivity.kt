@@ -82,8 +82,9 @@ class UserProfileActivity : BaseActivity<ActivityUserProfileBinding>() {
                     }
 
                     "settings" -> {
+                        val bundle = intent.extras
                         graph.setStartDestination(R.id.settingsFragment)
-                        navController.setGraph(graph, null)
+                        navController.setGraph(graph, bundle)
                     }
 
                     "suggestion" -> {
@@ -97,8 +98,9 @@ class UserProfileActivity : BaseActivity<ActivityUserProfileBinding>() {
                     }
 
                     "editImage" -> {
+                        val bundle = intent.extras
                         graph.setStartDestination(R.id.editImageFragment)
-                        navController.setGraph(graph, null)
+                        navController.setGraph(graph,  bundle)
                     }
 
                     "courtFragment" -> {
@@ -146,13 +148,15 @@ class UserProfileActivity : BaseActivity<ActivityUserProfileBinding>() {
                     }
 
                     "createGame" -> {
+                        val bundle = intent.extras
                         graph.setStartDestination(R.id.createGameFragment)
-                        navController.setGraph(graph, null)
+                        navController.setGraph(graph, bundle)
                     }
 
                     "gameDetails" -> {
+                        val bundle = intent.extras
                         graph.setStartDestination(R.id.gameDetailsFragment)
-                        navController.setGraph(graph, null)
+                        navController.setGraph(graph, bundle)
 
                     }
 
@@ -162,8 +166,9 @@ class UserProfileActivity : BaseActivity<ActivityUserProfileBinding>() {
                     }
 
                     "findGameFragment" -> {
+                        val bundle = intent.extras
                         graph.setStartDestination(R.id.findGameFragment)
-                        navController.setGraph(graph, null)
+                        navController.setGraph(graph, bundle)
                     }
 
                     "singleDataFragment" -> {
@@ -177,8 +182,41 @@ class UserProfileActivity : BaseActivity<ActivityUserProfileBinding>() {
                         graph.setStartDestination(R.id.showMapFragment)
                         navController.setGraph(graph, bundle)
                     }
-
-
+                    "invitePlayer" ->{
+                        val bundle = intent.extras
+                        graph.setStartDestination(R.id.invitePlayer)
+                        navController.setGraph(graph, bundle)
+                    }
+                    "gameChat" ->{
+                        val bundle = intent.extras
+                        graph.setStartDestination(R.id.gameChat)
+                        navController.setGraph(graph, bundle)
+                    }
+                    "gameScore" ->{
+                        val bundle = intent.extras
+                        graph.setStartDestination(R.id.gameScore)
+                        navController.setGraph(graph, bundle)
+                    }
+                    "imageZoom" ->{
+                        val bundle = intent.extras
+                        graph.setStartDestination(R.id.imageZoom)
+                        navController.setGraph(graph, bundle)
+                    }
+                    "organizer_profile" ->{
+                        val bundle = intent.extras
+                        graph.setStartDestination(R.id.fragmentOrganizersProfile)
+                        navController.setGraph(graph, bundle)
+                    }
+                    "add_organizer_pic" ->{
+                        val bundle = intent.extras
+                        graph.setStartDestination(R.id.fragmentOrganizerAddPic)
+                        navController.setGraph(graph, bundle)
+                    }
+                    "fragmentOrganizeEditProfile" ->{
+                        val bundle = intent.extras
+                        graph.setStartDestination(R.id.fragmentOrganizeEditProfile)
+                        navController.setGraph(graph, bundle)
+                    }
                     else -> {
                         graph.setStartDestination(R.id.editFragment)
                         navController.setGraph(graph, null)

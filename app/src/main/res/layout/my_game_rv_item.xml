@@ -15,19 +15,18 @@
 
         <variable
             name="bean"
-            type="com.beballer.beballer.data.model.MpvModel" />
+            type="com.beballer.beballer.data.model.MyGame" />
 
         <import type="android.view.View" />
     </data>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/clGame"
+        android:id="@+id/clMain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="10dp"
         android:foreground="?android:attr/selectableItemBackground"
-        android:onClick="@{v->callback.onItemClick(v,bean,pos)}"
         app:cardCornerRadius="10dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -39,6 +38,8 @@
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/court_image"
                 android:layout_width="0dp"
+                setImageCourtUrl="@{bean.field.photos}"
+
                 android:layout_height="0dp"
                 android:background="@color/grey"
                 android:padding="@dimen/_4sdp"
@@ -57,10 +58,11 @@
                 android:layout_marginHorizontal="@dimen/_2sdp"
                 android:layout_marginTop="8dp"
                 android:ellipsize="end"
+                app:formattedDate="@{bean.date}"
                 android:fontFamily="@font/inter_bold"
                 android:includeFontPadding="false"
                 android:maxLines="2"
-                android:text="Wednesday 14.06.2025"
+                android:text=""
                 android:textColor="@color/black_000000"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintEnd_toStartOf="@id/tvGameTime"
@@ -77,7 +79,7 @@
                 android:fontFamily="@font/inter_bold"
                 android:includeFontPadding="false"
                 android:maxLines="2"
-                android:text="12:00"
+                formattedTime="@{bean.date}"
                 android:textColor="@color/black_000000"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintBottom_toBottomOf="@+id/tvGameDate"
@@ -95,7 +97,7 @@
                 android:fontFamily="@font/inter_bold"
                 android:includeFontPadding="false"
                 android:maxLines="2"
-                android:text="Bruges 33520"
+                android:text="@{bean.field.address}"
                 android:textColor="@color/beballer_grey"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -111,7 +113,7 @@
                 android:fontFamily="@font/inter_bold"
                 android:includeFontPadding="false"
                 android:maxLines="2"
-                android:text="City Stade Albert\nGalinier"
+                android:text="@{bean.field.name}"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintEnd_toEndOf="@+id/tvGameCity"
@@ -133,7 +135,7 @@
                 android:maxLines="1"
                 android:paddingHorizontal="4dp"
                 android:paddingVertical="10dp"
-                android:text="1x1"
+                app:modeFormat="@{bean.mode}"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp"
                 app:drawableTint="@color/games_dark_color"
@@ -155,7 +157,7 @@
                 android:gravity="center"
                 android:paddingHorizontal="4dp"
                 android:paddingVertical="10dp"
-                android:text="2x2 player"
+                android:text='@{bean.totalJoinedPlayers + " players"}'
                 android:textColor="@color/black"
                 android:textSize="@dimen/_8ssp"
                 app:drawableTint="@color/games_dark_color"
@@ -180,7 +182,6 @@
                 android:text="Done"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_8ssp"
-                app:drawableTint="@color/games_dark_color"
                 app:drawableTopCompat="@drawable/round_call_received_24"
                 app:layout_constraintBottom_toBottomOf="@+id/tvGameMode"
                 app:layout_constraintEnd_toEndOf="@+id/tvGameCity"

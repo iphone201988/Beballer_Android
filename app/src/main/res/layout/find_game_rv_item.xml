@@ -15,7 +15,7 @@
 
         <variable
             name="bean"
-            type="com.beballer.beballer.data.model.FindModel" />
+            type="com.beballer.beballer.data.model.GetCourtData" />
 
         <import type="android.view.View" />
     </data>
@@ -27,7 +27,6 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="10dp"
         android:foreground="?android:attr/selectableItemBackground"
-        android:onClick="@{v->callback.onItemClick(v,bean,pos)}"
         app:cardCornerRadius="10dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -43,6 +42,7 @@
                 android:adjustViewBounds="true"
                 android:background="@color/grey"
                 android:padding="@dimen/_3sdp"
+                setImageCourtUrl="@{bean.photos}"
                 android:scaleType="centerCrop"
                 android:src="@drawable/iv_event"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -62,7 +62,7 @@
                 android:fontFamily="@font/inter_bold"
                 android:includeFontPadding="false"
                 android:maxLines="2"
-                android:text="Test Court"
+                setTextEmptyCheck="@{bean.name}"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -79,7 +79,7 @@
                 android:fontFamily="@font/inter_bold"
                 android:includeFontPadding="false"
                 android:maxLines="2"
-                android:text="Sahibzada Ajit Singh Nager 160059"
+                setTextEmptyCheck="@{bean.address}"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp"
                 android:textStyle="bold"
@@ -108,6 +108,7 @@
                     app:iconHalf="@drawable/ic_basketball_filled"
                     android:layout_marginStart="@dimen/_2sdp"
                     app:iconSize="20dp"
+                    setRatings="@{bean.grade}"
                     app:stepSize="0.5"
                     app:layout_constraintStart_toEndOf="@id/tvCourtRating"
                     app:layout_constraintTop_toTopOf="parent"
@@ -123,7 +124,7 @@
                     android:layout_marginEnd="4dp"
                     android:fontFamily="@font/inter_bold"
                     android:includeFontPadding="false"
-                    android:text="N/A"
+                    android:text="@{String.valueOf(bean.grade)}"
                     android:textColor="#BFBFBF"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -140,7 +141,7 @@
                 android:fontFamily="@font/inter_regular"
                 android:includeFontPadding="false"
                 android:maxLines="2"
-                android:text="2.2km"
+                android:text='@{bean.distance +"km"}'
                 android:textColor="#989898"
                 android:textSize="@dimen/_9ssp"
                 app:layout_constraintEnd_toEndOf="@+id/tvCourtName"
@@ -156,7 +157,7 @@
                 android:fontFamily="@font/inter_regular"
                 android:includeFontPadding="false"
                 android:maxLines="2"
-                android:text="1 hope"
+                android:text='@{bean.hoopsCount+"Hoops"}'
                 android:textColor="#989898"
                 android:textSize="@dimen/_9ssp"
                 app:layout_constraintEnd_toEndOf="@+id/clRating"

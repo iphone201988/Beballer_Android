@@ -48,6 +48,7 @@ class EditImageFragment : BaseFragment<FragmentEditImageBinding>() {
     private var multipartImage: MultipartBody.Part? = null
     private var photoFile2: File? = null
     private var photoURI: Uri? = null
+    private  var side : String ? =null
 
     override fun getLayoutResource(): Int {
         return R.layout.fragment_edit_image
@@ -62,9 +63,24 @@ class EditImageFragment : BaseFragment<FragmentEditImageBinding>() {
         initObserver()
         // click
         initOnClick()
+        initData()
+
+        setupSystemUI()
         // api call
         val data  = HashMap<String, Any>()
         viewModel.getProfileApi(Constants.USER_PROFILE,data)
+    }
+
+    private fun initData() {
+        side = arguments?.getString("side")
+
+    }
+
+
+    private fun setupSystemUI() {
+        BindingUtils.applySystemBarMargins(binding.consMain)
+        BindingUtils.statusBarStyleWhite(requireActivity())
+
     }
 
     /** handle click **/
@@ -129,9 +145,18 @@ class EditImageFragment : BaseFragment<FragmentEditImageBinding>() {
 
 
                     }
-                    if (multipartImage != null) {
-                        viewModel.updateProfileApi(Constants.CREATE_PROFILE, data, multipartImage)
+                    if (side == "organizer")
+                    {
+                        if (multipartImage != null) {
+                            viewModel.updateProfileApi(Constants.CREATE_ORGANIZER, data, multipartImage)
+                        }
                     }
+                    else{
+                        if (multipartImage != null) {
+                            viewModel.updateProfileApi(Constants.CREATE_PROFILE, data, multipartImage)
+                        }
+                    }
+
 
                 }
 

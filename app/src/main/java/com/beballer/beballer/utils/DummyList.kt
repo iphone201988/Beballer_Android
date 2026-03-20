@@ -1,72 +1,73 @@
 package com.beballer.beballer.utils
 
 import com.beballer.beballer.data.model.GameModeModel
+import com.beballer.beballer.data.model.GameModes
 
 object DummyList {
 
     // add list game mode
-    fun getListAccessibility(): ArrayList<GameModeModel> {
+    fun getListAccessibility(): ArrayList<GameModes> {
         return arrayListOf(
-            GameModeModel("Available to everyone"),
-            GameModeModel("Available to licensees"),
-            GameModeModel("Special opening hours"),
+            GameModes("Available to everyone"),
+            GameModes("Available to licensees"),
+            GameModes("Special opening hours")
         )
     }
 
-    fun getListHoopsCount(): ArrayList<GameModeModel> {
+    fun getListHoopsCount(): ArrayList<GameModes> {
         return arrayListOf(
-            GameModeModel("1"),
-            GameModeModel("2"),
-            GameModeModel("3"),
-            GameModeModel("4"),
-            GameModeModel("5+"),
+            GameModes("1"),
+            GameModes("2"),
+            GameModes("3"),
+            GameModes("4"),
+            GameModes("5+"),
 
             )
     }
 
     // add list game mode
-     fun getListBoardType(): ArrayList<GameModeModel> {
+     fun getListBoardType(): ArrayList<GameModes> {
         return arrayListOf(
-            GameModeModel("Steel"),
-            GameModeModel("Wood"),
-            GameModeModel("Plastic"),
-            GameModeModel("Plexiglas"),
+            GameModes("Steel"),
+            GameModes("Wood"),
+            GameModes("Plastic"),
+            GameModes("Plexiglas"),
         )
     }
 
-     fun getListNetType(): ArrayList<GameModeModel> {
+     fun getListNetType(): ArrayList<GameModes> {
         return arrayListOf(
-            GameModeModel("String"),
-            GameModeModel("Chain"),
-            GameModeModel("Plastic"),
-            GameModeModel("No nets"),
+            GameModes("String"),
+            GameModes("Chain"),
+            GameModes("Plastic"),
+            GameModes("No nets"),
 
             )
     }
 
-     fun getListFloorType(): ArrayList<GameModeModel> {
+     fun getListFloorType(): ArrayList<GameModes> {
         return arrayListOf(
-            GameModeModel("Asphalt with gravel"),
-            GameModeModel("Bitumen without gravel"),
-            GameModeModel("synth"),
-            GameModeModel("parquet"),
+            GameModes("Asphalt with gravel"),
+            GameModes("Bitumen without gravel"),
+            GameModes("synth"),
+            GameModes("parquet"),
 
             )
     }
 
-     fun getListLineType(): ArrayList<GameModeModel> {
+     fun getListLineType(): ArrayList<GameModes> {
         return arrayListOf(
-            GameModeModel("Up to standards"),
-            GameModeModel("Not up to standard"),
+            GameModes("Up to standards"),
+            GameModes("Not up to standard"),
 
             )
     }
 
 
-     fun getListWaterPointType(): ArrayList<GameModeModel> {
+     fun getListWaterPointType(): ArrayList<GameModes> {
         return arrayListOf(
-            GameModeModel("With"),
-            GameModeModel("Without"),
+            GameModes("With"),
+            GameModes("Without"),
 
             )
     }

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="callback"
+            type="com.beballer.beballer.utils.BaseCustomDialog.Listener" />
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_15sdp"
+        android:background="@drawable/btn_bg_5_radius"
+        android:backgroundTint="@color/white">
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvHeading"
+            style="@style/TextView.InterSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:gravity="center"
+            android:text="Referee Options"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnViewProfile"
+            style="@style/GreenButton"
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginStart="@dimen/_18sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:background="@drawable/chat_et_bg"
+            android:backgroundTint="@color/view_color"
+            android:fontFamily="@font/inter_semi_bold"
+            android:onClick="@{v->callback.onViewClick(v)}"
+            android:text="View Profile"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_13ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvHeading" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnChangeReferee"
+            style="@style/GreenButton"
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginStart="@dimen/_18sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:background="@drawable/chat_et_bg"
+            android:backgroundTint="@color/view_color"
+            android:fontFamily="@font/inter_semi_bold"
+            android:onClick="@{v->callback.onViewClick(v)}"
+            android:text="Change Referee"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_13ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnViewProfile" />
+
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnRemoveReferee"
+            style="@style/GreenButton"
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginStart="@dimen/_18sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:background="@drawable/chat_et_bg"
+            android:backgroundTint="@color/view_color"
+            android:fontFamily="@font/inter_semi_bold"
+            android:onClick="@{v->callback.onViewClick(v)}"
+            android:text="Remove Referee"
+            android:textColor="@color/red"
+            android:textSize="@dimen/_13ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnChangeReferee" />
+
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCancel"
+            style="@style/GreenButton"
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginStart="@dimen/_18sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:background="@drawable/chat_et_bg"
+            android:backgroundTint="@color/view_color"
+            android:fontFamily="@font/inter_semi_bold"
+            android:onClick="@{v->callback.onViewClick(v)}"
+            android:text="Cancel"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_13ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnRemoveReferee" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

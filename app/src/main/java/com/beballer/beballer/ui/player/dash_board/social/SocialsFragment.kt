@@ -1,12 +1,15 @@
 package com.beballer.beballer.ui.player.dash_board.social
 
 import android.content.Intent
+import android.location.Location
 import android.os.Handler
 import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -15,10 +18,15 @@ import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.data.api.Constants
 import com.beballer.beballer.data.api.Constants.userType
+import com.beballer.beballer.data.model.BoundPlayer
 import com.beballer.beballer.data.model.CommonResponse
 import com.beballer.beballer.data.model.GetUserPostData
 import com.beballer.beballer.data.model.GetUserPostResponse
+import com.beballer.beballer.data.model.LocationScope
+import com.beballer.beballer.data.model.MapBounds
 import com.beballer.beballer.data.model.MpvModel
+import com.beballer.beballer.data.model.PlayerByBoundApiResponse
+import com.beballer.beballer.data.model.PlayerData
 import com.beballer.beballer.databinding.CreateProfileDialogItemDesignBinding
 import com.beballer.beballer.databinding.FragmentSocialsBinding
 import com.beballer.beballer.databinding.ReportOrDeletePostBottomItemBinding
@@ -31,6 +39,7 @@ import com.beballer.beballer.ui.interfacess.OnNextClickListener
 import com.beballer.beballer.ui.interfacess.VideoHandler
 import com.beballer.beballer.ui.player.add_post.AddPostActivity
 import com.beballer.beballer.ui.player.create_profile.CreateProfileActivity
+import com.beballer.beballer.ui.player.dash_board.DashboardActivityVM
 import com.beballer.beballer.ui.player.dash_board.find.player_profile.PlayerProfileActivity
 import com.beballer.beballer.ui.player.dash_board.profile.user.UserProfileActivity
 import com.beballer.beballer.ui.player.dash_board.social.adapter.MultiViewAdapter
@@ -43,9 +52,11 @@ import com.beballer.beballer.ui.player.dash_board.social.suggested_user.Suggeste
 import com.beballer.beballer.utils.BaseCustomBottomSheet
 import com.beballer.beballer.utils.BaseCustomDialog
 import com.beballer.beballer.utils.BindingUtils
+import com.beballer.beballer.utils.LocationBoundsProvider
 import com.beballer.beballer.utils.Status
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 
@@ -53,12 +64,20 @@ import kotlin.math.abs
 class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, CommonPostInterface,
     AddPostInterface {
     private val viewModel: SocialsFragmentVM by viewModels()
+    // ✅ Shared Activity ViewModel
+    private val dashboardVM: DashboardActivityVM by activityViewModels()
+
     private lateinit var createProfileDialogItem: BaseCustomDialog<CreateProfileDialogItemDesignBinding>
     private lateinit var welcomeDialogItem: BaseCustomDialog<WelcomeDialogItemBinding>
     private lateinit var homePostAdapter: MultiViewAdapter
     private lateinit var homeSubPostAdapter: MultiViewAdapterSub
     private lateinit var subscribeBottomItem: BaseCustomBottomSheet<SubscribeBotomItemBinding>
     private lateinit var reportOrDeleteBottomItem: BaseCustomBottomSheet<ReportOrDeletePostBottomItemBinding>
+
+    private lateinit var boundsProvider: LocationBoundsProvider
+
+    private var postList: List<GetUserPostData?> = emptyList()
+    private var mvpList: List<BoundPlayer> = emptyList()
     private var currentPage = 1
     private var currentSubPage = 1
     private var isLoading = false
@@ -70,6 +89,8 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
     private var postPosition = -1
     private var postSubPosition = -1
     private var postSubscribe = false
+
+
     override fun getLayoutResource(): Int {
         return R.layout.fragment_socials
     }
@@ -84,6 +105,16 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
         binding.tvFeed.typeface = ResourcesCompat.getFont(requireContext(), R.font.inter_bold)
         binding.tvSubscriptions.typeface =
             ResourcesCompat.getFont(requireContext(), R.font.inter_medium)
+
+        boundsProvider = LocationBoundsProvider(requireContext())
+
+        dashboardVM.userLocation.observe(viewLifecycleOwner) { location ->
+
+            Log.i("location", "Received: ${location.latitude}, ${location.longitude}")
+
+            loadPlayers(location, LocationScope.CITY)
+        }
+
         // observer
         initObserver()
         // click
@@ -104,6 +135,9 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
         put["page"] = currentPage
         put["limit"] = 10
         viewModel.getPostApi(Constants.USER_GET_POST, put)
+
+
+
         // interFace
         SocialDetailsActivity.commonPostInterface = this
         AddPostActivity.addPostInterface = this
@@ -145,6 +179,35 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                 viewModel.getPostSubApi(Constants.USER_GET_POST, data)
 
             }, 2000)
+        }
+    }
+
+    private fun loadPlayers(location: Location, scope: LocationScope) {
+
+        lifecycleScope.launch {
+
+            val bounds = boundsProvider.fetchBounds(location, scope)
+
+            Log.d("BoundsDebug", "NE: ${bounds.northEastLat}, ${bounds.northEastLng}")
+            Log.d("BoundsDebug", "SW: ${bounds.southWestLat}, ${bounds.southWestLng}")
+
+            getTopPlayer(bounds)
+
+        }
+
+    }
+
+    private fun getTopPlayer(bounds: MapBounds) {
+        if (bounds != null){
+            val data  = HashMap<String, Any>()
+            data["northEastLng"] = bounds.northEastLng
+            data["southWestLng"] = bounds.southWestLng
+            data["northEastLat"] = bounds.northEastLat
+            data["southWestLat"] = bounds.southWestLat
+            data["page"] = 1
+            data["limit"] = 20
+
+            viewModel.getTopRanking(Constants.GET_PLAYER_BY_BOUNDS, data)
         }
     }
 
@@ -231,10 +294,18 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                 adapter.getList()[centerPosition]
 
                 val post = adapter.getPostAt(centerPosition)
-                val url = Constants.IMAGE_URL + (post?.video ?: "")
+                val videoPath = post?.video
 
-                viewHolder.playVideo(url, resumePosition)
-                adapter.setCurrentlyPlayingHolder(viewHolder)
+                val videoUrl = videoPath
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let {
+                        Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
+                    }
+
+                if (videoUrl != null) {
+                    viewHolder.playVideo(videoUrl, resumePosition)
+                    adapter.setCurrentlyPlayingHolder(viewHolder)
+                }
             } else {
                 adapter.pauseCurrentlyPlaying()
             }
@@ -500,6 +571,8 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                                 isProgress = true
                                 isLoading = false
                                 isLastPage = false
+
+                                postList = myDataModel.data
                                 if (currentPage == 1) {
                                     myDataModel.data.let {
                                         homePostAdapter.setList(it, getList())
@@ -514,6 +587,15 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                             }
                         }
 
+                        "getTopRanking" ->{
+                            val myDataModel : PlayerByBoundApiResponse ? = BindingUtils.parseJson(it.data.toString())
+                            if (myDataModel != null){
+                                if (myDataModel.data != null){
+                                    mvpList = myDataModel.data.players
+
+                                }
+                            }
+                        }
 
                         "postLikeApi" -> {
                             val myDataModel: CommonResponse? =
@@ -553,6 +635,8 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                                 homePostAdapter.removeAt(postPosition)
                             }
                         }
+
+
                     }
                 }
 

@@ -42,7 +42,7 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/organizersBottomNavigation"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_48sdp"
+            android:layout_height="wrap_content"
             android:background="@color/white"
             app:itemIconSize="@dimen/_20sdp"
             app:itemActiveIndicatorStyle="@style/App.Custom.Indicator"

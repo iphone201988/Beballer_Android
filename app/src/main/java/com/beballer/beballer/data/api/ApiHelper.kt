@@ -19,4 +19,10 @@ interface ApiHelper {
     suspend fun apiForMultipartPut(url: String,map: HashMap<String, RequestBody>?, part: MultipartBody.Part?): Response<JsonObject>
     suspend fun apiPutForRawBody(url: String,map: HashMap<String, Any>): Response<JsonObject>
 
+    suspend fun apiGetWithoutQuery(url: String) : Response<JsonObject>
+
+    suspend fun apiForPostQuery( url: String , data: HashMap<String, Any>) : Response<JsonObject>
+
+    suspend fun invitePlayer (url : String , data : HashMap<String, Any>) : Response<JsonObject>
+
 }

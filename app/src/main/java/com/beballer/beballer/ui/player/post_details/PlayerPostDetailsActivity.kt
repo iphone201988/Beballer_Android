@@ -101,7 +101,12 @@ class PlayerPostDetailsActivity : BaseActivity<ActivityPlayerPostDetailsBinding>
                         player = ExoPlayer.Builder(this).build()
                         playerView.player = player
 
-                        val videoUrl = Constants.IMAGE_URL + videoPath
+
+                        val videoUrl = if (videoPath.startsWith("/")) {
+                            Constants.IMAGE_URL + videoPath
+                        } else {
+                            Constants.IMAGE_URL + "/$videoPath"
+                        }
                         val mediaItem = MediaItem.fromUri(videoUrl)
                         player?.setMediaItem(mediaItem)
                         player?.prepare()

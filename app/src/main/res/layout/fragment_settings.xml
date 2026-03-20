@@ -15,6 +15,11 @@
         android:layout_height="match_parent"
         tools:context=".ui.dash_board.profile.settings.SettingsFragment">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/consMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivBack"
             android:layout_width="@dimen/_30sdp"
@@ -55,6 +60,8 @@
             app:layout_constraintTop_toBottomOf="@+id/tvTitle"
             tools:itemCount="8"
             tools:listitem="@layout/settings_rv_item" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

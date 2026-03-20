@@ -15,7 +15,7 @@
 
         <variable
             name="bean"
-            type="com.beballer.beballer.data.model.RankingModel" />
+            type="com.beballer.beballer.data.model.BoundPlayer" />
 
         <import type="android.view.View" />
     </data>
@@ -26,8 +26,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
         android:layout_marginVertical="5dp"
+        app:cardBackgroundColor="@{bean.isCurrentUser ? @color/games_dark_color : @color/ranking_user_background}"
         android:foreground="?android:attr/selectableItemBackground"
-        app:cardBackgroundColor="@color/ranking_user_background"
         app:cardCornerRadius="10dp"
         app:cardElevation="0dp">
 
@@ -44,7 +44,7 @@
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:maxLines="1"
-                android:text="@{bean.code}"
+                android:text="@{String.valueOf(bean.rank)}"
                 android:textColor="@color/black"
                 android:textSize="22sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -75,11 +75,12 @@
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/player_image"
-                    setImageInt="@{bean.image}"
+                    setImageFromUrl="@{bean.profilePicture}"
                     android:layout_width="62dp"
                     android:layout_height="62dp"
                     android:src="@drawable/ic_round_account_circle_40"
                     android:layout_margin="13dp"
+                    android:onClick="@{v -> callback.onItemClick(v,bean,pos)}"
                     android:scaleType="centerCrop"
                     app:shapeAppearance="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -117,7 +118,7 @@
                     android:ellipsize="end"
                     android:fontFamily="@font/inter_bold"
                     android:maxLines="1"
-                    android:text="@{bean.name}"
+                    android:text='@{bean.lastName != null ? bean.firstName + " " + bean.lastName : bean.firstName}'
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toTopOf="@id/player_username_tv"
@@ -134,7 +135,7 @@
                     android:ellipsize="end"
                     android:fontFamily="@font/inter_bold"
                     android:maxLines="1"
-                    android:text="@{bean.userName}"
+                    android:text='@{bean.username != null ? "@" + bean.username : ""}'
                     android:textColor="@color/black"
                     android:textSize="11sp"
                     app:layout_constraintBottom_toTopOf="@id/player_sector_tv"
@@ -157,7 +158,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/player_badge_image_card"
                     app:layout_constraintTop_toBottomOf="@+id/player_username_tv"
-                    tools:text="Paris" />
+                    tools:text="@{bean.city}"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -178,17 +179,16 @@
                     android:ellipsize="middle"
                     android:fontFamily="@font/inter_bold"
                     android:includeFontPadding="false"
-                    android:text="0"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="22sp"
+                    android:text="@{String.valueOf(bean.totalProgression)}"
                     app:layout_constraintBottom_toTopOf="@id/player_score_title_tv"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="packed"
-                    app:layout_constraintWidth_percent="0.2"
-                    tools:text="45" />
+                    app:layout_constraintWidth_percent="0.2" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/player_score_title_tv"

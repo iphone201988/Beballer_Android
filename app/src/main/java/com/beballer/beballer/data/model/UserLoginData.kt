@@ -32,9 +32,12 @@ data class User(
     val id: String?,
     val isOnboardAnalyticsDone: Boolean?,
     val isProfileCompleted: Boolean?,
+    val hasOrganizerAccount: Boolean?,
+    val hasPlayerAccount: Boolean?,
     val lastName: String?,
     val playPositionId: String?,
     val position: String?,
+    val username: String?,
     val profilePicture: String?,
     val progression: List<Any>,
     val rank: Int?,
@@ -85,9 +88,11 @@ data class ProfileDataUser(
     val followingCount: Int?,
     val gender: String?,
     val height: Int?,
+    val profileDescription : String?,
     val id: String?,
     val isOnboardAnalyticsDone: Boolean?,
     val isProfileCompleted: Boolean?,
+    val hasPlayerAccount : Boolean?,
     val lastName: String?,
     val lat: Double?,
     val long: Double?,
@@ -158,6 +163,7 @@ data class GetUserPostData(
     val isCommentedByCurrentUser: Boolean?,
     val isDeleted: Boolean?,
     val isFeed: Boolean?,
+    val field: Field?,
     val isLikedByCurrentUser: Boolean?,
     val isSharedByCurrentUser: Boolean?,
     var isSubscribed: Boolean?,
@@ -264,6 +270,7 @@ data class Game(
     val scoreTeam1: Int?,
     val scoreTeam2: Int?,
     val startDate: String?,
+    val totalJoinedPlayers: String?,
     val status: String?,
     val team1Players: List<Team1Player>?,
     val team1ScoreTeam1: Int?,
@@ -283,6 +290,7 @@ data class Field(
     val country: String?,
     val id: String?,
     val name: String?,
+    val photos: List<String>,
     val postalCode: String?,
     val region: String?
 ) : Parcelable
@@ -301,6 +309,9 @@ data class Team1Player(
 data class GameRef(
     val collectionName: String?, val id: String?
 ) : Parcelable
+
+
+
 
 /** post comment response **/
 data class GetPostCommentResponse(
@@ -532,13 +543,16 @@ data class ProfileByFavoriteProTeam(
 
 
 /** Get Court Api response **/
+
+@Parcelize
 data class GetCourtApiResponse(
     val courts: List<GetCourtData?>?,
     val message: String?,
     val pagination: CourtPagination?,
     val success: Boolean?
-)
+) : Parcelable
 
+@Parcelize
 data class GetCourtData(
     val _id: String?,
     val address: String?,
@@ -551,11 +565,12 @@ data class GetCourtData(
     val long: Double?,
     val name: String?,
     val photos: List<String?>?
-)
+) : Parcelable
 
+@Parcelize
 data class CourtPagination(
     val currentPage: Int?, val totalCount: Int?, val totalPages: Int?
-)
+) : Parcelable
 
 
 /** Get Court Api response **/
@@ -708,4 +723,394 @@ data class GetTournamentsMapBoundData(
  */
 data class GetCampsMapBoundData(
     val `data`: MapCourt?, val message: String?, val success: Boolean?
+)
+
+/**
+ * get player api response
+ */
+
+@Parcelize
+data class GetPlayersApiResponse(
+    val limit: Int?,
+    val message: String?,
+    val page: Int?,
+    val players: List<Player?>?,
+    val success: Boolean?,
+    val totalCount: Int?,
+    val totalPages: Int?
+) : Parcelable
+
+@Parcelize
+data class Player(
+    val _id: String?,
+    val city: String?,
+    val country: String?,
+    val distance: Double?,
+    val firstName: String?,
+    val id: String?,
+    val lastName: String?,
+    val lat: Double?,
+    val long: Double?,
+    val profilePicture: String?,
+    val score: Int?,
+    val username: String?,
+    val accepted: Boolean? = null
+) : Parcelable
+
+/**
+ * create game api response
+ */
+
+
+data class CreateGameApiResponse(
+    val `data`: CreateGameData?,
+    val message: String?,
+    val success: Boolean?
+)
+
+data class CreateGameData(
+    val __v: Int?,
+    val _id: String?,
+    val createdAt: String?,
+    val date: String?,
+    val `field`:  CreateField?,
+    val hasAcceptedInvitationReferee: Boolean?,
+    val hasAcceptedInvitationTeam1: List<Any?>?,
+    val hasAcceptedInvitationTeam2: List<Any?>?,
+    val id: String?,
+    val isAutoRefereeing: Boolean?,
+    val isDeleted: Boolean?,
+    val isVisible: Boolean?,
+    val mode: Int?,
+    val organizer: CreateOrganizer?,
+    val referee: Referee?,
+    val scoreTeam1: Int?,
+    val scoreTeam2: Int?,
+    val status: String?,
+    val team1Players: List<CreateTeam1Player>?,
+    val team1ScoreTeam1: Int?,
+    val team1ScoreTeam2: Int?,
+    val team2Players: List<CreateTeam1Player>?,
+    val team2ScoreTeam1: Int?,
+    val team2ScoreTeam2: Int?,
+    val teamToValidate: Int?,
+    val updatedAt: String?,
+    val visible: Boolean?
+)
+
+data class CreateField(
+    val ref: CreateRef?
+)
+
+data class CreateOrganizer(
+    val ref: CreateRef?
+)
+
+data class Referee(
+    val ref: CreateRef?
+)
+
+data class CreateTeam1Player(
+    val accepted: Boolean?,
+    val collectionName: String?,
+    val id: String?
+)
+
+data class CreateRef(
+    val collectionName: String?,
+    val id: String?
+)
+/**
+ * my games  api response
+ */
+
+
+
+
+data class MyGamesApiResponse(
+    val `data`: MyGamesData?,
+    val message: String?,
+    val success: Boolean?
+)
+
+data class MyGamesData(
+    val games: List<MyGame>?,
+    val pagination: MyGamePagination?
+)
+
+data class MyGame(
+    val _id: String?,
+    val createdAt: String?,
+    val date: String?,
+    val `field`: MyGameField?,
+    val id: String?,
+    val mode: Int?,
+    val status: String?,
+    val team1Players: List<GameTeam1Player>?,
+    val team2Players: List<GameTeam1Player>?,
+    val totalJoinedPlayers: String?,
+    val yourRating: Int?
+)
+
+data class MyGamePagination(
+    val currentPage: Int?,
+    val totalPages: Int?,
+    val totalRecords: Int?
+)
+
+data class MyGameField(
+    val _id: String?,
+    val address: String?,
+    val id: String?,
+    val lat: Double?,
+    val long: Double?,
+    val name: String?,
+    val photos: List<String?>?
+)
+
+data class GameTeam1Player(
+    val accepted: Boolean?,
+    val collectionName: String?,
+    val id: String?
+)
+
+/**
+ * game details by id  api response
+ */
+
+
+
+data class GetGameDetailsApiResponse(
+    val game: GameDetail?,
+    val message: String?,
+    val success: Boolean?
+)
+
+data class GameDetail(
+    val _id: String?,
+    val date: String?,
+    val `field`: GameDetailField?,
+    val hasAcceptedInvitationTeam1: List<String?>?,
+    val hasAcceptedInvitationTeam2: List<String?>?,
+    val id: String?,
+    val isAutoRefereeing: Boolean?,
+    val mode: Int?,
+    val creationDate : String?,
+    val scoreTeam1: Int,
+    val scoreTeam2: Int,
+    val team2ScoreTeam1: Int,
+    val team2ScoreTeam2: Int,
+    val teamToValidate: Int,
+    val team1ScoreTeam1: Int,
+    val team1ScoreTeam2: Int,
+    val organizer: GameDetailOrganizer?,
+    val referee: GameDetailReferee?,
+    val status: String?,
+    val team1Players: List<GameDetailTeam1Player?>?,
+    val team2Players: List<Team2Player?>?
+)
+
+data class GameDetailField(
+    val _id: String?,
+    val accessibility: String?,
+    val address: String?,
+    val areDimensionsStandard: Boolean?,
+    val boardType: String?,
+    val city: String?,
+    val contributor: Contributor?,
+    val description: String?,
+    val floorType: String?,
+    val grade: Int?,
+    val hasWaterPoint: Boolean?,
+    val hoopsCount: Int?,
+    val id: String?,
+    val latitude: Double?,
+    val level: Any?,
+    val longitude: Double?,
+    val name: String?,
+    val netType: String?,
+    val photos: List<String?>?,
+    val rating: Double?
+)
+
+data class GameDetailOrganizer(
+    val _id: String?,
+    val city: String?,
+    val firstName: String?,
+    val id: String?,
+    val lastName: String?,
+    val username: String?
+)
+
+data class GameDetailReferee(
+    val _id: String?,
+    val id: String?,
+    val username : String
+)
+
+data class GameDetailTeam1Player(
+    val _id: String?,
+    val accepted: Boolean?,
+    val city: String?,
+    val country: String?,
+    val firstName: String?,
+    val id: String?,
+    val lastName: String?,
+    val profilePicture: String?,
+    val score: Int?,
+    val username: String?
+)
+
+data class Team2Player(
+    val _id: String?,
+    val accepted: Boolean?,
+    val country: String?,
+    val firstName: String?,
+    val id: String?,
+    val lastName: String?,
+    val profilePicture: String?,
+    val score: Int?
+)
+
+data class Contributor(
+    val _id: String?,
+    val city: String?,
+    val firstName: String?,
+    val id: String?,
+    val lastName: String?,
+    val username: String?
+)
+
+
+
+
+
+data class SimpleApiResponse(
+    val message: String?,
+    val success: Boolean?
+)
+
+
+// get chat api response
+
+data class GetChatApiResponse(
+    val `data`: ChatData,
+    val message: String,
+    val success: Boolean
+)
+
+data class ChatData(
+    val messages: List<Message>,
+    val pagination: ChatPagination
+)
+
+data class Message(
+    val _id: String,
+    val chatGroupId: String,
+    val createdAt: String,
+    val isDeleted: Boolean,
+    val isRead: Boolean,
+    val message: String,
+    val senderId: String,
+    val senderImage: String,
+    val senderUsername: String,
+    val updatedAt: String,
+    var chatType: Boolean = false
+)
+
+data class ChatPagination(
+    val hasNextPage: Boolean,
+    val limit: Int,
+    val page: Int,
+    val total: Int,
+    val totalPages: Int
+)
+
+// player top ranking
+
+data class TopRankingApiResponse(
+    val `data`: RankingData,
+    val message: String,
+    val success: Boolean
+)
+
+data class RankingData(
+    val `1st`: St,
+    val `2nd`: Nd,
+    val `3rd`: Rd
+)
+
+data class St(
+    val _id: String,
+    val firstName: String,
+    val id: String,
+    val lastName: String,
+    val profilePicture: String,
+    val score: Int,
+    val totalProgression: Int,
+    val username: String
+)
+
+data class Nd(
+    val _id: String,
+    val firstName: String,
+    val id: String,
+    val lastName: String,
+    val profilePicture: String,
+    val score: Int,
+    val totalProgression: Int,
+    val username: String
+)
+
+data class Rd(
+    val _id: String,
+    val firstName: String,
+    val id: String,
+    val lastName: String,
+    val profilePicture: String,
+    val score: Int,
+    val totalProgression: Int,
+    val username: String
+)
+
+
+
+// player by bound api response
+
+data class PlayerByBoundApiResponse(
+    val `data`: PlayerBoundData,
+    val message: String,
+    val success: Boolean
+)
+
+data class PlayerBoundData(
+    val pagination: PlayerPagination,
+    val players: List<BoundPlayer>
+)
+
+data class PlayerPagination(
+    val currentPage: Int,
+    val hasNextPage: Boolean,
+    val hasPrevPage: Boolean,
+    val limit: Int,
+    val totalCount: Int,
+    val totalPages: Int
+)
+
+data class BoundPlayer(
+    val _id: String,
+    val city: String,
+    val country: String,
+    val firstName: String,
+    var isCurrentUser : Boolean = false,
+    val id: String,
+    val lastname: String,
+    val lastName: String,
+    val lat: Double,
+    val long: Double,
+    val profilePicture: String,
+    val rank: Int,
+    val score: Int,
+    val totalProgression: Int,
+    val username: String
 )

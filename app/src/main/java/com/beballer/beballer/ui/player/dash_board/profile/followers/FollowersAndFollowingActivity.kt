@@ -1,5 +1,7 @@
 package com.beballer.beballer.ui.player.dash_board.profile.followers
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
@@ -35,6 +37,10 @@ class FollowersAndFollowingActivity : BaseActivity<ActivityFollowersAndFollowing
     private lateinit var followingAdapter: SimpleRecyclerViewAdapter<FollowingUser, RvFollowingItemBinding>
     private lateinit var followersAdapter: SimpleRecyclerViewAdapter<FollowerUser, RvFollowersItemBinding>
     private lateinit var fullListFollowing: List<FollowingUser>
+    private var isFollowers = true
+
+    private val searchHandler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
     private lateinit var fullListFollowers: List<FollowerUser>
     private val currentPage = 1
     override fun getLayoutResource(): Int {
@@ -46,10 +52,13 @@ class FollowersAndFollowingActivity : BaseActivity<ActivityFollowersAndFollowing
     }
 
     override fun onCreateView() {
-        // intent get data
+
         val type = intent.getStringExtra("FollowersType")
+
         type?.let {
-            val isFollowers = it.equals("Followers", ignoreCase = true)
+
+            isFollowers = it.equals("Followers", ignoreCase = true)
+
             // Toggle visibility
             binding.svFollowersSearchView.visibility = if (isFollowers) View.VISIBLE else View.GONE
             binding.svFollowingsSearchView.visibility = if (isFollowers) View.GONE else View.VISIBLE
@@ -57,32 +66,68 @@ class FollowersAndFollowingActivity : BaseActivity<ActivityFollowersAndFollowing
             binding.rvFollowing.visibility = if (isFollowers) View.GONE else View.VISIBLE
 
             // Update title
-            binding.tvFollowers.text = getString(if (isFollowers) R.string.followers else R.string.following)
+            binding.tvFollowers.text =
+                getString(if (isFollowers) R.string.followers else R.string.following)
 
-            // Common data map
-            val data = hashMapOf<String, Any>(
-                "type" to it.lowercase(),
-                "page" to currentPage,
-                "limit" to 10,
-                "userId" to (sharedPrefManager.getLoginData()?.data?.user?._id.orEmpty())
-            )
-
-            // Call correct API
-            if (isFollowers) {
-                viewModel.getFollowersFollowingApi(Constants.GET_FOLLOWERS_FOLLOWING, data)
-            } else {
-                viewModel.getFollowingsFollowingApi(Constants.GET_FOLLOWERS_FOLLOWING, data)
-            }
+            callFollowersFollowingApi("")
         }
 
-        //CLick
         initOnClick()
-
-        // adapter
         initFollowingAdapter()
         initFollowersAdapter()
-        // observer
         initObserver()
+        setupSystemUI()
+
+        setupSearch(binding.svFollowersSearchView)
+        setupSearch(binding.svFollowingsSearchView)
+    }
+
+
+    private fun setupSystemUI() {
+        BindingUtils.applySystemBarMargins(binding.consMain)
+        BindingUtils.statusBarStyleWhite(this@FollowersAndFollowingActivity)
+
+    }
+    private fun setupSearch(searchView: SearchView) {
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                callFollowersFollowingApi(query.orEmpty())
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+
+                // cancel previous search
+                searchRunnable?.let { searchHandler.removeCallbacks(it) }
+
+                searchRunnable = Runnable {
+                    callFollowersFollowingApi(newText.orEmpty())
+                }
+
+                // delay API call (500ms)
+                searchHandler.postDelayed(searchRunnable!!, 500)
+
+                return true
+            }
+        })
+    }
+    private fun callFollowersFollowingApi(query: String) {
+
+        val data = hashMapOf<String, Any>(
+            "type" to if (isFollowers) "followers" else "following",
+            "page" to currentPage,
+            "limit" to 50,
+            "search" to query,
+            "id" to sharedPrefManager.getLoginData()?.data?.user?._id.orEmpty()
+        )
+
+        if (isFollowers) {
+            viewModel.getFollowersFollowingApi(Constants.GET_FOLLOWERS_FOLLOWING, data)
+        } else {
+            viewModel.getFollowingsFollowingApi(Constants.GET_FOLLOWERS_FOLLOWING, data)
+        }
     }
 
     /** handle click **/
@@ -162,7 +207,7 @@ class FollowersAndFollowingActivity : BaseActivity<ActivityFollowersAndFollowing
         }
 
         binding.rvFollowing.adapter = followingAdapter
-        setupFollowingSearch()
+
     }
 
     private fun initFollowersAdapter() {
@@ -173,52 +218,11 @@ class FollowersAndFollowingActivity : BaseActivity<ActivityFollowersAndFollowing
         }
 
         binding.rvFollowers.adapter = followersAdapter
-        setupFollowersSearch()
     }
 
 
-    /*** add search ***/
-    private fun setupFollowersSearch() {
-        val searchView = binding.svFollowersSearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-            override fun onQueryTextChange(newText: String?): Boolean {
-                val filtered = if (!newText.isNullOrBlank()) {
-                    fullListFollowers.filter {
-                        it.firstName?.startsWith(newText, ignoreCase = true) == true ||   it.lastName?.startsWith(newText, ignoreCase = true) == true
-                    }
-                } else {
-                    fullListFollowers
-                }
-                followersAdapter.list = filtered
-                followersAdapter.notifyDataSetChanged()
-                return true
-            }
-        })
-    }
 
-    private fun setupFollowingSearch() {
-        val searchView = binding.svFollowingsSearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-            override fun onQueryTextChange(newText: String?): Boolean {
-                val filtered = if (!newText.isNullOrBlank()) {
-                    fullListFollowing.filter {
-                        it.firstName?.startsWith(newText, ignoreCase = true) == true ||   it.lastName?.startsWith(newText, ignoreCase = true) == true
-                    }
-                } else {
-                    fullListFollowing
-                }
-                followingAdapter.list = filtered
-                followingAdapter.notifyDataSetChanged()
-                return true
-            }
-        })
-    }
+
 
 
 

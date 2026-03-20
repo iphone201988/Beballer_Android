@@ -19,6 +19,7 @@ import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.base.SimpleRecyclerViewAdapter
 import com.beballer.beballer.data.model.GameModeModel
+import com.beballer.beballer.data.model.GameModes
 import com.beballer.beballer.databinding.AccessibilityDialogItemBinding
 import com.beballer.beballer.databinding.FragmentAddCourtBinding
 import com.beballer.beballer.databinding.RvGameModeItemBinding
@@ -44,7 +45,7 @@ import java.util.Locale
 class AddCourtFragment : BaseFragment<FragmentAddCourtBinding>() {
     private val viewModel: AddCourtFragmentVM by viewModels()
     private lateinit var accessibilityDialog: BaseCustomBottomSheet<AccessibilityDialogItemBinding>
-    private lateinit var accessibilityAdapter: SimpleRecyclerViewAdapter<GameModeModel, RvGameModeItemBinding>
+    private lateinit var accessibilityAdapter: SimpleRecyclerViewAdapter<GameModes, RvGameModeItemBinding>
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private var saveLat: String? = null

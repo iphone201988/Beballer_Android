@@ -193,5 +193,25 @@
     <string name="court_search">Court search</string>
     <string name="no_search_results_found">No search results found</string>
     <string name="ticketing">Ticketing</string>
+    <string name="game_mode">Game Mode</string>
+    <string name="invite_other_players">Invite other \nplayers</string>
+    <string name="in_progress">In progress</string>
+    <string name="invitation_received">Invitation received</string>
+    <string name="starting_soon">Starting soon</string>
+    <string name="incoming">Incoming</string>
+    <string name="delete_game">Delete Game</string>
+    <string name="are_you_sure_you_want_to_delete_game">Are you sure you want to delete game?</string>
+    <string name="do_you_want_to_add_this_match_to_your_calendar">Do you want to add this match to your calendar?</string>
+    <string name="open_in_maps">Open in Maps</string>
+    <string name="choose_an_app">Choose an app</string>
+    <string name="google_maps">Google Maps</string>
+    <string name="remove">Remove</string>
+    <string name="are_you_sure_you_want_to_remove_this_player_from_then_game">Are you sure you want to remove this player from then game?</string>
+    <string name="remove_player">Remove PLayer</string>
+    <string name="are_you_sure_you_want_to_remove_the_referee_from_this_game">Are you sure you want to remove the referee from this game?</string>
+    <string name="beballer_keeps_working_to_improve_the_app_new_features_will_be_soon_available">Beballer keeps working to improve the app. \nNew features will be soon available :)</string>
+    <string name="upcoming_features">Upcoming features !</string>
+    <string name="enter_the_key">Enter the key</string>
+    <string name="if_you_don_t_have_key_to_create_your_organizer_account_you_can_contact_the_beballer_representative_to_request_one">if you don\'t have key to create your organizer account, you can contact the BEBALLER representative to request one.</string>
 
 </resources>

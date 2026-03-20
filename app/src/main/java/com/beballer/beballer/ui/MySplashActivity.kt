@@ -8,6 +8,7 @@ import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseActivity
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.databinding.ActivityMySplashBinding
+import com.beballer.beballer.ui.organizers.dash_board.OrganizersDashBoardActivity
 import com.beballer.beballer.ui.player.auth.AuthActivity
 import com.beballer.beballer.ui.player.auth.AuthCommonVM
 import com.beballer.beballer.ui.player.dash_board.DashboardActivity
@@ -29,7 +30,13 @@ class MySplashActivity : BaseActivity<ActivityMySplashBinding>() {
       Handler(Looper.getMainLooper()).postDelayed({
           val loginData = sharedPrefManager.getLoginData()
           if (loginData?.data != null) {
-              startActivity(Intent(this, DashboardActivity::class.java))
+              if (loginData?.data?.user?.hasPlayerAccount == true){
+                  startActivity(Intent(this, OrganizersDashBoardActivity::class.java))
+              }
+              else{
+                  startActivity(Intent(this, DashboardActivity  ::class.java))
+
+              }
           } else {
               startActivity(Intent(this, AuthActivity::class.java))
              // startActivity(Intent(this, AuthActivity::class.java))

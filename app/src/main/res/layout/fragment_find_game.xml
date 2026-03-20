@@ -130,6 +130,11 @@
             app:layout_constraintTop_toTopOf="@+id/tvCourtHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+
+
+
+
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvAddCourt"
                 android:layout_width="wrap_content"
@@ -149,19 +154,33 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.cardview.widget.CardView>
 
-
+        <com.nabilmh.lottieswiperefreshlayout.LottieSwipeRefreshLayout
+            android:id="@+id/ssPullRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:indicator_overlay="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvCourtHeader"
+            app:lottie_rawRes="@raw/refresh">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvFindGame"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:paddingTop="@dimen/_10sdp"
             android:paddingBottom="@dimen/_15sdp"
+            android:orientation="vertical"
+            tools:itemCount="3"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvCourtHeader"
             tools:listitem="@layout/find_game_rv_item" />
+
+
+        </com.nabilmh.lottieswiperefreshlayout.LottieSwipeRefreshLayout>
 
 
 

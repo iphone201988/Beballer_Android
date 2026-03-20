@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="@dimen/_160sdp"
+        android:layout_margin="@dimen/_5sdp"
+        android:paddingVertical="@dimen/_14sdp"
+        android:paddingHorizontal="@dimen/_6sdp"
+        android:background="@drawable/blue_strock_color_bg"
+        android:layout_height="wrap_content">
+
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivAddIcon"
+            android:layout_width="@dimen/_60sdp"
+            android:layout_height="@dimen/_60sdp"
+            android:src="@drawable/iv_invite_player"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvInvitePlayer"
+            style="@style/TextView.InterRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/invite_other_players"
+            android:textSize="@dimen/_8ssp"
+            android:textColor="@color/black_000000"
+            app:layout_constraintStart_toEndOf="@id/ivAddIcon"
+            app:layout_constraintTop_toTopOf="@id/ivAddIcon"
+            app:layout_constraintBottom_toBottomOf="@id/ivAddIcon"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

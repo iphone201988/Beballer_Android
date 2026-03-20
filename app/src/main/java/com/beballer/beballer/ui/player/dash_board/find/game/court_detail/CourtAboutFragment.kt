@@ -13,6 +13,7 @@ import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.base.SimpleRecyclerViewAdapter
 import com.beballer.beballer.data.model.GameModeModel
+import com.beballer.beballer.data.model.GameModes
 import com.beballer.beballer.databinding.AccessibilityDialogItemBinding
 import com.beballer.beballer.databinding.FragmentCourtAboutBinding
 import com.beballer.beballer.databinding.RvGameModeItemBinding
@@ -31,7 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class CourtAboutFragment : BaseFragment<FragmentCourtAboutBinding>() {
     private val viewModel: CourtAboutFragmentVM by viewModels()
     private lateinit var accessibilityDialog: BaseCustomBottomSheet<AccessibilityDialogItemBinding>
-    private lateinit var accessibilityAdapter: SimpleRecyclerViewAdapter<GameModeModel, RvGameModeItemBinding>
+    private lateinit var accessibilityAdapter: SimpleRecyclerViewAdapter<GameModes, RvGameModeItemBinding>
 
     override fun getLayoutResource(): Int {
         return R.layout.fragment_court_about

@@ -165,4 +165,41 @@ class SocialsFragmentVM @Inject constructor(private val apiHelper: ApiHelper) : 
         }
     }
 
+
+    fun getTopRanking(url: String, data: HashMap<String, Any>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            commonObserver.postValue(Resource.loading(null))
+            try {
+                apiHelper.apiGetOnlyAuthToken(url, data).let {
+                    if (it.isSuccessful) {
+                        commonObserver.postValue(Resource.success("getTopRanking", it.body()))
+                    } else commonObserver.postValue(
+                        Resource.error(handleErrorResponse(it.errorBody(), it.code()), null)
+                    )
+                }
+            } catch (e: Exception) {
+                Log.d("error", "getPostApi: $e")
+            }
+        }
+    }
+
+
+
+    fun getPlayerByBound(url: String, data: HashMap<String, Any>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            commonObserver.postValue(Resource.loading(null))
+            try {
+                apiHelper.apiGetOnlyAuthToken(url, data).let {
+                    if (it.isSuccessful) {
+                        commonObserver.postValue(Resource.success("getPlayerByBound", it.body()))
+                    } else commonObserver.postValue(
+                        Resource.error(handleErrorResponse(it.errorBody(), it.code()), null)
+                    )
+                }
+            } catch (e: Exception) {
+                Log.d("error", "getPostApi: $e")
+            }
+        }
+    }
+
 }

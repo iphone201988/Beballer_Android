@@ -94,11 +94,33 @@ class ApiHelperImpl @Inject constructor(
         return apiService.apiPutForRawBody(url, getTokenFromSPref(), map)
     }
 
+    override suspend fun apiGetWithoutQuery(url: String): Response<JsonObject> {
+        return  apiService.apiGetWithoutQuery(url,getTokenFromSPref())
+    }
+
+    override suspend fun apiForPostQuery(
+        url: String,
+        data: HashMap<String, Any>
+    ): Response<JsonObject> {
+         return apiService.apiForPostQuery(getTokenFromSPref(),url,data)
+    }
+
+    override suspend fun invitePlayer(
+        url: String,
+        data: HashMap<String, Any>
+    ): Response<JsonObject> {
+        return apiService.invitePlayer(invitePlayerToken(),data,url)
+    }
+
     private fun getTokenFromSPref(): String {
 
         return "Bearer ${
             sharedPrefManager.getToken()
         }"
+    }
+
+    private fun invitePlayerToken(): String {
+        return sharedPrefManager.getToken().orEmpty()
     }
 
 }

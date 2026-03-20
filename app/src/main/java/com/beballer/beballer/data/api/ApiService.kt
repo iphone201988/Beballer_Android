@@ -32,9 +32,25 @@ interface ApiService {
     @Url url: String
     ): Response<JsonObject>
 
+
+
+    @POST
+    suspend fun apiForPostQuery(
+        @Header("Authorization") token: String,
+        @Url url: String,
+        @QueryMap data: HashMap<String, Any>
+    ): Response<JsonObject>
+
     @POST
     suspend fun apiForRawBodyWithToken(
         @Header("Authorization") token: String,
+        @Body data: HashMap<String, Any>, @Url url: String
+    ): Response<JsonObject>
+
+
+    @POST
+    suspend fun invitePlayer(
+        @Header("Token") token: String,
         @Body data: HashMap<String, Any>, @Url url: String
     ): Response<JsonObject>
 
@@ -78,6 +94,12 @@ interface ApiService {
     @GET
     suspend fun apiGetWithQuery(
         @Url url: String, @QueryMap data: HashMap<String, String>
+    ): Response<JsonObject>
+
+    @GET
+    suspend fun apiGetWithoutQuery(
+        @Url url: String,
+        @Header("Authorization") token: String
     ): Response<JsonObject>
 
 

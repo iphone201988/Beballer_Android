@@ -20,7 +20,9 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.UnderlineSpan
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
@@ -29,7 +31,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Guideline
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.databinding.BindingAdapter
 import androidx.navigation.NavController
@@ -39,6 +43,7 @@ import com.beballer.beballer.data.api.Constants
 import com.beballer.beballer.data.model.CourtDataById
 import com.beballer.beballer.data.model.FollowerUser
 import com.beballer.beballer.data.model.FollowingUser
+import com.beballer.beballer.data.model.GameStatusDisplay
 import com.beballer.beballer.data.model.SuggestedUser
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -52,6 +57,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 object BindingUtils {
@@ -178,7 +184,14 @@ object BindingUtils {
     fun setImagePostUrl(image: ShapeableImageView, url: String?) {
         if (url != null) {
             if (url.isNotEmpty()) {
-                Glide.with(image.context).load(Constants.IMAGE_URL + url)
+
+                val imageUrl = if (url.startsWith("/")) {
+                    Constants.IMAGE_URL + url
+                } else {
+                    Constants.IMAGE_URL + "/$url"
+                }
+
+                Glide.with(image.context).load(imageUrl)
                     .placeholder(R.drawable.progress_animation_small)
                     .error(R.drawable.iv_event)
                     .diskCacheStrategy(DiskCacheStrategy.ALL).into(image)
@@ -194,29 +207,48 @@ object BindingUtils {
     @BindingAdapter("setImageCourtUrl")
     @JvmStatic
     fun setImageCourtUrl(image: ShapeableImageView, url: List<String>?) {
-            if (url?.isNotEmpty()==true) {
-                Glide.with(image.context).load(Constants.IMAGE_URL + url[0])
-                    .placeholder(R.drawable.progress_animation_small)
-                    .error(R.drawable.iv_event)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL).into(image)
+
+        val uri = url?.firstOrNull()
+
+        if (!uri.isNullOrBlank()) {
+
+            val imageUrl = if (uri.startsWith("/")) {
+                Constants.IMAGE_URL + uri
             } else {
-                image.setImageResource(R.drawable.iv_event)
+                Constants.IMAGE_URL + "/$uri"
             }
 
+            Glide.with(image.context)
+                .load(imageUrl)
+                .placeholder(R.drawable.progress_animation_small)
+                .error(R.drawable.iv_event)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(image)
+
+        } else {
+            image.setImageResource(R.drawable.iv_event)
+        }
     }
 
     @BindingAdapter("setImageFromUrl")
     @JvmStatic
     fun setImageFromUrl(image: ShapeableImageView, url: String?) {
-        if (url != null) {
-            if (url.isNotEmpty()) {
-                Glide.with(image.context).load(Constants.IMAGE_URL + url)
-                    .placeholder(R.drawable.progress_animation_small)
-                    .error(R.drawable.ic_round_account_circle_40)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL).into(image)
+
+        if (!url.isNullOrBlank()) {
+
+            val imageUrl = if (url.startsWith("/")) {
+                Constants.IMAGE_URL + url
             } else {
-                image.setImageResource(R.drawable.ic_round_account_circle_40)
+                Constants.IMAGE_URL + "/$url"
             }
+
+            Glide.with(image.context)
+                .load(imageUrl)
+                .placeholder(R.drawable.progress_animation_small)
+                .error(R.drawable.ic_round_account_circle_40)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(image)
+
         } else {
             image.setImageResource(R.drawable.ic_round_account_circle_40)
         }
@@ -600,6 +632,297 @@ object BindingUtils {
         }
     }
 
+
+
+
+    @BindingAdapter("formattedDate")
+    @JvmStatic
+    fun TextView.setFormattedDate(dateString: String?) {
+
+        if (dateString.isNullOrEmpty()) {
+            text = ""
+            return
+        }
+
+        try {
+            // Input format (ISO format)
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+            val date: Date? = inputFormat.parse(dateString)
+
+            // Output format → Saturday 28.02.2026
+            val outputFormat = SimpleDateFormat("EEEE dd.MM.yyyy", Locale.getDefault())
+
+            text = date?.let { outputFormat.format(it) } ?: ""
+
+        } catch (e: Exception) {
+            text = ""
+        }
+    }
+
+
+    @BindingAdapter("formattedTime")
+    @JvmStatic
+    fun TextView.setFormattedTime(dateString: String?) {
+
+        if (dateString.isNullOrEmpty()) {
+            text = ""
+            return
+        }
+
+        try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+            val date = inputFormat.parse(dateString)
+
+            // ✅ 12-hour format -> 07:00 PM
+            val outputFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+
+            text = date?.let { outputFormat.format(it) } ?: ""
+
+        } catch (e: Exception) {
+            text = ""
+        }
+    }
+
+
+    @BindingAdapter("modeFormat")
+    @JvmStatic
+    fun TextView.setModeFormat(mode: Int?) {
+
+        if (mode == null) {
+            text = ""
+            return
+        }
+
+        text = "${mode}x${mode}"
+    }
+
+
+
+
+
+    fun gameStatusDisplay(
+        date: Date?,   // ✅ Accept Date instead of String
+        status: String?,
+        needsInviteResponse: Boolean
+    ): GameStatusDisplay {
+
+        if (date == null) return GameStatusDisplay("", 0)
+
+        val intervalMillis = date.time - Date().time
+        val intervalSeconds = intervalMillis / 1000
+
+        return when (status) {
+
+            "inProgress" -> {
+                GameStatusDisplay(
+                    text = "In progress",
+                    iconRes = R.drawable.iv_preview
+                )
+            }
+
+            "done" -> {
+                GameStatusDisplay(
+                    text = "Done",
+                    iconRes = R.drawable.iv_left_arrow
+                )
+            }
+
+            "notStarted", "waiting", "processing", "scheduled" -> {
+
+                when {
+
+                    intervalSeconds <= -3600 -> {
+                        GameStatusDisplay(
+                            text = "Starting soon",
+                            iconRes = R.drawable.iv_multiple_circle
+                        )
+                    }
+
+                    intervalSeconds in -3600..1800 -> {
+                        if (needsInviteResponse) {
+                            GameStatusDisplay(
+                                text = "Invitation received",
+                                iconRes = R.drawable.iv_down_arrow
+                            )
+                        } else {
+                            GameStatusDisplay(
+                                text = "Starting soon",
+                                iconRes = R.drawable.iv_multiple_circle
+                            )
+                        }
+                    }
+
+                    intervalSeconds > 1800 -> {
+                        if (needsInviteResponse) {
+                            GameStatusDisplay(
+                                text = "Invitation received",
+                                iconRes = R.drawable.iv_down_arrow
+                            )
+                        } else {
+                            GameStatusDisplay(
+                                text = "Incoming",
+                                iconRes = R.drawable.iv_right_arrow
+                            )
+                        }
+                    }
+
+                    else -> {
+                        GameStatusDisplay(
+                            text = "Starting soon",
+                            iconRes = R.drawable.iv_multiple_circle
+                        )
+                    }
+                }
+            }
+
+            else -> GameStatusDisplay("", 0)
+        }
+    }
+
+
+
+    fun parseServerDate(dateString: String?): Date? {
+        if (dateString.isNullOrEmpty()) return null
+
+        return try {
+            val sdf = SimpleDateFormat(
+                "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                Locale.getDefault()
+            )
+            sdf.timeZone = TimeZone.getTimeZone("UTC")
+            sdf.parse(dateString)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+
+
+
+
+
+    @BindingAdapter("formattedGameDate")
+    @JvmStatic
+    fun setFormattedGameDate(textView: AppCompatTextView, dateString: String?) {
+
+        if (dateString.isNullOrEmpty()) {
+            textView.text = ""
+            return
+        }
+
+        try {
+            // Parse ISO date (UTC)
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+            val date = inputFormat.parse(dateString)
+
+            date?.let {
+                // Convert to device local time
+                val calendar = Calendar.getInstance()
+                calendar.time = it
+
+                val outputFormat = SimpleDateFormat(
+                    "EEEE dd MMMM\nyyyy",
+                    Locale.getDefault()
+                )
+
+                textView.text = outputFormat.format(calendar.time).lowercase()
+            }
+
+        } catch (e: Exception) {
+            textView.text = dateString
+        }
+    }
+
+
+
+    @BindingAdapter("waterPointStatus")
+    @JvmStatic
+    fun setWaterPointStatus(textView: AppCompatTextView, hasWaterPoint: Boolean?) {
+
+        textView.text = if (hasWaterPoint == true) {
+            "Yes"
+        } else {
+            "N/A"
+        }
+    }
+
+
+    @JvmStatic
+    fun convertToISODate(isoDate: String?): Date? {
+        if (isoDate.isNullOrEmpty()) return null
+
+        return try {
+            val inputFormatter = SimpleDateFormat(
+                "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                Locale.US
+            )
+            inputFormatter.timeZone = TimeZone.getTimeZone("UTC")
+            inputFormatter.parse(isoDate)
+        } catch (e: Exception) {
+            null
+        }
+
+    }
+
+    @JvmStatic
+    fun formattedMatchDate(date: Date?): String {
+        if (date == null) return ""
+
+        val formatter = SimpleDateFormat(
+            "EEEE dd MMMM",
+            Locale.getDefault()
+        )
+
+        val formatted = formatter.format(date)
+
+        return formatted.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault())
+            else it.toString()
+        }
+    }
+
+
+
+    @JvmStatic
+    @BindingAdapter("setMatchDate")
+    fun setMatchDate(textView: TextView, isoDate: String?) {
+
+        val date = convertToISODate(isoDate)
+        val formatted = formattedMatchDate(date)
+
+        textView.text = formatted
+    }
+
+
+    fun applySystemBarMargins(view: View) {
+        val initialTop = (view.layoutParams as? ViewGroup.MarginLayoutParams)?.topMargin ?: 0
+        val initialBottom = (view.layoutParams as? ViewGroup.MarginLayoutParams)?.bottomMargin ?: 0
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val params = v.layoutParams as? ViewGroup.MarginLayoutParams
+            params?.let {
+                it.topMargin = initialTop + bars.top
+                it.bottomMargin = initialBottom + bars.bottom
+                v.layoutParams = it
+            }
+            insets
+        }
+    }
+
+
+    fun statusBarStyleWhite(activity: Activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            activity.window.statusBarColor = Color.TRANSPARENT
+        }
+    }
 
 }
 

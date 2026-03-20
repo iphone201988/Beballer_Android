@@ -272,8 +272,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(), OtpVerifyBottomSheet
     private fun commonLogin(uid: String) {
         val data: HashMap<String, Any> = hashMapOf(
             "id" to uid,
-            "longitude" to "76.7794",
-            "latitude" to "30.7333",
+            "longitude" to BindingUtils.long,
+            "latitude" to BindingUtils.lat,
             "type" to "player",
             "deviceToken" to token,
             "deviceType" to 2

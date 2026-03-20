@@ -58,4 +58,10 @@
         tools:layout="@layout/fragment_organizers_profile" />
 
 
+    <fragment
+        android:id="@+id/fragmentOrganizerAddPic"
+        android:name="com.beballer.beballer.ui.organizers.profile.OrganizersAddPicFragment"
+        tools:layout="@layout/fragment_organizers_add_pic" />
+
+
 </navigation>

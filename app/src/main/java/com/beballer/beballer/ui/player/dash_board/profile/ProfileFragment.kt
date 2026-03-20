@@ -43,6 +43,9 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
     private lateinit var genderBottomSheet: CommonBottomSheet<GenderBottomSheetItemBinding>
     private lateinit var welcomeDialogItem: BaseCustomDialog<ProfileWelcomeDialogItemBinding>
     private lateinit var unLockBatchDialogItem: BaseCustomDialog<UnlockBatchDialogItemBinding>
+
+    private var imageUrl : String ? = null
+
     private var heightCount = ""
     private var birthDate = ""
     override fun getLayoutResource(): Int {
@@ -236,7 +239,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
                     )
                 }
 
-                R.id.tvTotalFollowersCount->{
+                R.id.tvTotalFollowersCount , R.id.tvTotalFollowers->{
                     val intent = Intent(requireContext(), FollowersAndFollowingActivity::class.java)
                     intent.putExtra("FollowersType", "Followers")
                     startActivity(intent)
@@ -244,7 +247,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
                         R.anim.slide_in_right, R.anim.slide_out_left
                     )
                 }
-                R.id.tvTotalFollowing->{
+                R.id.tvTotalFollowing , R.id.tvNbTotalFollowing->{
                     val intent = Intent(requireContext(), FollowersAndFollowingActivity::class.java)
                     intent.putExtra("FollowersType", "Following")
                     startActivity(intent)
@@ -252,7 +255,21 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
                         R.anim.slide_in_right, R.anim.slide_out_left
                     )
                 }
+
+                R.id.ivProfileImage ->{
+                    if (imageUrl != null){
+                        val intent = Intent(requireContext(), UserProfileActivity::class.java)
+                        intent.putExtra("userType", "imageZoom")
+                        intent.putExtra("url", imageUrl)
+                        startActivity(intent)
+                        requireActivity().overridePendingTransition(
+                            R.anim.slide_in_right, R.anim.slide_out_left
+                        )
+                    }
+
+                }
             }
+
         }
     }
 
@@ -352,6 +369,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
                                     if (myDataModel.data != null) {
                                         binding.bean = myDataModel.data.user
                                         sharedPrefManager.setProfileData(myDataModel)
+                                        imageUrl = myDataModel.data.user?.profilePicture
                                         if (Constants.welcomeDialog == 0) {
                                             Constants.welcomeDialog = 1
                                             welcomeDialogItem()

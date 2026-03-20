@@ -31,5 +31,9 @@
         android:name="com.beballer.beballer.ui.player.dash_board.profile.ProfileFragment"
         tools:layout="@layout/fragment_profile" />
 
+    <fragment
+        android:id="@+id/fragmentOrganizerUserProfile"
+        android:name="com.beballer.beballer.ui.organizers.dash_board.user_profile.OrganizerUserProfileFragment"
+        tools:layout="@layout/fragment_organizer_user_profile" />
 
 </navigation>

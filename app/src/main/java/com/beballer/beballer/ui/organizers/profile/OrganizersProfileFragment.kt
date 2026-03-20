@@ -3,14 +3,24 @@ package com.beballer.beballer.ui.organizers.profile
 import android.content.Intent
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
+import com.beballer.beballer.data.api.Constants
+import com.beballer.beballer.data.model.LoginApiResponse
+import com.beballer.beballer.data.model.OrganizerProfileData
+import com.beballer.beballer.data.model.SimpleApiResponse
 import com.beballer.beballer.databinding.FragmentOrganizersProfileBinding
 import com.beballer.beballer.ui.organizers.dash_board.OrganizersDashBoardActivity
+import com.beballer.beballer.ui.player.dash_board.DashboardActivity
+import com.beballer.beballer.ui.player.dash_board.profile.user.UserProfileActivity
+import com.beballer.beballer.utils.BindingUtils
+import com.beballer.beballer.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,6 +39,49 @@ class OrganizersProfileFragment : BaseFragment<FragmentOrganizersProfileBinding>
     override fun onCreateView(view: View) {
         // click
         initOnClick()
+        initObserver()
+    }
+
+    private fun initObserver() {
+        viewModel.commonObserver.observe(viewLifecycleOwner , Observer{
+            when (it?.status) {
+                Status.LOADING -> {
+                    showLoading()
+                }
+
+                Status.SUCCESS -> {
+                    when (it.message) {
+                        "uniqueName" ->{
+                            val myDataModel : SimpleApiResponse ? = BindingUtils.parseJson(it.data.toString())
+                            if (myDataModel != null){
+
+                                val userData = OrganizerProfileData(
+                                    username = binding.etCompanyName.text.toString().trim(),
+                                    feedCountry =  binding.countryCodePicker.selectedCountryNameCode,
+                                    email = binding.etEmailAddress.text.toString().trim()
+                                )
+
+                                val intent = Intent(requireContext(), UserProfileActivity::class.java)
+                                intent.putExtra("userType", "add_organizer_pic")
+                                intent.putExtra("userData", userData)
+                                startActivity(intent)
+                                requireActivity().overridePendingTransition(
+                                    R.anim.slide_in_right, R.anim.slide_out_left
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    hideLoading()
+                    showErrorToast(it.message.toString())
+                }
+
+                else -> {
+                }
+            }
+        })
     }
 
 
@@ -42,10 +95,10 @@ class OrganizersProfileFragment : BaseFragment<FragmentOrganizersProfileBinding>
 
                 R.id.btnNext -> {
                     if (validate()) {
-                        val intent =
-                            Intent(requireActivity(), OrganizersDashBoardActivity::class.java)
-                        startActivity(intent)
-                        requireActivity().finishAffinity()
+                        val data = HashMap<String , Any>()
+                        data["username"] = binding.etCompanyName.text.toString().trim()
+
+                        viewModel.uniqueName(data, Constants.UNIQUE_NAME)
                     }
                 }
 

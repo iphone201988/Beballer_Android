@@ -129,5 +129,46 @@
         android:name="com.beballer.beballer.ui.player.dash_board.find.map.ShowMapFragment"
         tools:layout="@layout/fragment_show_map" />
 
+    <fragment
+        android:id="@+id/invitePlayer"
+        android:name="com.beballer.beballer.ui.player.dash_board.find.game.invite_player.InvitePlayerFragment"
+        tools:layout="@layout/fragment_invite_player" />
 
+
+    <fragment
+        android:id="@+id/gameChat"
+        android:name="com.beballer.beballer.ui.player.dash_board.find.game.details_game.game_chat.GameChatFragment"
+        tools:layout="@layout/fragment_game_chat" />
+
+
+
+    <fragment
+        android:id="@+id/gameScore"
+        android:name="com.beballer.beballer.ui.player.dash_board.find.game.game_score.GameScoreFragment"
+        tools:layout="@layout/fragment_game_score" />
+
+
+
+    <fragment
+        android:id="@+id/imageZoom"
+        android:name="com.beballer.beballer.ui.image_zoom.ImageZoomFragment"
+        tools:layout="@layout/fragment_image_zoom" />
+
+    <fragment
+        android:id="@+id/fragmentOrganizersProfile"
+        android:name="com.beballer.beballer.ui.organizers.profile.OrganizersProfileFragment"
+        tools:layout="@layout/fragment_organizers_profile" />
+
+
+    <fragment
+        android:id="@+id/fragmentOrganizerAddPic"
+        android:name="com.beballer.beballer.ui.organizers.profile.OrganizersAddPicFragment"
+        tools:layout="@layout/fragment_organizers_add_pic" />
+
+
+
+    <fragment
+        android:id="@+id/fragmentOrganizeEditProfile"
+        android:name="com.beballer.beballer.ui.organizers.dash_board.edit_organizer_profile.EditOrganizerProfileFragment"
+        tools:layout="@layout/fragment_edit_organizer_profile" />
 </navigation>

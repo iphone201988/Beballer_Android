@@ -32,6 +32,12 @@
         tools:context=".ui.dash_board.profile.ProfileFragment">
 
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/consMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvTitle"
             style="@style/TextView.InterMedium"
@@ -87,6 +93,7 @@
                 android:layout_height="@dimen/_50sdp"
                 android:layout_marginTop="@dimen/_12sdp"
                 android:contentDescription="@string/done"
+                android:onClick="@{v -> vm.onClick(v)}"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_round_account_circle_40"
                 app:layout_constraintEnd_toStartOf="@+id/middle"
@@ -232,6 +239,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_semi_bold"
                 android:gravity="center"
+                android:onClick="@{v->vm.onClick(v)}"
                 android:text="@{String.valueOf(bean.followersCount)}"
                 android:textColor="#646464"
                 android:textSize="@dimen/_8ssp"
@@ -675,6 +683,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/CardProfileTab" />
 
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

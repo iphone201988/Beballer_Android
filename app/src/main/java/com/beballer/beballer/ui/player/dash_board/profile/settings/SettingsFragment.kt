@@ -1,6 +1,7 @@
 package com.beballer.beballer.ui.player.dash_board.profile.settings
 
 import android.content.Intent
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import com.beballer.beballer.BR
@@ -15,11 +16,14 @@ import com.beballer.beballer.databinding.LogoutDialogItemBinding
 import com.beballer.beballer.databinding.SettingsRvItemBinding
 import com.beballer.beballer.ui.player.auth.AuthActivity
 import com.beballer.beballer.ui.player.dash_board.profile.user.UserProfileActivity
+import com.beballer.beballer.utils.BindingUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
     private val viewModel: SettingsFragmentVM by viewModels()
+
+    private var side : String ? = null
     private lateinit var settingsAdapter: SimpleRecyclerViewAdapter<SettingsModel, SettingsRvItemBinding>
     private lateinit var logoutDialogItem: BaseCustomDialog<LogoutDialogItemBinding>
     override fun getLayoutResource(): Int {
@@ -32,9 +36,14 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
 
     override fun onCreateView(view: View) {
         // click
+        side = arguments?.getString("side")
+        Log.i("fdsfsdf", "onCreateView: $side")
         initClick()
+        setupSystemUI()
+
         // adapter
         initAdapter()
+
     }
 
     /** handle click **/
@@ -54,12 +63,22 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
             SimpleRecyclerViewAdapter(R.layout.settings_rv_item, BR.bean) { v, m, pos ->
                 when (pos) {
                     0 -> {
-                        val intent = Intent(requireContext(), UserProfileActivity::class.java)
-                        intent.putExtra("userType", "EditProfile")
-                        startActivity(intent)
-                        requireActivity().overridePendingTransition(
-                            R.anim.slide_in_right, R.anim.slide_out_left
-                        )
+                        if (side == "Organizer"){
+                            val intent = Intent(requireContext(), UserProfileActivity::class.java)
+                            intent.putExtra("userType", "fragmentOrganizeEditProfile")
+                            startActivity(intent)
+                            requireActivity().overridePendingTransition(
+                                R.anim.slide_in_right, R.anim.slide_out_left
+                            )
+                        }else{
+                            val intent = Intent(requireContext(), UserProfileActivity::class.java)
+                            intent.putExtra("userType", "EditProfile")
+                            startActivity(intent)
+                            requireActivity().overridePendingTransition(
+                                R.anim.slide_in_right, R.anim.slide_out_left
+                            )
+                        }
+
                     }
 
                     1 -> {
@@ -153,6 +172,12 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
             SettingsModel(R.drawable.person_mark, "Log out", "8"),
 
             )
+    }
+
+    private fun setupSystemUI() {
+        BindingUtils.applySystemBarMargins(binding.consMain)
+        BindingUtils.statusBarStyleWhite(requireActivity())
+
     }
 
 

@@ -25,6 +25,13 @@
         android:background="@color/white"
         tools:context=".ui.player.dash_board.profile.user.edit_image.EditImageFragment">
 
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/consMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/cancelImage"
             android:layout_width="wrap_content"
@@ -297,6 +304,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

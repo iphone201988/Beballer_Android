@@ -26,17 +26,38 @@ class ImagesPagerAdapter(
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ImagesPagerAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val uri = mUri[position]
-        val factory = DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build()
-        Glide.with(mContext).load(Constants.IMAGE_URL+uri.toString()).fitCenter()
-            .transition(DrawableTransitionOptions.withCrossFade(factory)).into(holder.pagerImage)
 
+        val imageUrl = if (uri.startsWith("/")) {
+            Constants.IMAGE_URL + uri
+        } else {
+            Constants.IMAGE_URL + "/" + uri
+        }
+
+        val factory = DrawableCrossFadeFactory.Builder()
+            .setCrossFadeEnabled(true)
+            .build()
+
+        Glide.with(mContext)
+            .load(imageUrl)
+            .fitCenter()
+            .transition(DrawableTransitionOptions.withCrossFade(factory))
+            .into(holder.pagerImage)
     }
+
 
     override fun getItemCount(): Int {
         return mUri.size
     }
+
+    fun updateImages(newList: List<String>) {
+        mUri.clear()
+        mUri.addAll(newList)
+        notifyDataSetChanged()
+    }
+
+
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var pagerImage: ImageView = itemView.findViewById(R.id.pager_image)

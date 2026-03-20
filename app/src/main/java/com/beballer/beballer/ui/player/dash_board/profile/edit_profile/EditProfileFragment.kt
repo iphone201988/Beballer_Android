@@ -66,6 +66,8 @@ class EditProfileFragment : BaseFragment<FragmentEditProfileBinding>() {
         }
         // click
         initOnClick()
+
+        setupSystemUI()
         // observer
         initObserver()
         // api call
@@ -268,6 +270,14 @@ class EditProfileFragment : BaseFragment<FragmentEditProfileBinding>() {
         genderBottomSheet.setCancelable(true)
         genderBottomSheet.show()
     }
+
+    private fun setupSystemUI() {
+        BindingUtils.applySystemBarMargins(binding.consMain)
+        BindingUtils.statusBarStyleWhite(requireActivity())
+
+    }
+
+
 
 
     /**  api response observer  **/

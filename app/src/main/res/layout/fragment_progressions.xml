@@ -11,6 +11,9 @@
 
 
         <variable
+            name="bean"
+            type="com.beballer.beballer.data.model.RankingData" />
+        <variable
             name="type"
             type="Integer" />
     </data>
@@ -64,14 +67,13 @@
                 android:onClick="@{v->vm.onClick(v)}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvTitle"
-
-                >
+                app:layout_constraintTop_toBottomOf="@+id/tvTitle">
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:layout_width="@dimen/_74sdp"
                     android:layout_height="@dimen/_74sdp"
                     android:layout_gravity="center"
+                    setImageFromUrl="@{bean.get1st().profilePicture}"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_round_account_circle_40"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -112,7 +114,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Ravi Don"
+                android:text="@{bean.get1st().username}"
                 android:textColor="#546670"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintEnd_toEndOf="@+id/firstCardView"
@@ -139,6 +141,8 @@
                     android:layout_height="@dimen/_64sdp"
                     android:layout_gravity="center"
                     android:scaleType="centerCrop"
+                    setImageFromUrl="@{bean.get2nd().profilePicture}"
+
                     android:src="@drawable/ic_round_account_circle_40"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -179,7 +183,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Asit"
+                android:text="@{bean.get2nd().username}"
                 android:textColor="#546670"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintEnd_toEndOf="@+id/secondCardView"
@@ -197,14 +201,13 @@
                 android:onClick="@{v->vm.onClick(v)}"
                 app:layout_constraintBottom_toBottomOf="@+id/firstCardView"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/firstCardView"
-
-                >
+                app:layout_constraintStart_toEndOf="@+id/firstCardView">
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:layout_width="@dimen/_64sdp"
                     android:layout_height="@dimen/_64sdp"
                     android:layout_gravity="center"
+                    setImageFromUrl="@{bean.get3rd().profilePicture}"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_round_account_circle_40"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -247,7 +250,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Ashish Pink"
+                android:text="@{bean.get3rd().username}"
                 android:textColor="#546670"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintEnd_toEndOf="@+id/thirdCardView"

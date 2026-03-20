@@ -16,6 +16,11 @@
         android:fitsSystemWindows="true"
         tools:context=".ui.player.dash_board.profile.followers.FollowersAndFollowingActivity">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/consMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivBack"
             android:layout_width="@dimen/_30sdp"
@@ -110,7 +115,7 @@
             tools:itemCount="4"
             tools:listitem="@layout/rv_following_item" />
 
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

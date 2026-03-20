@@ -44,6 +44,14 @@ android {
         jvmTarget = "21"
     }
 
+    packaging {
+        resources {
+            excludes += listOf(
+                "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+            )
+        }
+    }
+
 }
 
 dependencies {
@@ -56,6 +64,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
 
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.identity.doctypes.jvm)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -128,5 +137,15 @@ dependencies {
     implementation ("com.github.bilalnasir9:CustomRatingBar:1.0.0")
 
     implementation("com.google.maps.android:android-maps-utils:2.4.0")
+
+
+    // socket
+    implementation("io.socket:socket.io-client:2.0.1")
+
+
+    //Image zoom
+    implementation ("com.github.chrisbanes:PhotoView:2.3.0")
+
+
 
 }

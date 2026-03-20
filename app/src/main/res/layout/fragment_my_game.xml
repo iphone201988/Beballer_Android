@@ -184,7 +184,7 @@
                 android:includeFontPadding="false"
                 android:paddingHorizontal="@dimen/_15sdp"
                 android:paddingVertical="@dimen/_7sdp"
-                android:text="Create a match"
+                android:text="Create a game"
                 android:textColor="@color/white"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -201,19 +201,32 @@
             android:layout_marginStart="@dimen/_15sdp"
             android:layout_marginBottom="@dimen/_2sdp"
             android:gravity="center"
+            android:visibility="gone"
             android:text="Done Games"
             android:textColor="@color/black_000000"
             android:textSize="@dimen/_14ssp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
+
+        <com.nabilmh.lottieswiperefreshlayout.LottieSwipeRefreshLayout
+            android:id="@+id/ssPullRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:indicator_overlay="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardView"
+            app:lottie_rawRes="@raw/refresh">
+
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvMyGame"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -222,5 +235,38 @@
             tools:itemCount="4"
             tools:listitem="@layout/my_game_rv_item" />
 
+
+
+        </com.nabilmh.lottieswiperefreshlayout.LottieSwipeRefreshLayout>
+
+
+        <com.nabilmh.lottieswiperefreshlayout.LottieSwipeRefreshLayout
+            android:id="@+id/ssRefreshPublicGames"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:indicator_overlay="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardView"
+            app:lottie_rawRes="@raw/refresh">
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPublicGames"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDoneGame"
+            app:layout_constraintVertical_bias="0.0"
+            tools:itemCount="4"
+            tools:listitem="@layout/my_game_rv_item" />
+
+        </com.nabilmh.lottieswiperefreshlayout.LottieSwipeRefreshLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

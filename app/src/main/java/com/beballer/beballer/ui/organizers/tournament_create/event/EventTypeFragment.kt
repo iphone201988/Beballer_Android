@@ -3,6 +3,7 @@ package com.beballer.beballer.ui.organizers.tournament_create.event
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.beballer.beballer.R
@@ -10,12 +11,12 @@ import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.utils.BindingUtils
 import com.beballer.beballer.databinding.FragmentEventTypeBinding
+import com.beballer.beballer.ui.organizers.tournament_create.CommonTournamentVM
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class EventTypeFragment : BaseFragment<FragmentEventTypeBinding>() {
-    private val viewModel: EventTypeFragmentVM by viewModels()
-
+    private val viewModel: CommonTournamentVM by activityViewModels()
     private var selectedType = 1
 
     override fun getLayoutResource(): Int {
@@ -34,6 +35,7 @@ class EventTypeFragment : BaseFragment<FragmentEventTypeBinding>() {
         binding.clCreate.setBackgroundResource(R.drawable.create_tournament_bg)
         binding.ivSelected.setImageResource(R.drawable.unique_selected_element)
         binding.ivUnSelected.setImageResource(R.drawable.unique_unselected_element)
+        viewModel.tournamentData.hasCategories = false
 
         // click
         initOnCLick()
@@ -49,6 +51,7 @@ class EventTypeFragment : BaseFragment<FragmentEventTypeBinding>() {
 
                 R.id.clCreate -> {
                     selectedType = 1
+                    viewModel.tournamentData.hasCategories = false
                     binding.tvCreate.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                     binding.tvThanks.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_000000))
                     binding.clNoThanks.setBackgroundResource(R.drawable.player_bg)
@@ -58,6 +61,8 @@ class EventTypeFragment : BaseFragment<FragmentEventTypeBinding>() {
                 }
                 R.id.clNoThanks -> {
                     selectedType = 2
+                    viewModel.tournamentData.hasCategories = true
+
                     binding.tvCreate.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_000000))
                     binding.tvThanks.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                     binding.clNoThanks.setBackgroundResource(R.drawable.create_tournament_bg)

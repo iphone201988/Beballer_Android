@@ -9,17 +9,29 @@ import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.base.SimpleRecyclerViewAdapter
 import com.beballer.beballer.data.model.FindModel
+import com.beballer.beballer.data.model.PlaceDetails
 import com.beballer.beballer.databinding.CreateTournamentDialogItemBinding
 import com.beballer.beballer.databinding.FragmentTournamentBinding
 import com.beballer.beballer.databinding.RvTournamentItemBinding
 import com.beballer.beballer.ui.player.dash_board.profile.user.UserProfileActivity
 import com.beballer.beballer.utils.BaseCustomDialog
+import com.beballer.beballer.utils.BindingUtils
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.net.PlacesClient
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TournamentFragment : BaseFragment<FragmentTournamentBinding>() {
+class TournamentFragment : BaseFragment<FragmentTournamentBinding>(){
     private val viewModel: TournamentFragmentVM by viewModels()
     private lateinit var tournamentAdapter: SimpleRecyclerViewAdapter<FindModel, RvTournamentItemBinding>
+
+
+
     private lateinit var createTournamentDialogItem: BaseCustomDialog<CreateTournamentDialogItemBinding>
     override fun getLayoutResource(): Int {
         return R.layout.fragment_tournament
@@ -32,10 +44,23 @@ class TournamentFragment : BaseFragment<FragmentTournamentBinding>() {
     override fun onCreateView(view: View) {
         // observer
         initObserver()
+
+
+
+
+
         // click
         initOnClick()
+        setupSystemUI()
         // adapter
         initTournamentAdapter()
+    }
+
+
+    private fun setupSystemUI() {
+        BindingUtils.applySystemBarMargins(binding.consMain)
+        BindingUtils.statusBarStyleWhite(requireActivity())
+
     }
 
     /** handle click **/
@@ -121,4 +146,6 @@ class TournamentFragment : BaseFragment<FragmentTournamentBinding>() {
 
 
     }
+
+
 }

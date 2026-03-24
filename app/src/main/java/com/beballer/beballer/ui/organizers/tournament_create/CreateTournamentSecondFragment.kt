@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.beballer.beballer.BR
@@ -14,6 +15,7 @@ import com.beballer.beballer.base.SimpleRecyclerViewAdapter
 import com.beballer.beballer.utils.BaseCustomBottomSheet
 import com.beballer.beballer.utils.BindingUtils
 import com.beballer.beballer.data.model.GameModeModel
+import com.beballer.beballer.data.model.GameModes
 import com.beballer.beballer.databinding.FragmentCreateTournamentSecondBinding
 import com.beballer.beballer.databinding.PlayFormateBottomLayoutBinding
 import com.beballer.beballer.databinding.RvGameModeItemBinding
@@ -22,12 +24,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
 
 @AndroidEntryPoint
 class CreateTournamentSecondFragment : BaseFragment<FragmentCreateTournamentSecondBinding>() {
-    private val viewModel: CommonTournamentVM by viewModels()
+    private val viewModel: CommonTournamentVM by activityViewModels()
     private lateinit var playFormatSheet: BaseCustomBottomSheet<PlayFormateBottomLayoutBinding>
-    private lateinit var gameModeAdapter: SimpleRecyclerViewAdapter<GameModeModel, RvGameModeItemBinding>
+    private lateinit var gameModeAdapter: SimpleRecyclerViewAdapter<GameModes, RvGameModeItemBinding>
 
     override fun getLayoutResource(): Int {
         return R.layout.fragment_create_tournament_second
@@ -63,6 +66,15 @@ class CreateTournamentSecondFragment : BaseFragment<FragmentCreateTournamentSeco
 
                 R.id.btnNext -> {
                     if (validate()) {
+                        viewModel.tournamentData.format = binding.etPlayFormat.text.toString().trim()
+                        val price = binding.etPrice.text.toString().trim()
+                        val currency = extractCurrencyCode(binding.etSkip.text.toString())
+
+                        val formattedPrice = price.toDoubleOrNull()?.let {
+                            "$it $currency"
+                        } ?: ""
+
+                        viewModel.tournamentData.priceRange = formattedPrice
                         BindingUtils.navigateWithSlide(
                             findNavController(), R.id.tournamentThird, null
                         )
@@ -90,32 +102,50 @@ class CreateTournamentSecondFragment : BaseFragment<FragmentCreateTournamentSeco
         binding.etSkip.addTextChangedListener(textWatcher)
     }
 
-
+    private fun extractCurrencyCode(value: String): String {
+        return value.split(" ")
+            .lastOrNull()
+            ?.lowercase() ?: ""
+    }
     private fun openCalender() {
         val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
 
         val datePickerDialog = DatePickerDialog(
-            requireActivity(), { _, selectedYear, selectedMonth, selectedDay ->
+            requireActivity(),
+            { _, selectedYear, selectedMonth, selectedDay ->
 
-                val selectedCalendar = Calendar.getInstance()
-                selectedCalendar.set(Calendar.YEAR, selectedYear)
-                selectedCalendar.set(Calendar.MONTH, selectedMonth)
-                selectedCalendar.set(Calendar.DAY_OF_MONTH, selectedDay)
+                val selectedCalendar = Calendar.getInstance().apply {
+                    set(Calendar.YEAR, selectedYear)
+                    set(Calendar.MONTH, selectedMonth)
+                    set(Calendar.DAY_OF_MONTH, selectedDay)
 
-                // Set current hour & minute to preserve time format
-                val hour = selectedCalendar.get(Calendar.HOUR_OF_DAY)
-                val minute = selectedCalendar.get(Calendar.MINUTE)
+                    // Optional: set fixed time OR current time
+                    set(Calendar.HOUR_OF_DAY, 6)
+                    set(Calendar.MINUTE, 12)
+                    set(Calendar.SECOND, 17)
+                    set(Calendar.MILLISECOND, 206)
+                }
 
-                val sdf = SimpleDateFormat("EEEE, dd MMMM yyyy - HH:mm", Locale.US)
-                val formattedDate = sdf.format(selectedCalendar.time)
+                // ✅ 1. UI Format
+                val uiFormat = SimpleDateFormat("EEEE, dd MMMM yyyy - HH:mm", Locale.US)
+                val displayDate = uiFormat.format(selectedCalendar.time)
+                binding.etStartDate.setText(displayDate)
 
-                    binding.etStartDate.setText(formattedDate)
+                // ✅ 2. ISO Format (for API)
+                val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+                isoFormat.timeZone = TimeZone.getTimeZone("UTC")
 
-            }, year, month, day
+                val apiDate = isoFormat.format(selectedCalendar.time)
+
+                // ✅ Store in ViewModel
+                viewModel.tournamentData.endDate = apiDate
+
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
         )
+
         datePickerDialog.datePicker.minDate = System.currentTimeMillis() - 1000
         datePickerDialog.show()
     }
@@ -181,29 +211,29 @@ class CreateTournamentSecondFragment : BaseFragment<FragmentCreateTournamentSeco
     }
 
     // add list game mode
-    private fun getListPlayFormat(): ArrayList<GameModeModel> {
+    private fun getListPlayFormat(): ArrayList<GameModes> {
         return arrayListOf(
-            GameModeModel("1x1"),
-            GameModeModel("2x2"),
-            GameModeModel("3x3"),
-            GameModeModel("4x4"),
-            GameModeModel("5x5"),
+            GameModes("1x1"),
+            GameModes("2x2"),
+            GameModes("3x3"),
+            GameModes("4x4"),
+            GameModes("5x5"),
 
             )
     }
 
 
-    private fun getListPrice(): ArrayList<GameModeModel> {
+    private fun getListPrice(): ArrayList<GameModes> {
         return arrayListOf(
-            GameModeModel("€ EUR"),
-            GameModeModel("$ USD"),
-            GameModeModel("£ GBP"),
-            GameModeModel("Fr. CHF"),
-            GameModeModel("$ AUD"),
-            GameModeModel("$ CAD"),
-            GameModeModel("kr DKK"),
-            GameModeModel("kr SEK"),
-            GameModeModel("¥ JPY"),
+            GameModes("€ EUR"),
+            GameModes("$ USD"),
+            GameModes("£ GBP"),
+            GameModes("Fr. CHF"),
+            GameModes("$ AUD"),
+            GameModes("$ CAD"),
+            GameModes("kr DKK"),
+            GameModes("kr SEK"),
+            GameModes("¥ JPY"),
 
             )
     }

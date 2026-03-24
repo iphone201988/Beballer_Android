@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.beballer.beballer.ui.organizers.tournament_create.CommonTournamentVM" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.organizers.tournament_create.CreateTournamentNineFragment">
+
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/cancelImage"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_marginStart="@dimen/_2sdp"
+            android:layout_marginTop="@dimen/_40sdp"
+            android:onClick="@{v->vm.onClick(v)}"
+            android:padding="@dimen/_6sdp"
+            android:src="@drawable/back_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="55dp"
+            android:layout_marginTop="@dimen/_7sdp"
+            android:fontFamily="@font/inter_bold"
+            android:lineSpacingExtra="@dimen/_2sdp"
+            android:gravity="center"
+            android:text="Fill out the following\ninformation reference your tournament"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/cancelImage" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvSubTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:gravity="center"
+            android:fontFamily="@font/inter_regular"
+            android:text="Fill out the informations"
+            android:textAlignment="center"
+            android:textColor="@color/grey_8B8FA0"
+            android:textSize="@dimen/_12ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

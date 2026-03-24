@@ -24,6 +24,7 @@ import com.beballer.beballer.data.model.UserProfile
 import com.beballer.beballer.databinding.FragmentOrganizerUserProfileBinding
 import com.beballer.beballer.databinding.PlayerPostRvItemBinding
 import com.beballer.beballer.ui.player.dash_board.DashboardActivity
+import com.beballer.beballer.ui.player.dash_board.profile.followers.FollowersAndFollowingActivity
 import com.beballer.beballer.ui.player.dash_board.profile.user.UserProfileActivity
 import com.beballer.beballer.ui.player.post_details.PlayerPostDetailsActivity
 import com.beballer.beballer.utils.BindingUtils
@@ -67,6 +68,8 @@ class OrganizerUserProfileFragment : BaseFragment<FragmentOrganizerUserProfileBi
 
     }
 
+
+
     private fun initOnClick() {
         viewModel.onClick.observe(viewLifecycleOwner, Observer{
             when(it?.id){
@@ -79,6 +82,26 @@ class OrganizerUserProfileFragment : BaseFragment<FragmentOrganizerUserProfileBi
                         R.anim.slide_in_right, R.anim.slide_out_left
                     )
                 }
+
+
+                R.id.tvTotalFollowersCount , R.id.tvTotalFollowers->{
+                    val intent = Intent(requireContext(), FollowersAndFollowingActivity::class.java)
+                    intent.putExtra("FollowersType", "Followers")
+                    startActivity(intent)
+                    requireActivity().overridePendingTransition(
+                        R.anim.slide_in_right, R.anim.slide_out_left
+                    )
+                }
+                R.id.tvTotalFollowing , R.id.tvNbTotalFollowing->{
+                    val intent = Intent(requireContext(), FollowersAndFollowingActivity::class.java)
+                    intent.putExtra("FollowersType", "Following")
+                    startActivity(intent)
+                    requireActivity().overridePendingTransition(
+                        R.anim.slide_in_right, R.anim.slide_out_left
+                    )
+                }
+
+
             }
         })
     }

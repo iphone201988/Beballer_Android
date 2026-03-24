@@ -223,18 +223,18 @@ class DashboardActivity : BaseActivity<ActivityDashboardBinding>(), LocationResu
 
         enterCodePopUp = BaseCustomDialog(this , R.layout.item_layout_enter_code){
             when(it?.id){
-                R.id.btnConfirm ->
+                R.id.tvOk ->
                 {
                     val data = HashMap<String, Any>()
-                    data["proCode"] =  enterCodePopUp.binding.etCode.text.toString().trim()
+                    data["proCode"] =  enterCodePopUp.binding.etCourtDescription.text.toString().trim()
                     viewModel.enterCode(data, Constants.ORGANIZER_PRO_CODE)
                     enterCodePopUp.dismiss()
                 }
-                R.id.btnRequestKey ->{
+                R.id.tvSecond ->{
                     enterCodePopUp.dismiss()
 
                 }
-                R.id.btnCancel ->{
+                R.id.tvRequest ->{
                     enterCodePopUp.dismiss()
 
                 }

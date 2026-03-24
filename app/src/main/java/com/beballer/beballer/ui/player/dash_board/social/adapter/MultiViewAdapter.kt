@@ -406,6 +406,7 @@ class MultiViewAdapter(
             } else {
                 Constants.IMAGE_URL + "/$url"
             }
+            Log.i("Fdsfdsfds", "Gamebind: $videoUrl")
 
             currentVideoUrl = videoUrl
             val profilePath = item?.publisherData?.profilePicture
@@ -707,6 +708,9 @@ class MultiViewAdapter(
                 ?.takeIf { it.isNotBlank() }
                 ?.let { Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/') }
 
+            Log.i("Fdsfdsfds", "Courtbind: $imageUrl")
+
+
             Glide.with(ivCommonPostProfile.context)
                 .load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
@@ -908,6 +912,8 @@ class MultiViewAdapter(
             val imageUrl = uri?.takeIf { it.isNotBlank() }?.let {
                 Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
             }
+
+            Log.i("Fdsfdsfds", "Gamebind: $imageUrl")
 
             Glide.with(ivCommonPostProfile.context)
                 .load(imageUrl)

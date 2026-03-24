@@ -561,6 +561,7 @@ data class GetCourtData(
     val grade: Double?,
     val hoopsCount: Int?,
     val id: String?,
+    val rating: Double?,
     val lat: Double?,
     val long: Double?,
     val name: String?,
@@ -596,6 +597,7 @@ data class CourtDataById(
     val distance: Double?,
     val floorType: String?,
     val grade: Double?,
+    val rating : Double?,
     val hasWaterPoint: Boolean?,
     val hoopsCount: Int?,
     val id: String?,
@@ -1113,4 +1115,144 @@ data class BoundPlayer(
     val score: Int,
     val totalProgression: Int,
     val username: String
+)
+
+
+
+data class CreateTournamentApiResponse(
+    val event: Event,
+    val message: String,
+    val success: Boolean
+)
+
+data class Event(
+    val _id: String,
+    val address: String,
+    val categories: List<Any>,
+    val city: String,
+    val coordinates: List<Double>,
+    val country: String,
+    val createdAt: String,
+    val endDate: String,
+    val eventPhotos: List<String>,
+    val geohash: Any,
+    val hasCategories: Boolean,
+    val hasSponsors: Boolean,
+    val id: String,
+    val isVisible: Boolean,
+    val isVisibleTo: List<String>,
+    val lat: Double,
+    val long: Double,
+    val name: String,
+    val organizers: List<TournamentOrganizer>,
+    val organizersCode: String,
+    val organizersInfo: List<OrganizersInfo>,
+    val paymentStatus: Int,
+    val referees: List<Any>,
+    val refereesCode: String,
+    val refereesInfo: List<Any>,
+    val region: String,
+    val shareLink: Any,
+    val spectators: List<Any>,
+    val spectatorsCode: String,
+    val spectatorsInfo: List<Any>,
+    val startDate: String,
+    val type: String,
+    val updatedAt: String
+)
+
+data class TournamentOrganizer(
+    val collectionName: String,
+    val id: String
+)
+
+data class OrganizersInfo(
+    val _id: String,
+    val coordinates: List<Double>,
+    val id: String,
+    val profilePicture: String,
+    val username: String,
+    val verified: Boolean
+)
+
+
+
+
+data class CreateCategoryApiResponse(
+    val `data`: CategoryData,
+    val message: String,
+    val success: Boolean
+)
+
+data class CategoryData(
+    val category: Category
+)
+
+data class Category(
+    val __v: Int,
+    val _id: String,
+    val ageRange: String,
+    val courts: List<Court>,
+    val courtsCount: Int,
+    val createdAt: String,
+    val description: String,
+    val endDate: String,
+    val eventId: String,
+    val finalTeamsCount: Int,
+    val format: Any,
+    val hasSmallFinal: Boolean,
+    val id: String,
+    val isDeleted: Boolean,
+    val isOrganised: Boolean,
+    val level: String,
+    val lookingForATeamPlayers: List<Any>,
+    val name: String,
+    val players: List<Any>,
+    val playersInfo: List<Any>,
+    val poolsCount: Int,
+    val priceRange: String,
+    val registeredPlayers: List<Any>,
+    val registeredPlayersInfo: List<Any>,
+    val roundsCount: Int,
+    val spectators: List<Any>,
+    val stability: Any,
+    val startDate: String,
+    val teams: List<Team>,
+    val teamsCount: Int,
+    val updatedAt: String,
+    val url: String,
+    val usesBeballerForm: Boolean
+)
+
+data class Court(
+    val __v: Int,
+    val _id: String,
+    val categoryId: String,
+    val createdAt: String,
+    val id: String,
+    val isDeleted: Boolean,
+    val name: String,
+    val number: Int,
+    val stability: Any,
+    val updatedAt: String
+)
+
+data class Team(
+    val __v: Int,
+    val _id: String,
+    val categoryId: String,
+    val code: String,
+    val createdAt: String,
+    val eventId: String,
+    val goalsReceived: Int,
+    val goalsScored: Int,
+    val id: String,
+    val isDeleted: Boolean,
+    val isReadyToCreateGames: Boolean,
+    val name: String,
+    val number: Int,
+    val players: List<Any>,
+    val pool: String,
+    val score: Int,
+    val updatedAt: String
 )

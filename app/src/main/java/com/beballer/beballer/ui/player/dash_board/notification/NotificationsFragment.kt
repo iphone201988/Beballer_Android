@@ -7,6 +7,7 @@ import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.databinding.FragmentNotificationsBinding
+import com.beballer.beballer.utils.BindingUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,6 +26,8 @@ class NotificationsFragment : BaseFragment<FragmentNotificationsBinding>() {
         initObserver()
         // click
         initOnClick()
+
+        setupSystemUI()
     }
 
     /** handle click **/
@@ -37,7 +40,11 @@ class NotificationsFragment : BaseFragment<FragmentNotificationsBinding>() {
             }
         }
     }
+    private fun setupSystemUI() {
+        BindingUtils.applySystemBarMargins(binding.consMain)
+        BindingUtils.statusBarStyleWhite(requireActivity())
 
+    }
 
     /** handle api response **/
     private fun initObserver() {

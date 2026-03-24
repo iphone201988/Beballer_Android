@@ -1,9 +1,12 @@
 package com.beballer.beballer.ui.organizers.tournament_create
 
+import android.content.Intent
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.beballer.beballer.BR
@@ -11,20 +14,32 @@ import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.base.SimpleRecyclerViewAdapter
+import com.beballer.beballer.data.model.CreateTournamentApiResponse
 import com.beballer.beballer.utils.BaseCustomBottomSheet
 import com.beballer.beballer.utils.BindingUtils
 import com.beballer.beballer.data.model.GameModeModel
+import com.beballer.beballer.data.model.GameModes
+import com.beballer.beballer.data.model.LoginApiResponse
 import com.beballer.beballer.databinding.FragmentCreateTournamentFourBinding
 import com.beballer.beballer.databinding.PlayFormateBottomLayoutBinding
 import com.beballer.beballer.databinding.RvGameModeItemBinding
+import com.beballer.beballer.ui.player.dash_board.DashboardActivity
+import com.beballer.beballer.utils.Status
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 @AndroidEntryPoint
 class CreateTournamentFourFragment : BaseFragment<FragmentCreateTournamentFourBinding>() {
-    private val viewModel: CommonTournamentVM by viewModels()
+    private val viewModel: CommonTournamentVM by activityViewModels()
     private lateinit var playFormatSheet: BaseCustomBottomSheet<PlayFormateBottomLayoutBinding>
-    private lateinit var gameModeAdapter: SimpleRecyclerViewAdapter<GameModeModel, RvGameModeItemBinding>
+    private lateinit var gameModeAdapter: SimpleRecyclerViewAdapter<GameModes, RvGameModeItemBinding>
+
+    private var selectedGameModeApi: String = ""
+
 
     override fun getLayoutResource(): Int {
         return R.layout.fragment_create_tournament_four
@@ -40,6 +55,8 @@ class CreateTournamentFourFragment : BaseFragment<FragmentCreateTournamentFourBi
         binding.etDescription.layoutParams = layoutParams
         // click
         initOnCLick()
+
+        initObserver()
     }
 
     /*** click handel ***/
@@ -60,20 +77,32 @@ class CreateTournamentFourFragment : BaseFragment<FragmentCreateTournamentFourBi
 
                 R.id.btnNext -> {
                     if (validate()) {
+
+                        // ✅ Store data in ViewModel
+                        viewModel.tournamentData.level = selectedGameModeApi
+                        viewModel.tournamentData.description =
+                            binding.etDescription.text.toString().trim()
+
+                        viewModel.tournamentData.startDate = getCurrentIsoDate()
+
                         if (binding.etTournamentAddress.text?.contains("I already have a link") == true) {
+
                             if (binding.etAgeRange.text?.isEmpty() == true) {
                                 showInfoToast("Please enter link")
-                            } else {
-                                BindingUtils.navigateWithSlide(
-                                    findNavController(), R.id.tournamentFive, null
-                                )
+                                return@observe
                             }
+
+                            viewModel.tournamentData.usesBeballerForm = false
+                            viewModel.tournamentData.url =
+                                binding.etAgeRange.text.toString().trim() // assuming link here
+
                         } else {
-                            BindingUtils.navigateWithSlide(
-                                findNavController(), R.id.tournamentFive, null
-                            )
+                            viewModel.tournamentData.usesBeballerForm = true
+                            viewModel.tournamentData.url = null
                         }
 
+                        // ✅ 🔥 CALL API
+                        viewModel.createTournament()
                     }
                 }
             }
@@ -152,6 +181,12 @@ class CreateTournamentFourFragment : BaseFragment<FragmentCreateTournamentFourBi
     }
 
 
+    private fun getCurrentIsoDate(): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        return sdf.format(Date())
+    }
+
     /** handle play format adapter **/
     private fun initPlayFormatAdapter(type: Int) {
         gameModeAdapter =
@@ -160,6 +195,7 @@ class CreateTournamentFourFragment : BaseFragment<FragmentCreateTournamentFourBi
                     R.id.clGame -> {
                         if (type == 1) {
                             playFormatSheet.dismiss()
+                            selectedGameModeApi = m.apiValue
                             binding.etTournamentName.setText(m.title)
                         } else {
                             playFormatSheet.dismiss()
@@ -179,20 +215,20 @@ class CreateTournamentFourFragment : BaseFragment<FragmentCreateTournamentFourBi
     }
 
     // add list game mode
-    private fun getListPlayFormat(): ArrayList<GameModeModel> {
+    private fun getListPlayFormat(): ArrayList<GameModes> {
         return arrayListOf(
-            GameModeModel("Beginner"),
-            GameModeModel("Intermediate"),
-            GameModeModel("Experienced"),
-            GameModeModel("Professional"),
+            GameModes("Beginner", 0, "beginner"),
+            GameModes("Intermediate", 0, "intermediate"),
+            GameModes("Experienced",0 ,"experienced"),
+            GameModes("Professional", 0, "pro"),
         )
     }
 
 
-    private fun getListPrice(): ArrayList<GameModeModel> {
+    private fun getListPrice(): ArrayList<GameModes> {
         return arrayListOf(
-            GameModeModel("Generated on BEBALLER"),
-            GameModeModel("I already have a link"),
+            GameModes("Generated on BEBALLER"),
+            GameModes("I already have a link"),
         )
     }
 
@@ -212,5 +248,50 @@ class CreateTournamentFourFragment : BaseFragment<FragmentCreateTournamentFourBi
             return false
         }
         return true
+    }
+
+
+
+    private fun initObserver() {
+        viewModel.commonObserver.observe(viewLifecycleOwner) {
+            when (it?.status) {
+                Status.LOADING -> {
+                    showLoading()
+                }
+
+                Status.SUCCESS -> {
+                    when (it.message) {
+                        "CREATE_TOURNAMENT" -> {
+                            try {
+                              val myDataModel : CreateTournamentApiResponse ?= BindingUtils.parseJson(it.data.toString())
+                                if (myDataModel != null){
+                                    if (myDataModel.event != null){
+                                        viewModel.tournamentData.eventId = myDataModel.event.id
+                                        BindingUtils.navigateWithSlide(
+                                            findNavController(),
+                                            R.id.tournamentFive,
+                                            null
+                                        )
+                                    }
+                                }
+
+                            } catch (e: Exception) {
+                                Log.e("error", "commonLoginAPi: $e")
+                            }finally {
+                                hideLoading()
+                            }
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    hideLoading()
+                    showErrorToast(it.message.toString())
+                }
+
+                else -> {
+                }
+            }
+        }
     }
 }

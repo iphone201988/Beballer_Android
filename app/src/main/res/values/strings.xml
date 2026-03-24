@@ -213,5 +213,9 @@
     <string name="upcoming_features">Upcoming features !</string>
     <string name="enter_the_key">Enter the key</string>
     <string name="if_you_don_t_have_key_to_create_your_organizer_account_you_can_contact_the_beballer_representative_to_request_one">if you don\'t have key to create your organizer account, you can contact the BEBALLER representative to request one.</string>
+    <string name="if_you_don_t_have_a_key_to_create_your_organizer_account_you_can_contact_the_beballer_representative_to_request_one">If you don\'t have a key to create your organizer account, you can contact the BEBALLER representative to request one.</string>
+    <string name="create">Create</string>
+    <string name="are_you_sure_you_want_to_create_this_tournament">Are you sure you want to create this tournament?</string>
+    <string name="create_tournament">Create Tournament</string>
 
 </resources>

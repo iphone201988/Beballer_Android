@@ -15,10 +15,18 @@
         android:layout_height="match_parent"
         tools:context=".ui.dash_board.find.tournament.TournamentFragment">
 
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/consMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clHeader"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_65sdp"
+            android:layout_height="wrap_content"
             android:background="@color/fafafa"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +69,7 @@
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:src="@drawable/only_strock"
                 android:tint="@color/black_000000"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -148,6 +156,9 @@
             app:layout_constraintTop_toBottomOf="@+id/cardView"
             tools:itemCount="5"
             tools:listitem="@layout/rv_tournament_item"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

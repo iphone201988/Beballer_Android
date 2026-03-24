@@ -91,6 +91,7 @@ object Constants {
 
     const val EDIT_ORGANIZER = "organiser/create-organiser"
 
+    const val CREATE_EVENT_TOURNAMENT = "event/create-event-tournament"
 
-
+    const val ADD_ORGANIZER_CATEGORY = "event/add-or-organize-tournament-category"
 }

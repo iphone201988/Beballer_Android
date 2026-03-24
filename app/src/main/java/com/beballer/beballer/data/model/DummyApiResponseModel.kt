@@ -15,7 +15,7 @@ data class RankingModel( var code: String , var image :Int ,var name: String, va
 data class StatistModel( var name: String , var point :Int)
 data class InventModel( var match: String , var percentage :Int)
 data class GameModeModel( var title: String )
-data class GameModes( var title: String ,  val modeId: Int =  0)
+data class GameModes( var title: String ,  val modeId: Int =  0 , val apiValue: String = "")
 data class SubscriptionModel( var title: String )
 data class ChatModel( var message: String,var chatType: Boolean=false)
 data class SettingsModel( var teamIcon: Int,var type:String , var colorCode:String)
@@ -213,3 +213,34 @@ data class OrganizerProfileData(
     val feedCountry: String,
     val email: String
 ) : Parcelable
+
+
+
+data class PlaceDetails(val name: String, val address: String, val location: LatLng, val city: String, val region: String, val country: String)
+
+
+data class TournamentData(
+    var eventId: String? = null,
+    var startDate: String? = null,
+    var endDate: String? = null,
+    var name: String? = null,
+    var level: String? = null,
+    var city: String? = null,
+    var format: String? = null,
+    var priceRange: String? = null,
+    var country: String? = null,
+    var ageRange: String? = null,
+    var description: String? = null,
+    var address: String? = null,
+    var region: String? = null,
+    var lat: Double? = null,
+    var long: Double? = null,
+    var usesBeballerForm: Boolean? = null,
+    var hasCategories: Boolean? = null,
+    var url : String ? =  null,
+
+    // ✅ NEW FIELDS
+    var courtsCount: Int? = null,
+    var teamsCount: Int? = null,
+    var poolsCount: Int? = null
+)

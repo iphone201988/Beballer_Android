@@ -13,106 +13,160 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_10sdp"
-        android:padding="@dimen/_10sdp"
-        android:background="@drawable/btn_bg_5_radius"
-        android:backgroundTint="@color/white">
+        android:background="@drawable/green_btn_bg"
+        android:backgroundTint="@color/e9e9ea">
 
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvApply"
-            style="@style/TextView.InterSemiBold"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvTitle"
+            style="@style/TextView.InterMedium"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginHorizontal="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_25sdp"
             android:gravity="center"
-            android:text="@string/enter_the_key"
+            android:paddingHorizontal="@dimen/_20sdp"
+            android:text="Enter the key"
             android:textColor="@color/black"
-            android:textSize="@dimen/_16ssp"
+            android:textSize="@dimen/_13ssp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvNotification"
+            android:id="@+id/tvSubTitle"
+            style="@style/TextView.InterRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/_10sdp"
+            android:text="@string/if_you_don_t_have_a_key_to_create_your_organizer_account_you_can_contact_the_beballer_representative_to_request_one"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_11ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etCourtDescription"
+            style="@style/EditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_14sdp"
+            android:layout_marginTop="@dimen/_11sdp"
+            android:autofillHints="none"
+            android:background="@drawable/player_bg"
+            android:gravity="center|start"
+            android:inputType="textPersonName"
+            android:minHeight="@dimen/_32sdp"
+            android:minLines="4"
+            android:text=""
+            android:textColor="@color/black"
+            android:textColorHint="@color/beballer_purple_grey"
+            android:textSize="@dimen/_13ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvSubTitle" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/first"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            app:dividerColor="#D4D4D4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etCourtDescription" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvOk"
             style="@style/TextView.InterMedium"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:gravity="start"
-            android:text="@string/if_you_don_t_have_key_to_create_your_organizer_account_you_can_contact_the_beballer_representative_to_request_one"
-            android:textColor="@color/grey"
-            android:textSize="@dimen/_12ssp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tvApply"
-            app:layout_constraintTop_toBottomOf="@+id/tvApply" />
-        
-        
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/etCode"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_50sdp"
-            android:background="@drawable/chat_bg"
-            android:backgroundTint="@color/view_color"
-            android:textColor="@color/black"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:gravity="center"
             android:paddingHorizontal="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            app:layout_constraintTop_toBottomOf="@id/tvNotification"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnConfirm"
-            style="@style/GreenButton"
-            android:layout_width="0dp"
-            android:layout_marginTop="@dimen/_14sdp"
-            android:layout_marginBottom="@dimen/_20sdp"
-            android:background="@drawable/chat_et_bg"
-            android:backgroundTint="@color/view_color"
-            android:fontFamily="@font/inter_semi_bold"
-            android:onClick="@{v->callback.onViewClick(v)}"
-            android:text="Ok"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_13ssp"
+            android:text="OK"
+            android:onClick="@{v -> callback.onViewClick(v)}"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/_12ssp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etCode" />
+            app:layout_constraintTop_toBottomOf="@+id/first" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnRequestKey"
-            style="@style/GreenButton"
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/second"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            app:dividerColor="#D4D4D4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvOk" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvSecond"
+            style="@style/TextView.InterMedium"
             android:layout_width="0dp"
-            android:layout_marginTop="@dimen/_14sdp"
-            android:layout_marginBottom="@dimen/_20sdp"
-            android:background="@drawable/chat_et_bg"
-            android:backgroundTint="@color/view_color"
-            android:fontFamily="@font/inter_semi_bold"
-            android:onClick="@{v->callback.onViewClick(v)}"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/_10sdp"
+            android:onClick="@{v -> callback.onViewClick(v)}"
             android:text="Request a key"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_13ssp"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/_12ssp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnConfirm" />
+            app:layout_constraintTop_toBottomOf="@+id/second" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/third"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            app:dividerColor="#D4D4D4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvSecond"
+            app:layout_constraintTop_toBottomOf="@id/tvSecond" />
 
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnCancel"
-            style="@style/GreenButton"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRequest"
+            style="@style/TextView.InterMedium"
             android:layout_width="0dp"
-            android:layout_marginTop="@dimen/_14sdp"
-            android:layout_marginBottom="@dimen/_20sdp"
-            android:background="@drawable/chat_et_bg"
-            android:backgroundTint="@color/view_color"
-            android:fontFamily="@font/inter_semi_bold"
-            android:onClick="@{v->callback.onViewClick(v)}"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/_10sdp"
             android:text="Cancel"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_13ssp"
+            android:textColor="@color/blue"
+            android:onClick="@{v -> callback.onViewClick(v)}"
+            android:textSize="@dimen/_12ssp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnRequestKey" />
+            app:layout_constraintTop_toBottomOf="@+id/third" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:visibility="invisible"
+            app:dividerColor="#D4D4D4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvSecond"
+            app:layout_constraintTop_toBottomOf="@id/tvRequest" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

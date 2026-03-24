@@ -91,6 +91,12 @@
         android:name="com.beballer.beballer.ui.organizers.tournament_create.CreateTournamentEightFragment"
         tools:layout="@layout/fragment_create_tournament_eight" />
 
+
+    <fragment
+        android:id="@+id/tournamentNine"
+        android:name="com.beballer.beballer.ui.organizers.tournament_create.CreateTournamentNineFragment"
+        tools:layout="@layout/fragment_create_tournament_nine" />
+
     <!-- - - -  - -  - -  - - -  Details - - - - - - - - - - - -->
     <fragment
         android:id="@+id/OrgTournamentDetailsFragment"

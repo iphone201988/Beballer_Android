@@ -182,6 +182,7 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
         }
     }
 
+
     private fun loadPlayers(location: Location, scope: LocationScope) {
 
         lifecycleScope.launch {
@@ -301,6 +302,8 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                     ?.let {
                         Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
                     }
+
+                Log.i("videoUrl", "playCenterVideoRvAdapter: $videoUrl")
 
                 if (videoUrl != null) {
                     viewHolder.playVideo(videoUrl, resumePosition)

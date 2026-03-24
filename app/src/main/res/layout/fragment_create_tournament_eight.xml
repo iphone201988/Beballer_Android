@@ -40,6 +40,7 @@
             android:layout_marginTop="@dimen/_7sdp"
             android:fontFamily="@font/inter_bold"
             android:lineSpacingExtra="@dimen/_2sdp"
+            android:gravity="center"
             android:text="Fill out the following\ninformation reference your tournaments"
             android:textAlignment="center"
             android:textColor="@color/black"
@@ -55,6 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="@dimen/_20sdp"
+            android:gravity="center"
             android:fontFamily="@font/inter_regular"
             android:text="Fill out the informations"
             android:textAlignment="center"
@@ -211,6 +213,28 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/locationCard"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/_160sdp"
+                    android:visibility="gone"
+                    android:background="@drawable/bg_blue_btn"
+                    app:layout_constraintEnd_toEndOf="@id/clSecond"
+                    app:layout_constraintStart_toStartOf="@id/clSecond"
+                    app:layout_constraintTop_toBottomOf="@id/clSecond">
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvEnterLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_10sdp"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/item_layout_location" />
+
+
+                </androidx.cardview.widget.CardView>
 
 
 
@@ -244,6 +268,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

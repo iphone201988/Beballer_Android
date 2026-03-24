@@ -2,6 +2,7 @@ package com.beballer.beballer.ui.organizers.tournament_create
 
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.beballer.beballer.R
@@ -13,8 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CreateTournamentFiveFragment : BaseFragment<FragmentCreateTournamentFiveBinding>() {
-    private val viewModel: CommonTournamentVM by viewModels()
-
+    private val viewModel: CommonTournamentVM by activityViewModels()
     private var selectedType = 1
     override fun getLayoutResource(): Int {
         return R.layout.fragment_create_tournament_five
@@ -66,6 +66,7 @@ class CreateTournamentFiveFragment : BaseFragment<FragmentCreateTournamentFiveBi
 
                 R.id.btnNext -> {
                     if (selectedType==1){
+
                         BindingUtils.navigateWithSlide(findNavController(), R.id.tournamentSix, null)
                     }
                     else {

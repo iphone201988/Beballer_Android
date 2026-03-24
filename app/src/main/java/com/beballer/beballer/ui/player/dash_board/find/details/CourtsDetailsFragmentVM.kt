@@ -32,4 +32,22 @@ class CourtsDetailsFragmentVM @Inject constructor(private val apiHelper: ApiHelp
             }
         }
     }
+
+
+    fun addRatingApi(data : HashMap<String, Any>, url: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            commonObserver.postValue(Resource.loading(null))
+            try {
+                apiHelper.apiPostForRawBody(url,data).let {
+                    if (it.isSuccessful) {
+                        commonObserver.postValue(Resource.success("addRatingApi", it.body()))
+                    } else commonObserver.postValue(
+                        Resource.error(handleErrorResponse(it.errorBody(), it.code()), null)
+                    )
+                }
+            } catch (e: Exception) {
+                Log.d("error", "getPostApi: $e")
+            }
+        }
+    }
 }

@@ -7,7 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.animation.OvershootInterpolator
 import android.widget.Toast
@@ -21,10 +23,13 @@ import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.data.api.Constants
 import com.beballer.beballer.data.model.CourtDataById
 import com.beballer.beballer.data.model.GetCourtByIdResponse
+import com.beballer.beballer.data.model.SimpleApiResponse
 import com.beballer.beballer.databinding.CourtDeleteDailogItemBinding
 import com.beballer.beballer.databinding.CreateGameDialogBinding
 import com.beballer.beballer.databinding.FavouritDailogItemBinding
 import com.beballer.beballer.databinding.FragmentCourtsDetailsBinding
+import com.beballer.beballer.databinding.OpenMapDialogBinding
+import com.beballer.beballer.databinding.RatingDialogBinding
 import com.beballer.beballer.ui.player.dash_board.find.player_profile.PlayerProfileActivity
 import com.beballer.beballer.ui.player.dash_board.profile.user.UserProfileActivity
 import com.beballer.beballer.utils.BaseCustomDialog
@@ -52,9 +57,18 @@ class CourtsDetailsFragment : BaseFragment<FragmentCourtsDetailsBinding>(), OnMa
     private var courtMarker: Marker? = null
     private val interpolator = OvershootInterpolator()
     private var googleMap: GoogleMap? = null
+
+    private var courtDetail :  String ? = null
     private lateinit var createGameDialogItem: BaseCustomDialog<CreateGameDialogBinding>
     private lateinit var favCourtDialogItem: BaseCustomDialog<FavouritDailogItemBinding>
     private lateinit var deleteCourtDialogItem: BaseCustomDialog<CourtDeleteDailogItemBinding>
+    private lateinit var openMapApp: BaseCustomDialog<OpenMapDialogBinding>
+
+    private lateinit var ratingPopup: BaseCustomDialog<RatingDialogBinding>
+    private var courtLat: Double? = null
+    private var courtlong: Double? = null
+    private var formattedRating: String? = null
+
     override fun getLayoutResource(): Int {
         return R.layout.fragment_courts_details
     }
@@ -68,17 +82,106 @@ class CourtsDetailsFragment : BaseFragment<FragmentCourtsDetailsBinding>(), OnMa
         initOnClick()
         // fab button click
         initFabMenu()
-        val courtDetails = arguments?.getString("courtId")
-        courtDetails.let {
-            // api call
-            val put = HashMap<String, Any>()
-            viewModel.getCourtById(Constants.GET_COURTS_BY_ID + "$it", put)
-        }
+        initData()
+        initPopup()
+
+
         // observer
         initObserver()
         // map
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        setupRating()
+
+    }
+
+    private fun initData() {
+        courtDetail = arguments?.getString("courtId")
+        Log.i("dfdsfds", "initData: $courtDetail")
+        courtDetail.let {
+            // api call
+            val put = HashMap<String, Any>()
+            viewModel.getCourtById(Constants.GET_COURTS_BY_ID + "$it", put)
+        }
+    }
+
+    private fun setupRating() {
+
+        val popupBinding = ratingPopup.binding
+
+
+        popupBinding.tvYourRating.text =
+            "Your rating : ${String.format("%.1f", popupBinding.courtRatingBar.rating)}"
+
+
+
+        popupBinding.courtRatingBar.setOnRatingBarChangeListener = { rating, fromUser ->
+
+            if (fromUser) {
+                formattedRating = String.format("%.1f", rating)
+
+                Log.i("fdsfsdf", "setupRating: $formattedRating")
+
+                popupBinding.tvYourRating.text = "Your rating : $formattedRating"
+
+            }
+        }
+
+
+    }
+
+
+
+    private fun initPopup() {
+        ratingPopup = BaseCustomDialog(requireContext(), R.layout.rating_dialog) {
+            when (it.id) {
+                R.id.btnCreateGame -> {
+                    if (!formattedRating.isNullOrEmpty()) {
+                        val data = HashMap<String, Any>()
+                        data["rating"] = formattedRating.toString()
+                        data["courtId"] = courtDetail.toString()
+                        viewModel.addRatingApi(data, Constants.ADD_RATING)
+                        ratingPopup.dismiss()
+                    }
+                }
+
+                R.id.btnCancel -> {
+                    ratingPopup.dismiss()
+                }
+
+            }
+
+        }
+
+
+        openMapApp = BaseCustomDialog(requireContext(), R.layout.open_map_dialog) {
+            when (it.id) {
+
+                R.id.btnConfirm -> {
+
+                    if (courtLat != null && courtlong != null) {
+
+                        val uri = Uri.parse("geo:$courtLat,$courtlong?q=$courtLat,$courtlong")
+                        val intent = Intent(Intent.ACTION_VIEW, uri)
+                        intent.setPackage("com.google.android.apps.maps") // Open directly in Google Maps (optional)
+
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Location not available",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    openMapApp.dismiss()
+                }
+
+                R.id.btnCancel -> {
+                    openMapApp.dismiss()
+                }
+            }
+        }
 
     }
 
@@ -99,6 +202,14 @@ class CourtsDetailsFragment : BaseFragment<FragmentCourtsDetailsBinding>(), OnMa
                         com.airbnb.lottie.R.anim.abc_slide_in_bottom,
                         com.airbnb.lottie.R.anim.abc_fade_out
                     )
+                }
+
+                R.id.tvCourtAddress, R.id.tvCourtDistance -> {
+                    openMapApp.show()
+                }
+
+                R.id.courtRatingBar -> {
+                    ratingPopup.show()
                 }
 
                 R.id.tvCourtKing -> {
@@ -272,6 +383,8 @@ class CourtsDetailsFragment : BaseFragment<FragmentCourtsDetailsBinding>(), OnMa
                                             if (myDataModel.data.court.lat != null && myDataModel.data.court.long != null) {
                                                 val lat1 = myDataModel.data.court.lat
                                                 val lon1 = myDataModel.data.court.long
+                                                courtLat = myDataModel.data.court.lat
+                                                courtlong = myDataModel.data.court.long
                                                 val lat2 = BindingUtils.lat
                                                 val lon2 = BindingUtils.long
                                                 val distance = BindingUtils.formattedDistance(
@@ -294,6 +407,15 @@ class CourtsDetailsFragment : BaseFragment<FragmentCourtsDetailsBinding>(), OnMa
                                 hideLoading()
                             }
                         }
+
+                        "addRatingApi" -> {
+                            val myDataModel: SimpleApiResponse? =
+                                BindingUtils.parseJson(it.data.toString())
+                            if (myDataModel != null) {
+                                initData()
+                            }
+                        }
+
 
 
                     }

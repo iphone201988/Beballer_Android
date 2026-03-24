@@ -39,6 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="55dp"
             android:layout_marginTop="@dimen/_7sdp"
+            android:gravity="center"
             android:fontFamily="@font/inter_bold"
             android:lineSpacingExtra="@dimen/_2sdp"
             android:text="Fill out the following\ninformation reference your tournament"
@@ -59,6 +60,7 @@
             android:fontFamily="@font/inter_regular"
             android:text="Add the image of your flyer"
             android:textAlignment="center"
+            android:gravity="center"
             android:textColor="@color/grey_8B8FA0"
             android:textSize="@dimen/_12ssp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -87,6 +89,7 @@
             android:layout_marginTop="@dimen/_20sdp"
             app:cardCornerRadius="10dp"
             app:cardElevation="5dp"
+            android:onClick="@{v -> vm.onClick(v)}"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintEnd_toStartOf="@id/cardAddImage2"
@@ -99,10 +102,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
-                android:padding="20dp"
+                android:onClick="@{v -> vm.onClick(v)}"
+                android:padding="0dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/camera_image"
-                app:tint="@color/grey" />
+                android:src="@drawable/camera_image"/>
         </androidx.cardview.widget.CardView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -139,6 +142,7 @@
             android:layout_height="0dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="5dp"
+            android:onClick="@{v -> vm.onClick(v)}"
             app:layout_constraintEnd_toStartOf="@+id/cardAddImage3"
             app:layout_constraintBottom_toBottomOf="@+id/cardAddImage1"
             app:layout_constraintStart_toEndOf="@+id/cardAddImage1"
@@ -149,20 +153,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
-                android:padding="20dp"
+                android:padding="0dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/camera_image"
-                app:tint="@color/grey" />
+                android:onClick="@{v -> vm.onClick(v)}"
+                android:src="@drawable/camera_image" />
         </androidx.cardview.widget.CardView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/image_2_fab"
+            android:id="@+id/ivFabSecond"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/done"
             android:src="@drawable/ic_plus_sign"
             app:backgroundTint="@color/blue_00bef5"
             app:fabCustomSize="25dp"
+            android:onClick="@{v -> vm.onClick(v)}"
             app:layout_constraintBottom_toBottomOf="@+id/cardAddImage2"
             app:layout_constraintEnd_toEndOf="@+id/cardAddImage2"
             app:layout_constraintStart_toEndOf="@+id/cardAddImage2"
@@ -188,6 +193,7 @@
             android:layout_height="0dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="5dp"
+            android:onClick="@{v -> vm.onClick(v)}"
             app:layout_constraintBottom_toBottomOf="@+id/cardAddImage1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/cardAddImage2"
@@ -198,10 +204,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="true"
-                android:padding="20dp"
+                android:padding="0dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/camera_image"
-                app:tint="@color/grey" />
+                android:onClick="@{v -> vm.onClick(v)}"
+                android:src="@drawable/camera_image" />
         </androidx.cardview.widget.CardView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -212,6 +218,7 @@
             android:src="@drawable/ic_plus_sign"
             app:backgroundTint="@color/blue_00bef5"
             app:fabCustomSize="25dp"
+            android:onClick="@{v -> vm.onClick(v)}"
             app:layout_constraintBottom_toBottomOf="@+id/cardAddImage3"
             app:layout_constraintEnd_toEndOf="@+id/cardAddImage3"
             app:layout_constraintStart_toEndOf="@+id/cardAddImage3"

@@ -39,7 +39,7 @@ class CreateTournamentFourFragment : BaseFragment<FragmentCreateTournamentFourBi
     private lateinit var gameModeAdapter: SimpleRecyclerViewAdapter<GameModes, RvGameModeItemBinding>
 
     private var selectedGameModeApi: String = ""
-
+    private var type : String ? = null
 
     override fun getLayoutResource(): Int {
         return R.layout.fragment_create_tournament_four
@@ -53,10 +53,17 @@ class CreateTournamentFourFragment : BaseFragment<FragmentCreateTournamentFourBi
         val layoutParams = binding.etDescription.layoutParams
         resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._82sdp)
         binding.etDescription.layoutParams = layoutParams
+
+        initData()
         // click
         initOnCLick()
 
         initObserver()
+    }
+
+    private fun initData() {
+        type =  arguments?.getString("type")
+
     }
 
     /*** click handel ***/
@@ -101,8 +108,18 @@ class CreateTournamentFourFragment : BaseFragment<FragmentCreateTournamentFourBi
                             viewModel.tournamentData.url = null
                         }
 
-                        // ✅ 🔥 CALL API
-                        viewModel.createTournament()
+                        if (type == "Several tournaments"){
+                            BindingUtils.navigateWithSlide(
+                                findNavController(),
+                                R.id.tournamentSix,
+                                null
+                            )
+                        }
+                        else{
+                            // ✅ 🔥 CALL API
+                            viewModel.createTournament()
+                        }
+
                     }
                 }
             }

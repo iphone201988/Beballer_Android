@@ -97,6 +97,12 @@
         android:name="com.beballer.beballer.ui.organizers.tournament_create.CreateTournamentNineFragment"
         tools:layout="@layout/fragment_create_tournament_nine" />
 
+
+    <fragment
+        android:id="@+id/addTournamentDetail"
+        android:name="com.beballer.beballer.ui.organizers.tournament_create.AddTournamentDetialsFragment"
+        tools:layout="@layout/fragment_add_tournament_detials" />
+
     <!-- - - -  - -  - -  - - -  Details - - - - - - - - - - - -->
     <fragment
         android:id="@+id/OrgTournamentDetailsFragment"
@@ -128,6 +134,9 @@
         android:id="@+id/campsViewFragment"
         android:name="com.beballer.beballer.ui.organizers.camps_view.CampsViewFragment"
         tools:layout="@layout/fragment_camps_view" />
+
+
+
 
 
 </navigation>

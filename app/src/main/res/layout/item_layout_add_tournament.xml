@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="callback"
+            type="com.beballer.beballer.base.SimpleRecyclerViewAdapter.SimpleCallback" />
+        <variable
+            name="bean"
+            type="com.beballer.beballer.data.model.TournamentCategory" />
+
+        <variable
+            name="pos"
+            type="Integer" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clCreate"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        android:layout_marginTop="@dimen/_6sdp"
+        android:background="@{bean.isSelected ? @drawable/create_tournament_bg : @drawable/player_bg}"
+        android:onClick="@{v -> callback.onItemClick(v,bean,pos)}"
+        android:paddingVertical="@dimen/_13sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvQuestion">
+
+        <View
+            android:id="@+id/tvView"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_marginHorizontal="16dp"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_rect_tournament"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvCount"
+            style="@style/TextView.InterMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{bean.count}"
+            android:maxLength="1"
+            android:textSize="@dimen/_12ssp"
+            android:textColor="@color/white"
+            app:layout_constraintTop_toTopOf="@id/tvView"
+            app:layout_constraintStart_toStartOf="@id/tvView"
+            app:layout_constraintEnd_toEndOf="@id/tvView"
+            app:layout_constraintBottom_toBottomOf="@id/tvView"/>
+
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivSelected"
+            android:layout_width="@dimen/_18sdp"
+            android:layout_height="@dimen/_18sdp"
+            android:layout_marginEnd="@dimen/_18sdp"
+            android:src="@{bean.isSelected ? @drawable/unique_selected_element : @drawable/unique_unselected_element}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvCreate"
+            style="@style/TextView.InterMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:text="@{bean.tournamentName}"
+            android:textSize="@dimen/_15ssp"
+            android:textColor="@{bean.isSelected ? @color/white : @color/black}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -217,5 +217,7 @@
     <string name="create">Create</string>
     <string name="are_you_sure_you_want_to_create_this_tournament">Are you sure you want to create this tournament?</string>
     <string name="create_tournament">Create Tournament</string>
+    <string name="choose_the_tournament_to_fill_in">Choose the tournament to fill in</string>
+    <string name="start_organizing_the_tournament">Start organizing the tournament:</string>
 
 </resources>

@@ -244,3 +244,32 @@ data class TournamentData(
     var teamsCount: Int? = null,
     var poolsCount: Int? = null
 )
+
+
+
+
+@Parcelize
+data class TournamentCategory(
+    var tournamentName: String = "",
+    var count : String  = "",
+    var isSelected: Boolean = false,
+    var tournamentAgeRange: String = "",
+    var startDate: String? =  "",
+    var endDate: String? = "",
+    var courtsCount: String = "",
+    var poolsCount: String = "",
+    var teamsCount: String = "",
+
+    var categoryID: String = "",
+    var internalId: String = "",
+    var eventID: String = "",
+
+    var stability: String = "",
+    var roundsCount: Int = 0,
+    var finalTeamsCount: Int = 0,
+
+    var isOrganised: Boolean = false,
+    var hasSmallFinal: Boolean = false,
+
+
+    ) : Parcelable

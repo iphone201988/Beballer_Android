@@ -1,6 +1,7 @@
 package com.beballer.beballer.ui.organizers.tournament_create
 
 import android.app.DatePickerDialog
+import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -75,8 +76,13 @@ class CreateTournamentSecondFragment : BaseFragment<FragmentCreateTournamentSeco
                         } ?: ""
 
                         viewModel.tournamentData.priceRange = formattedPrice
+
+
+                        val bundle = Bundle().apply {
+                            putString("type","Single tournaments")
+                        }
                         BindingUtils.navigateWithSlide(
-                            findNavController(), R.id.tournamentThird, null
+                            findNavController(), R.id.tournamentThird, bundle
                         )
                     }
                 }
@@ -90,7 +96,7 @@ class CreateTournamentSecondFragment : BaseFragment<FragmentCreateTournamentSeco
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
-            override fun afterTextChanged(s: Editable?) {
+            override fun afterTextChanged(s: Editable?   ) {
                 checkAllFieldsNotEmpty()
             }
         }

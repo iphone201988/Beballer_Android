@@ -1,10 +1,12 @@
 package com.beballer.beballer.ui.organizers.tournament_create
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.data.api.ApiHelper
 import com.beballer.beballer.data.api.Constants
+import com.beballer.beballer.data.model.TournamentCategory
 import com.beballer.beballer.data.model.TournamentData
 import com.beballer.beballer.utils.Resource
 import com.beballer.beballer.utils.event.SingleRequestEvent
@@ -27,6 +29,11 @@ class CommonTournamentVM @Inject constructor(
 
     // ✅ Store all form data
     val tournamentData = TournamentData()
+
+
+    val selectedTournament = MutableLiveData<TournamentCategory>()
+
+    val tournamentList = MutableLiveData<ArrayList<TournamentCategory>>()
 
     // ✅ Store images
     val selectedImageParts = mutableListOf<MultipartBody.Part>()
@@ -71,21 +78,27 @@ class CommonTournamentVM @Inject constructor(
 
         return HashMap<String, Any>().apply {
 
-            data.eventId?.let { put("eventId", it) }
-            data.startDate?.let { put("startDate", it) }
-            data.endDate?.let { put("endDate", it) }
-            data.name?.let { put("name", it) }
-            data.level?.let { put("level", it) }
-            data.ageRange?.let { put("ageRange", it) }
-            data.priceRange?.let { put("priceRange", it) }
-            data.description?.let { put("description", it) }
+            fun putWithLog(key: String, value: Any?) {
+                if (value != null) {
+                    Log.i("ADV_API", "ADDING -> $key: $value")
+                    put(key, value)
+                } else {
+                    Log.w("ADV_API", "SKIPPED (NULL) -> $key")
+                }
+            }
 
-            data.usesBeballerForm?.let { put("usesBeballerForm", it) }
-
-            // ✅ INT values
-            data.courtsCount?.let { put("courtsCount", it) }
-            data.teamsCount?.let { put("teamsCount", it) }
-            data.poolsCount?.let { put("poolsCount", it) }
+            putWithLog("eventId", data.eventId)
+            putWithLog("startDate", data.startDate)
+            putWithLog("endDate", data.endDate)
+            putWithLog("name", data.name)
+            putWithLog("level", data.level)
+            putWithLog("ageRange", data.ageRange)
+            putWithLog("priceRange", data.priceRange)
+            putWithLog("description", data.description)
+            putWithLog("usesBeballerForm", data.usesBeballerForm)
+            putWithLog("courtsCount", data.courtsCount)
+            putWithLog("teamsCount", data.teamsCount)
+            putWithLog("poolsCount", data.poolsCount)
         }
     }
 
@@ -231,4 +244,76 @@ class CommonTournamentVM @Inject constructor(
 
         selectedImageParts.clear()
     }
+
+
+
+    fun updateCourt(url: String, map: HashMap<String, Any>) {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            commonObserver.postValue(Resource.loading(null))
+
+            try {
+                val response = apiHelper.apiForRawBodyWithToken( map,url)
+
+                if (response.isSuccessful && response.body() != null) {
+
+                    commonObserver.postValue(
+                        Resource.success("UPDATE_COURT", response.body())
+                    )
+
+                } else {
+
+                    val errorMsg = handleErrorResponse(
+                        response.errorBody(),
+                        response.code()
+                    )
+
+                    commonObserver.postValue(Resource.error(errorMsg, null))
+                }
+
+            } catch (e: Exception) {
+
+                Log.e("ADV_API_ERROR", "Error: ${e.localizedMessage}", e)
+
+                val message = when (e) {
+                    is java.net.UnknownHostException -> "No Internet Connection"
+                    is java.net.SocketTimeoutException -> "Request Timeout"
+                    is javax.net.ssl.SSLException -> "SSL Error"
+                    else -> e.localizedMessage ?: "Something went wrong"
+                }
+
+                commonObserver.postValue(Resource.error(message, null))
+            }
+        }
+    }
+
+
+
+
+    val tournamentDataList = ArrayList<TournamentCategory>()
+
+    init {
+        if (tournamentDataList.isEmpty()) {
+            tournamentDataList.add(TournamentCategory("Tournament 1", "1", true))
+            tournamentDataList.add(TournamentCategory("Tournament 2", "2"))
+        }
+    }
+
+    fun addTournament(): Boolean {
+        if (tournamentDataList.size >= 6) {
+            return false   // ❌ limit reached
+        }
+
+        val nextNumber = tournamentDataList.size + 1
+
+        tournamentDataList.add(
+            TournamentCategory(
+                tournamentName = "Tournament $nextNumber",
+                count = nextNumber.toString()
+            )
+        )
+
+        return true // ✅ added successfully
+    }
+
 }

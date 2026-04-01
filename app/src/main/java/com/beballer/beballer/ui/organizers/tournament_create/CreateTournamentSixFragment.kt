@@ -1,6 +1,7 @@
 package com.beballer.beballer.ui.organizers.tournament_create
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -11,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
+import com.beballer.beballer.data.model.Court
 import com.beballer.beballer.data.model.CreateCategoryApiResponse
 import com.beballer.beballer.data.model.CreateTournamentApiResponse
 import com.beballer.beballer.utils.BindingUtils
@@ -100,7 +102,13 @@ class CreateTournamentSixFragment : BaseFragment<FragmentCreateTournamentSixBind
                                     if (myDataModel.data != null){
                                         val bundle = Bundle().apply {
                                             putString("tournamentCount", binding.etNumberOfCourts.text.toString().trim())
-                                            putString("campsType","tournaments")
+
+                                            putParcelableArrayList(
+                                                "courtData",
+                                                ArrayList(myDataModel.data.category.courts) // ✅ correct
+                                            )
+
+                                            putString("campsType", "tournaments")
                                         }
                                         BindingUtils.navigateWithSlide(
                                             findNavController(), R.id.createCampsSevenFragment, bundle

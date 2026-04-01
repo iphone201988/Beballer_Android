@@ -19,7 +19,7 @@ data class GameModes( var title: String ,  val modeId: Int =  0 , val apiValue: 
 data class SubscriptionModel( var title: String )
 data class ChatModel( var message: String,var chatType: Boolean=false)
 data class SettingsModel( var teamIcon: Int,var type:String , var colorCode:String)
-data class CreateTournamentModel( var name: String)
+data class CreateTournamentModel( var name: String , var id : String = "")
 data class AddTournamentModel( var name: String)
 data class FinalModel( var name: String,var check: Boolean=false)
 data class MatchModel( var headingTitle: String,var title: String,var subTitle: String , var newTeam :String , var team:String)
@@ -259,7 +259,6 @@ data class TournamentCategory(
     var courtsCount: String = "",
     var poolsCount: String = "",
     var teamsCount: String = "",
-
     var categoryID: String = "",
     var internalId: String = "",
     var eventID: String = "",

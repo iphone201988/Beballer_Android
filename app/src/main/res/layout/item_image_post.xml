@@ -72,6 +72,7 @@
                 android:includeFontPadding="false"
                 android:text="@string/fossesmarlybasket"
                 android:textColor="@color/grey_50"
+
                 android:textSize="@dimen/_8ssp"
                 app:layout_constraintBottom_toTopOf="@id/tvImageSector"
                 app:layout_constraintStart_toStartOf="@+id/tvCommonPostName"
@@ -162,7 +163,37 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         </androidx.cardview.widget.CardView>
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvName"
+            style="@style/TextView.InterSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Text"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:textColor="#1B1B1B"
+            android:textSize="@dimen/_12ssp"
+            app:layout_constraintTop_toBottomOf="@id/imagePost"
+            app:layout_constraintStart_toStartOf="@id/imagePost"/>
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvCountryName"
+            style="@style/TextView.InterRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Chandigarh, India"
+            android:gravity="start"
+            android:textColor="#1B1B1B"
+            android:textSize="@dimen/_10ssp"
+            app:layout_constraintEnd_toEndOf="@id/imagePost"
+            app:layout_constraintTop_toBottomOf="@id/tvName"
+            app:layout_constraintStart_toStartOf="@id/imagePost"/>
+
 
         <HorizontalScrollView
             android:id="@+id/buttonsLayout"
@@ -173,7 +204,7 @@
             android:scrollbarAlwaysDrawHorizontalTrack="true"
             app:layout_constraintEnd_toStartOf="@id/tvSubscribe"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imagePost">
+            app:layout_constraintTop_toBottomOf="@id/tvCountryName">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"

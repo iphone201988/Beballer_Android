@@ -91,6 +91,7 @@ class CreateTournamentThirdFragment : BaseFragment<FragmentCreateTournamentThird
                                 if (myDataModel != null){
                                     if (myDataModel.event != null){
                                         viewModel.tournamentData.eventId = myDataModel.event.id
+
                                         BindingUtils.navigateWithSlide(
                                             findNavController(),
                                             R.id.tournamentNine,
@@ -173,7 +174,6 @@ class CreateTournamentThirdFragment : BaseFragment<FragmentCreateTournamentThird
                     if (tournamentType == "Multiple tournaments"){
                         createTournamentPopup.show()
 
-                        tournamentType = ""
                     }
                     else{
                         BindingUtils.navigateWithSlide(

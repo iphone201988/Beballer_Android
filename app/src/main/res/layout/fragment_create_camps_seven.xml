@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.beballer.beballer.ui.organizers.camps_create.CommonCreateCampsFragmentVM" />
+            type="com.beballer.beballer.ui.organizers.tournament_create.CommonTournamentVM" />
 
         <variable
             name="buttonCheck"

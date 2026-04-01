@@ -87,6 +87,7 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
         setupSystemUI()
         userId = sharedPrefManager.getLoginData()?.data?.user?._id
         intentType = intent.getStringExtra("socialDetails")
+        Log.i("intent", "onCreateView: $intentType")
         val item = intent.getParcelableExtra<GetUserPostData>("socialData")
         nextPosition = intent.getIntExtra("socialPos", -1)
         if (item != null) {
@@ -210,6 +211,7 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
         }
 
         when (intentType) {
+
             "image" -> {
                 binding.clImageType.visibility = View.VISIBLE
                 binding.clPostHeader.visibility = View.VISIBLE

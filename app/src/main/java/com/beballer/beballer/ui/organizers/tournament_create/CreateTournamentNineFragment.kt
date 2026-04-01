@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -23,7 +25,7 @@ import kotlin.getValue
 @AndroidEntryPoint
 class CreateTournamentNineFragment : BaseFragment<FragmentCreateTournamentNineBinding>() {
 
-    private val viewModel: CommonTournamentVM by viewModels()
+    private val viewModel: CommonTournamentVM by activityViewModels()
 
     private var tournamentData : TournamentCategory ? = null
     private lateinit var tournamentAdapter  : SimpleRecyclerViewAdapter<TournamentCategory, ItemLayoutAddTournamentBinding>
@@ -40,34 +42,32 @@ class CreateTournamentNineFragment : BaseFragment<FragmentCreateTournamentNineBi
 
     override fun onCreateView(view: View) {
         initOnClick()
-        getTournamentList()
+     //   getTournamentList()
         initAdapter()
 
     }
 
-    private fun getTournamentList() {
-        tournamentList.clear()
-        tournamentList.add(TournamentCategory("Tournament 1", "1",true))
-        tournamentList.add(TournamentCategory("Tournament 2", "2"))
 
-    }
 
     private fun initAdapter() {
-        tournamentAdapter = SimpleRecyclerViewAdapter(R.layout.item_layout_add_tournament , BR.bean){v,m,pos ->
-            when(v.id){
-                R.id.clCreate ->{
-                    tournamentList.forEachIndexed { index, tournament ->
-                        tournament.isSelected = index == pos
+        tournamentAdapter = SimpleRecyclerViewAdapter(
+            R.layout.item_layout_add_tournament,
+            BR.bean
+        ) { v, m, pos ->
 
+            when (v.id) {
+                R.id.clCreate -> {
+                    viewModel.tournamentDataList.forEachIndexed { index, tournament ->
+                        tournament.isSelected = index == pos
                     }
-                    tournamentData  = m
+                    tournamentData = m
                     tournamentAdapter.notifyDataSetChanged()
                 }
             }
         }
-        binding.rvTournament.adapter = tournamentAdapter
-        tournamentAdapter.list = tournamentList
 
+        binding.rvTournament.adapter = tournamentAdapter
+        tournamentAdapter.list = viewModel.tournamentDataList
     }
 
     private fun initOnClick() {
@@ -87,6 +87,14 @@ class CreateTournamentNineFragment : BaseFragment<FragmentCreateTournamentNineBi
                 }
 
                 R.id.tvAddTournament ->{
+                    val isAdded = viewModel.addTournament()
+
+                    if (isAdded) {
+                        tournamentAdapter.notifyItemInserted(viewModel.tournamentDataList.size - 1)
+                    } else {
+                        Toast.makeText(requireContext(), "You can add maximum 6 tournaments", Toast.LENGTH_SHORT).show()
+                    }
+                    tournamentAdapter.notifyItemInserted(viewModel.tournamentDataList.size - 1)
                     BindingUtils.navigateWithSlide(
                         findNavController(), R.id.addTournamentDetail, null
                     )
@@ -94,6 +102,10 @@ class CreateTournamentNineFragment : BaseFragment<FragmentCreateTournamentNineBi
             }
         })
     }
+
+
+
+
 
 
 

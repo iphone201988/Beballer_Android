@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_4sdp"
                 android:fontFamily="@font/inter_regular"
-                android:text="21 h"
+                android:text=""
                 android:textColor="@color/beballer_medium_grey"
                 android:textSize="@dimen/_9ssp"
                 app:layout_constraintBottom_toBottomOf="@id/ivMenu"
@@ -228,17 +228,43 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvName"
+            style="@style/TextView.InterSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Text"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:textColor="#1B1B1B"
+            android:textSize="@dimen/_12ssp"
+            app:layout_constraintTop_toBottomOf="@id/cardPost"
+            app:layout_constraintStart_toStartOf="@id/cardPost"/>
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvCountryName"
+            style="@style/TextView.InterRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Chandigarh, India"
+            android:gravity="start"
+            android:textColor="#1B1B1B"
+            android:textSize="@dimen/_10ssp"
+            app:layout_constraintEnd_toEndOf="@id/imagePost"
+            app:layout_constraintTop_toBottomOf="@id/tvName"
+            app:layout_constraintStart_toStartOf="@id/cardPost"/>
+
         <HorizontalScrollView
             android:id="@+id/buttonsLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_14sdp"
+            android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginTop="@dimen/_6sdp"
             android:layout_marginEnd="@dimen/_12sdp"
             android:scrollbarAlwaysDrawHorizontalTrack="true"
             app:layout_constraintEnd_toStartOf="@id/subscribe_tv"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardPost">
+            app:layout_constraintTop_toBottomOf="@id/tvCountryName">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
@@ -250,7 +276,6 @@
                     android:layout_width="@dimen/_25sdp"
                     android:layout_height="@dimen/_25sdp"
                     android:padding="@dimen/_3sdp"
-                    android:layout_marginStart="@dimen/_10sdp"
                     android:src="@drawable/ic_like_0_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

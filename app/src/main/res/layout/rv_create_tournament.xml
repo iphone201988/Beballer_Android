@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="bean"
+            type="com.beballer.beballer.data.model.Court" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,6 +38,7 @@
             android:gravity="start|center"
             android:inputType="textCapSentences|textNoSuggestions"
             android:letterSpacing="0"
+            android:text="@{bean.name}"
             android:maxLines="1"
             android:paddingStart="@dimen/_40sdp"
             android:textColor="@color/black"

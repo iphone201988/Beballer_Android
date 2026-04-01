@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -34,7 +35,7 @@ import java.util.TimeZone
 @AndroidEntryPoint
 class AddTournamentDetialsFragment : BaseFragment<FragmentAddTournamentDetialsBinding>(){
 
-    private val viewModel  : CommonTournamentVM by viewModels()
+    private val viewModel  : CommonTournamentVM by activityViewModels()
 
 
     private var tournamentData : TournamentCategory ? = null
@@ -74,6 +75,8 @@ class AddTournamentDetialsFragment : BaseFragment<FragmentAddTournamentDetialsBi
                 }
                 R.id.btnNext ->{
                     if (validate()){
+                        viewModel.tournamentData.ageRange = binding.etAgeRange.text.toString().trim()
+                        viewModel.tournamentData.priceRange = binding.etPrice.text.toString().trim()
                         val bundle = Bundle().apply {
                             putString("type","Several tournaments")
                         }
@@ -105,6 +108,7 @@ class AddTournamentDetialsFragment : BaseFragment<FragmentAddTournamentDetialsBi
         binding.etStartDate.addTextChangedListener(textWatcher)
         binding.etPrice.addTextChangedListener(textWatcher)
         binding.etSkip.addTextChangedListener(textWatcher)
+        binding.etAgeRange.addTextChangedListener(textWatcher)
 
 
 
@@ -239,8 +243,8 @@ class AddTournamentDetialsFragment : BaseFragment<FragmentAddTournamentDetialsBi
     // Function to check all fields
     private fun checkAllFieldsNotEmpty() {
         val isAllNotEmpty =
-            binding.etPlayFormat.text?.isNotEmpty() == true && binding.etStartDate.text?.isNotEmpty() == true && binding.etPrice.text?.isNotEmpty() == true && binding.etSkip.text?.isNotEmpty() == true
-        binding.buttonCheck = isAllNotEmpty
+            binding.etPlayFormat.text?.isNotEmpty() == true && binding.etStartDate.text?.isNotEmpty() == true && binding.etPrice.text?.isNotEmpty() == true && binding.etSkip.text?.isNotEmpty() == true && binding.etAgeRange.text?.isNotEmpty() == true
+         binding.buttonCheck = isAllNotEmpty
     }
 
 }

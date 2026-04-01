@@ -207,7 +207,8 @@ data class GetUserPostEvent(
     val shareLink: String?,
     val spectatorsCode: String?,
     val startDate: String?,
-    val type: String?
+    val type: String?,
+    val eventPhotos: List<String?>?
 
 ) : Parcelable
 
@@ -1175,19 +1176,21 @@ data class OrganizersInfo(
     val verified: Boolean
 )
 
+/// create category api response
 
-
-
+@Parcelize
 data class CreateCategoryApiResponse(
     val `data`: CategoryData,
     val message: String,
     val success: Boolean
-)
+): Parcelable
 
+@Parcelize
 data class CategoryData(
     val category: Category
-)
+): Parcelable
 
+@Parcelize
 data class Category(
     val __v: Int,
     val _id: String,
@@ -1199,44 +1202,48 @@ data class Category(
     val endDate: String,
     val eventId: String,
     val finalTeamsCount: Int,
-    val format: Any,
+    val format: String,
     val hasSmallFinal: Boolean,
     val id: String,
     val isDeleted: Boolean,
     val isOrganised: Boolean,
     val level: String,
-    val lookingForATeamPlayers: List<Any>,
+    val lookingForATeamPlayers: List<String>,
     val name: String,
-    val players: List<Any>,
-    val playersInfo: List<Any>,
+    val players: List<String>,
+    val playersInfo: List<String>,
     val poolsCount: Int,
     val priceRange: String,
-    val registeredPlayers: List<Any>,
-    val registeredPlayersInfo: List<Any>,
+    val registeredPlayers: List<String>,
+    val registeredPlayersInfo: List<String>,
     val roundsCount: Int,
-    val spectators: List<Any>,
-    val stability: Any,
+    val spectators: List<String>,
+    val stability: String,
     val startDate: String,
     val teams: List<Team>,
     val teamsCount: Int,
     val updatedAt: String,
     val url: String,
     val usesBeballerForm: Boolean
-)
+) : Parcelable
 
+
+@Parcelize
 data class Court(
-    val __v: Int,
-    val _id: String,
-    val categoryId: String,
-    val createdAt: String,
-    val id: String,
-    val isDeleted: Boolean,
-    val name: String,
-    val number: Int,
-    val stability: Any,
-    val updatedAt: String
-)
+    val __v: Int?,
+    val _id: String?,
+    val categoryId: String?,
+    val createdAt: String?,
+    val id: String?,
+    val isDeleted: Boolean?,
+    var name: String?,
+    val number: Int?,
+    val stability: String?,
+    val updatedAt: String?
+) : Parcelable
 
+
+@Parcelize
 data class Team(
     val __v: Int,
     val _id: String,
@@ -1251,8 +1258,34 @@ data class Team(
     val isReadyToCreateGames: Boolean,
     val name: String,
     val number: Int,
-    val players: List<Any>,
+    val players: List<String>,
     val pool: String,
     val score: Int,
+    val updatedAt: String
+) : Parcelable
+
+
+// update category api response
+
+data class UpdateCategoryApiResponse(
+    val `data`: UpdateCategoryData,
+    val message: String,
+    val success: Boolean
+)
+
+data class UpdateCategoryData(
+    val courts: List<CategoryCourt>
+)
+
+data class CategoryCourt(
+    val __v: Int,
+    val _id: String,
+    val categoryId: String,
+    val createdAt: String,
+    val id: String,
+    val isDeleted: Boolean,
+    val name: String,
+    val number: Int,
+    val stability: Any,
     val updatedAt: String
 )

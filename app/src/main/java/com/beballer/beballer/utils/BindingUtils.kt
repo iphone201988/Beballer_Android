@@ -303,13 +303,20 @@ object BindingUtils {
     @BindingAdapter("setTeamFromUrl")
     @JvmStatic
     fun setTeamFromUrl(image: ShapeableImageView, url: String?) {
-        if (url != null) {
+        if (!url.isNullOrBlank()) {
+
+            val imageUrl = if (url.startsWith("/")) {
+                Constants.IMAGE_URL + url
+            } else {
+                Constants.IMAGE_URL + "/$url"
+            }
             if (url.isNotEmpty()) {
-                Glide.with(image.context).load(Constants.IMAGE_URL + url)
+                Glide.with(image.context).load(Constants.IMAGE_URL + imageUrl)
                     .placeholder(R.drawable.progress_animation_small)
                     .diskCacheStrategy(DiskCacheStrategy.ALL).into(image)
             }
         }
+
     }
 
     @BindingAdapter("setRatings")

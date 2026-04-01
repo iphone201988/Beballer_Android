@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
@@ -61,7 +62,7 @@ class MultiViewAdapter(
                     "video" -> TYPE_VIDEO
                     "textOnly" -> TYPE_TEXT
                     "court" -> TYPE_COURT
-//                    "event" -> TYPE_EVENT
+                   "event" -> TYPE_EVENT
                     "game" -> TYPE_GAME
                     else -> TYPE_IMAGE
                 }
@@ -259,6 +260,9 @@ class MultiViewAdapter(
         private val ivImage: ShapeableImageView = itemView.findViewById(R.id.ivImage)
         private val ivCommonPostProfile: ShapeableImageView = itemView.findViewById(R.id.ivCommonPostProfile)
         private val tvCommonPostDesc: AppCompatTextView = itemView.findViewById(R.id.tvCommonPostDesc)
+
+        private val eventName : AppCompatTextView = itemView.findViewById(R.id.tvName)
+        private val eventLocation : AppCompatTextView = itemView.findViewById(R.id.tvCountryName)
         private val ivCommonLike: AppCompatImageView =
             itemView.findViewById(R.id.ivCommonLike)
         private val ivCommonComment: AppCompatImageView =
@@ -287,10 +291,13 @@ class MultiViewAdapter(
                 tvSubscribe.setTextColor(ContextCompat.getColor(tvSubscribe.context, R.color.blue_00bef5))
             }
 
+            eventName.setIfNotEmpty(item?.event?.name)
+            eventLocation.setIfNotEmpty(item?.event?.address)
             val fullName = listOfNotNull(
                 item?.publisherData?.firstName?.takeIf { it.isNotBlank() },
                 item?.publisherData?.lastName?.takeIf { it.isNotBlank() }).joinToString(" ")
-                .ifBlank { "User" }
+                .ifBlank { item?.publisherData?.username }
+            Log.i("fsfssdf", "bind: $fullName ")
 
             tvCommonPostName.text = fullName
             val username = item?.publisherData?.username?.takeIf { it.isNotBlank() } ?: "user"
@@ -321,11 +328,22 @@ class MultiViewAdapter(
             //  commentCount.text = item?.likesCount.toString()
 
 
-            item?.image?.let { image ->
-                val imageUrl = Constants.IMAGE_URL + image
-                Glide.with(ivImage.context).load(imageUrl)
-                    .placeholder(R.drawable.progress_animation_small)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivImage)
+            item?.image?.let { uri ->
+
+                val imageUrl = if (uri.isNotBlank()) {
+                    Constants.IMAGE_URL.trimEnd('/') + "/" + uri.trimStart('/')
+                } else {
+                    null
+                }
+
+                imageUrl?.let {
+
+                    Glide.with(ivImage.context)
+                        .load(it)
+                        .placeholder(R.drawable.progress_animation_small)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(ivImage)
+                }
             }
             val rawDate = item?.date
             if (rawDate?.isNotEmpty() == true){
@@ -992,11 +1010,78 @@ class MultiViewAdapter(
     }
     // event type
     class EventPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvDescription: AppCompatTextView = itemView.findViewById(R.id.tvPublisherName)
+        private val tvName: AppCompatTextView = itemView.findViewById(R.id.tvPublisherName)
+        private val profileImage : ShapeableImageView = itemView.findViewById(R.id.ivPerson)
+        private val eventImage : ShapeableImageView = itemView.findViewById(R.id.ivEvent)
+        private val userName : AppCompatTextView = itemView.findViewById(R.id.tvPublisherUsername)
+        private val tvHour: AppCompatTextView = itemView.findViewById(R.id.tvHour)
+        private val tvEventName : AppCompatTextView = itemView.findViewById(R.id.tvName)
+        private val tvAddress : AppCompatTextView = itemView.findViewById(R.id.tvCountryName)
+
+        private val tvImageLike: AppCompatTextView = itemView.findViewById(R.id.like_tv)
+        private val tvImageComment: AppCompatTextView = itemView.findViewById(R.id.comment_tv)
+//        private val shareCount: AppCompatTextView = itemView.findViewById(R.id.share_tv)
+
         fun bind(item: GetUserPostData?, listener: OnItemClickListener, position: Int) {
-            tvDescription.text = item?.description
+
+            val fullName = listOfNotNull(
+                item?.publisherData?.firstName?.takeIf { it.isNotBlank() },
+                item?.publisherData?.lastName?.takeIf { it.isNotBlank() }).joinToString(" ")
+                .ifBlank { item?.publisherData?.username }
+            Log.i("fsfssdf", "bind: $fullName ")
+            tvName.text = fullName
 
 
+            val username = item?.publisherData?.username?.takeIf { it.isNotBlank() } ?: "user"
+            userName.text = "@$username"
+
+
+            val uri = item?.publisherData?.profilePicture.orEmpty()
+
+            val imageUrl = if (uri.isNotBlank()) {
+                Constants.IMAGE_URL.trimEnd('/') + "/" + uri.trimStart('/')
+            } else {
+                null
+            }
+
+            item?.event?.eventPhotos?.firstOrNull()?.let { uri ->
+
+                val imageUrl = if (uri.isNotBlank()) {
+                    Constants.IMAGE_URL.trimEnd('/') + "/" + uri.trimStart('/')
+                } else {
+                    null
+                }
+
+                imageUrl?.let {
+                    Glide.with(eventImage.context)
+                        .load(it)
+                        .placeholder(R.drawable.progress_animation_small)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(eventImage)
+                }
+            } ?: run {
+                // Optional fallback (when no image)
+                eventImage.setImageResource(R.drawable.progress_animation_small)
+            }
+
+            Log.i("Fdsfdsfds", "bind: $imageUrl")
+            Glide.with(profileImage.context)
+                .load(imageUrl)
+                .placeholder(R.drawable.progress_animation_small)
+                .error(R.drawable.ic_round_account_circle_40)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(profileImage)
+
+
+            tvImageLike.text = item?.likesCount.toString()
+            tvImageComment.text = item?.commentCount.toString()
+
+            val rawDate = item?.date
+            if (rawDate?.isNotEmpty() == true){
+                val date = BindingUtils.convertToDate(rawDate)
+                val relative = BindingUtils.DateHelper.formatRelativeDate(date)
+                tvHour.text = relative
+            }
 
         }
     }
@@ -1024,5 +1109,13 @@ class MultiViewAdapter(
         fun onItemClick(item: GetUserPostData?, clickedViewId: Int, position: Int)
     }
 
-
+    fun TextView.setIfNotEmpty(value: String?) {
+        Log.i("fdsfds", "setIfNotEmpty: $value ")
+        if (!value.isNullOrEmpty()) {
+            text = value
+            visibility = View.VISIBLE
+        } else {
+            visibility = View.GONE
+        }
+    }
 }

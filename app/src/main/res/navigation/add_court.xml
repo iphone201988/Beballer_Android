@@ -27,5 +27,10 @@
         android:name="com.beballer.beballer.ui.player.dash_board.find.game.add_photo.AddPhotoFragment"
         tools:layout="@layout/fragment_add_photo" />
 
+    <fragment
+        android:id="@+id/updatePhotoFragment"
+        android:name="com.beballer.beballer.ui.player.dash_board.find.courts.update.UpdateCourtImageFragment"
+        tools:layout="@layout/fragment_update_court_image" />
+
 
 </navigation>

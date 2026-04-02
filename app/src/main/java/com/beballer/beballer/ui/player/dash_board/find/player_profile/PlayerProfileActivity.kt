@@ -1,5 +1,6 @@
 package com.beballer.beballer.ui.player.dash_board.find.player_profile
 
+import android.content.Intent
 import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
@@ -8,10 +9,13 @@ import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseActivity
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.data.api.Constants
+import com.beballer.beballer.data.api.Constants.profileId
+import com.beballer.beballer.data.api.Constants.userPostId
 import com.beballer.beballer.data.model.CommonResponse
 import com.beballer.beballer.data.model.PlayerProfileByIdResponse
 import com.beballer.beballer.databinding.ActivityPlayerProfileBinding
 import com.beballer.beballer.databinding.SubscribeBotomItemBinding
+import com.beballer.beballer.ui.player.dash_board.profile.followers.FollowersAndFollowingActivity
 import com.beballer.beballer.utils.BaseCustomBottomSheet
 import com.beballer.beballer.utils.BindingUtils
 import com.beballer.beballer.utils.Status
@@ -23,6 +27,8 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
     private val viewModel: PlayerProfileActivityVM by viewModels()
     var isSubscribed: Boolean = false
     var userProfileId: String? = null
+
+
     private lateinit var subscribeBottomItem: BaseCustomBottomSheet<SubscribeBotomItemBinding>
     override fun getLayoutResource(): Int {
         return R.layout.activity_player_profile
@@ -39,15 +45,13 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
         binding.second.visibility = View.VISIBLE
         binding.third.visibility = View.VISIBLE
         initClick()
-        // adapter
-        val adapter = PlayerProfilePagerAdapter(supportFragmentManager, lifecycle)
-        binding.viewPagerProfile.adapter = adapter
+
         // api call
         val userId = intent.getStringExtra("playerProfile")
         userId?.let {
             userProfileId = it
             val useId: String =
-                sharedPrefManager.getLoginData()?.data?.user?._id.takeIf { !it.isNullOrEmpty() }
+                sharedPrefManager.getLoginData()?.data?.user?._id.takeIf { id -> !id.isNullOrEmpty() }
                     ?: ""
             if (useId == it) {
                 binding.tvSubscribe.visibility = View.GONE
@@ -110,6 +114,25 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
 
                 }
 
+                R.id.tvTotalFollowersCount, R.id.tvTotalFollowers -> {
+                    val intent = Intent(
+                        this@PlayerProfileActivity, FollowersAndFollowingActivity::class.java
+                    )
+                    intent.putExtra("FollowersType", "Followers")
+                    intent.putExtra("profileId", profileId)
+                    startActivity(intent)
+                }
+
+                R.id.tvTotalFollowing, R.id.tvNbTotalFollowing -> {
+                    val intent = Intent(
+                        this@PlayerProfileActivity,
+                        FollowersAndFollowingActivity::class.java
+                    )
+                    intent.putExtra("FollowersType", "Following")
+                    intent.putExtra("profileId", profileId)
+                    startActivity(intent)
+                }
+
 
             }
         }
@@ -133,18 +156,28 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
                             try {
                                 val myDataModel: PlayerProfileByIdResponse? =
                                     BindingUtils.parseJson(it.data.toString())
-                                if (myDataModel != null) {
-                                    if (myDataModel.data != null) {
-                                        isSubscribed = myDataModel.data.user?.isSubscribed == true
-                                        binding.bean = myDataModel.data.user
-                                        val heightCm = myDataModel.data.user?.height ?: 0
-                                        val date = myDataModel.data.user?.birthDate ?: ""
-                                        binding.tvPlayerHeight.text =
-                                            BindingUtils.convertCmToFeetInchesFormatted(heightCm)
-                                        val age = BindingUtils.calculateAgeFromIsoLegacy(date)
-                                        binding.tvPlayerAge.text = "$age"
-                                    }
+
+                                val user = myDataModel?.data?.user ?: return@observe
+
+                                isSubscribed = user.isSubscribed == true
+                                binding.bean = user
+                                profileId = user._id
+                                userPostId = user.id
+
+                                // Height
+                                val heightCm = user.height ?: 0
+                                binding.tvPlayerHeight.text =
+                                    BindingUtils.convertCmToFeetInchesFormatted(heightCm)
+                                // Age
+                                val age = user.birthDate?.let { date ->
+                                    BindingUtils.calculateAgeFromIsoLegacy(date)
                                 }
+                                binding.tvPlayerAge.text = "$age"
+
+                                // adapter
+                                val adapter =
+                                    PlayerProfilePagerAdapter(supportFragmentManager, lifecycle)
+                                binding.viewPagerProfile.adapter = adapter
 
                             } catch (e: Exception) {
                                 Log.e("error", "getUserById: $e")
@@ -165,16 +198,14 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
                                         binding.tvSubscribe.text = getString(R.string.unsubscribe)
                                         binding.tvSubscribe.setBackgroundColor(
                                             ContextCompat.getColor(
-                                                this@PlayerProfileActivity,
-                                                R.color.text_light
+                                                this@PlayerProfileActivity, R.color.text_light
                                             )
                                         )
                                     } else {
                                         binding.tvSubscribe.text = getString(R.string.subscribe)
                                         binding.tvSubscribe.setBackgroundColor(
                                             ContextCompat.getColor(
-                                                this@PlayerProfileActivity,
-                                                R.color.beballer_blue
+                                                this@PlayerProfileActivity, R.color.beballer_blue
                                             )
                                         )
                                     }
@@ -214,9 +245,9 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
                         subscribeBottomItem.dismiss()
                         val subscribeUser = subscribe == true
                         val data = HashMap<String, Any>()
-                        userId?.let {
+                        userId?.let { id ->
                             data["subscribed"] = !subscribeUser
-                            viewModel.postSubscribeApi(Constants.USER_SUBSCRIBE + "?id=$it", data)
+                            viewModel.postSubscribeApi(Constants.USER_SUBSCRIBE + "?id=$id", data)
                         }
                     }
                 }
@@ -227,7 +258,7 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
         subscribeBottomItem.show()
 
         if (subscribe == true) {
-            subscribeBottomItem.binding.tvSubscribe.text = "Unsubscribe"
+            subscribeBottomItem.binding.tvSubscribe.text = getString(R.string.unsubscribe)
             subscribeBottomItem.binding.tvSubscribe.setTextColor(
                 ContextCompat.getColor(
                     this@PlayerProfileActivity, R.color.red_F27070

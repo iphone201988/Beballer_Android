@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import dagger.hilt.android.AndroidEntryPoint
 
+@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class CourtsFragment : BaseFragment<FragmentCourtsBinding>(), OnMapReadyCallback {
     private val viewModel: CourtsFragmentVM by viewModels()
@@ -70,7 +71,8 @@ class CourtsFragment : BaseFragment<FragmentCourtsBinding>(), OnMapReadyCallback
         pagination()
         /** Refresh **/
         binding.ssPullRefresh.setColorSchemeResources(
-            ContextCompat.getColor(requireContext(), R.color.organize_color))
+            ContextCompat.getColor(requireContext(), R.color.organize_color)
+        )
         binding.ssPullRefresh.setOnRefreshListener {
             Handler().postDelayed({
                 binding.ssPullRefresh.isRefreshing = false
@@ -104,14 +106,14 @@ class CourtsFragment : BaseFragment<FragmentCourtsBinding>(), OnMapReadyCallback
                                         val pastSessionData = myDataModel.courts
                                         val feedItems: List<ViewItem> =
                                             pastSessionData.filterNotNull()
-                                                .map { ViewItem.Post(it) } ?: emptyList()
+                                                .map { list -> ViewItem.Post(list) }
                                         isLoading = false
                                         isLastPage = false
                                         isProgress = true
 
                                         if (currentPage == 1) {
-                                            myDataModel.courts.let {
-                                                fullList = it as ArrayList<GetCourtData>
+                                            myDataModel.courts.let { list ->
+                                                fullList = list as ArrayList<GetCourtData>
                                                 courtsAdapter.setList(feedItems)
                                             }
                                         } else {
@@ -169,12 +171,10 @@ class CourtsFragment : BaseFragment<FragmentCourtsBinding>(), OnMapReadyCallback
                 R.id.tvAddCourt -> {
                     val intent = Intent(requireContext(), AddCourtActivity::class.java)
                     startActivity(intent)
-                    requireActivity().overridePendingTransition(
-                        R.anim.slide_in_right, R.anim.slide_out_left
-                    )
+                    requireActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                 }
 
-                R.id.courtsMapCard , R.id.view->{
+                R.id.courtsMapCard, R.id.view -> {
                     val intent = Intent(requireContext(), UserProfileActivity::class.java)
                     intent.putExtra("userType", "showMapFragment")
                     intent.putExtra("mapType", "court")
@@ -329,6 +329,7 @@ class CourtsFragment : BaseFragment<FragmentCourtsBinding>(), OnMapReadyCallback
         setCurrentLocation()
 
     }
+
     private fun setCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(), Manifest.permission.ACCESS_FINE_LOCATION

@@ -16,7 +16,7 @@ interface ApiHelper {
     suspend fun apiGetWithQuery(data: HashMap<String, String>,url: String): Response<JsonObject>
     suspend fun apiForPostMultipartList(url: String,map: HashMap<String, RequestBody>, part: MutableList<MultipartBody.Part>): Response<JsonObject>
     suspend fun apiForPostMultipart(url: String,map: HashMap<String, RequestBody>?, part: MultipartBody.Part?): Response<JsonObject>
-    suspend fun apiForMultipartPut(url: String,map: HashMap<String, RequestBody>?, part: MultipartBody.Part?): Response<JsonObject>
+    suspend fun apiForMultipartPut(url: String,map: HashMap<String, RequestBody>?, parts: MutableList<MultipartBody.Part>): Response<JsonObject>
     suspend fun apiPutForRawBody(url: String,map: HashMap<String, Any>): Response<JsonObject>
 
     suspend fun apiGetWithoutQuery(url: String) : Response<JsonObject>

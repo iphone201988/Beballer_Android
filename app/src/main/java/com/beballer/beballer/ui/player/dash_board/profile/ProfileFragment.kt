@@ -2,19 +2,18 @@ package com.beballer.beballer.ui.player.dash_board.profile
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
-import com.beballer.beballer.utils.BaseCustomDialog
-import com.beballer.beballer.utils.BindingUtils
-import com.beballer.beballer.utils.CommonBottomSheet
-import com.beballer.beballer.utils.Resource
-import com.beballer.beballer.utils.Status
 import com.beballer.beballer.data.api.Constants
+import com.beballer.beballer.data.api.Constants.profileId
+import com.beballer.beballer.data.api.Constants.userPostId
 import com.beballer.beballer.data.model.CommonResponse
 import com.beballer.beballer.data.model.UserProfile
 import com.beballer.beballer.databinding.FragmentProfileBinding
@@ -24,10 +23,14 @@ import com.beballer.beballer.databinding.UnlockBatchDialogItemBinding
 import com.beballer.beballer.ui.player.dash_board.DashboardActivity
 import com.beballer.beballer.ui.player.dash_board.find.player_profile.PlayerProfilePagerAdapter
 import com.beballer.beballer.ui.player.dash_board.profile.followers.FollowersAndFollowingActivity
-import com.beballer.beballer.ui.player.dash_board.profile.followers.FollowersAndFollowingActivityVM
 import com.beballer.beballer.ui.player.dash_board.profile.position.PositionFragment
 import com.beballer.beballer.ui.player.dash_board.profile.team.TeamFragment
 import com.beballer.beballer.ui.player.dash_board.profile.user.UserProfileActivity
+import com.beballer.beballer.utils.BaseCustomDialog
+import com.beballer.beballer.utils.BindingUtils
+import com.beballer.beballer.utils.CommonBottomSheet
+import com.beballer.beballer.utils.Resource
+import com.beballer.beballer.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
@@ -37,6 +40,8 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
 
+@Suppress("DEPRECATION")
+@RequiresApi(Build.VERSION_CODES.Q)
 @AndroidEntryPoint
 class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
     private val viewModel: ProfileFragmentVM by viewModels()
@@ -44,7 +49,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
     private lateinit var welcomeDialogItem: BaseCustomDialog<ProfileWelcomeDialogItemBinding>
     private lateinit var unLockBatchDialogItem: BaseCustomDialog<UnlockBatchDialogItemBinding>
 
-    private var imageUrl : String ? = null
+    private var imageUrl: String? = null
 
     private var heightCount = ""
     private var birthDate = ""
@@ -77,8 +82,8 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
     override fun onResume() {
         super.onResume()
         // api call
-        val data  = HashMap<String, Any>()
-        viewModel.getProfileApi(Constants.USER_PROFILE,data)
+        val data = HashMap<String, Any>()
+        viewModel.getProfileApi(Constants.USER_PROFILE, data)
     }
 
 
@@ -239,25 +244,28 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
                     )
                 }
 
-                R.id.tvTotalFollowersCount , R.id.tvTotalFollowers->{
+                R.id.tvTotalFollowersCount, R.id.tvTotalFollowers -> {
                     val intent = Intent(requireContext(), FollowersAndFollowingActivity::class.java)
                     intent.putExtra("FollowersType", "Followers")
-                    startActivity(intent)
-                    requireActivity().overridePendingTransition(
-                        R.anim.slide_in_right, R.anim.slide_out_left
-                    )
-                }
-                R.id.tvTotalFollowing , R.id.tvNbTotalFollowing->{
-                    val intent = Intent(requireContext(), FollowersAndFollowingActivity::class.java)
-                    intent.putExtra("FollowersType", "Following")
+                    intent.putExtra("profileId", profileId)
                     startActivity(intent)
                     requireActivity().overridePendingTransition(
                         R.anim.slide_in_right, R.anim.slide_out_left
                     )
                 }
 
-                R.id.ivProfileImage ->{
-                    if (imageUrl != null){
+                R.id.tvTotalFollowing, R.id.tvNbTotalFollowing -> {
+                    val intent = Intent(requireContext(), FollowersAndFollowingActivity::class.java)
+                    intent.putExtra("FollowersType", "Following")
+                    intent.putExtra("profileId", profileId)
+                    startActivity(intent)
+                    requireActivity().overridePendingTransition(
+                        R.anim.slide_in_right, R.anim.slide_out_left
+                    )
+                }
+
+                R.id.ivProfileImage -> {
+                    if (imageUrl != null) {
                         val intent = Intent(requireContext(), UserProfileActivity::class.java)
                         intent.putExtra("userType", "imageZoom")
                         intent.putExtra("url", imageUrl)
@@ -278,6 +286,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
 
 
     /** picker **/
+
     private fun showGenderPicker() {
         genderBottomSheet = CommonBottomSheet(requireContext(), R.layout.gender_bottom_sheet_item) {
             when (it?.id) {
@@ -302,8 +311,8 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
         picker?.maxValue = heightOptions.size - 1
         picker?.displayedValues = heightOptions.toTypedArray()
         picker?.textColor = ContextCompat.getColor(requireContext(), R.color.black_000000)
-        genderBottomSheet.binding.btnCancel.text = "Cancel"
-        genderBottomSheet.binding.btnOk.text = "Save"
+        genderBottomSheet.binding.btnCancel.text = getString(R.string.cancel)
+        genderBottomSheet.binding.btnOk.text = getString(R.string.save)
         genderBottomSheet.binding.btnCancel.visibility = View.VISIBLE
         genderBottomSheet.behavior.isDraggable = true
         genderBottomSheet.setCancelable(true)
@@ -318,7 +327,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
         }
     }
 
-    /** welcome setting dialog item **/
+    /** welcome to setting dialog item **/
     private fun welcomeDialogItem() {
         welcomeDialogItem = BaseCustomDialog<ProfileWelcomeDialogItemBinding>(
             requireContext(), R.layout.profile_welcome_dialog_item
@@ -367,24 +376,36 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
                                     BindingUtils.parseJson(it.data.toString())
                                 if (myDataModel != null) {
                                     if (myDataModel.data != null) {
-                                        binding.bean = myDataModel.data.user
+
+                                        val user = myDataModel.data.user ?: return@observe
+
+                                        binding.bean = user
+                                        profileId = user._id
+                                        userPostId = user.id
                                         sharedPrefManager.setProfileData(myDataModel)
-                                        imageUrl = myDataModel.data.user?.profilePicture
+
+                                        imageUrl = user.profilePicture
+
                                         if (Constants.welcomeDialog == 0) {
                                             Constants.welcomeDialog = 1
                                             welcomeDialogItem()
                                         }
+
                                         DashboardActivity.userImageFragment.postValue(
                                             Resource.success(
-                                                "changeInmage",
-                                                myDataModel.data.user?.profilePicture
+                                                "changeImage", user.profilePicture
                                             )
                                         )
 
-                                        val heightCm = myDataModel.data.user?.height ?: 0
-                                        val date = myDataModel.data.user?.birthDate ?: ""
-                                        binding.tvPlayerHeight.text = BindingUtils.convertCmToFeetInchesFormatted(heightCm)
-                                        val age = BindingUtils.calculateAgeFromIsoLegacy(date)
+                                        // Height
+                                        val heightCm = user.height ?: 0
+                                        binding.tvPlayerHeight.text =
+                                            BindingUtils.convertCmToFeetInchesFormatted(heightCm)
+
+                                        // Age
+                                        val age = user.birthDate?.let { date ->
+                                            BindingUtils.calculateAgeFromIsoLegacy(date)
+                                        }
                                         binding.tvPlayerAge.text = "$age"
 
                                     }
@@ -406,7 +427,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
                                     if (myDataModel.message?.isNotEmpty() == true) {
                                         // api call
                                         val data = HashMap<String, Any>()
-                                        viewModel.getProfileApi(Constants.USER_PROFILE,data)
+                                        viewModel.getProfileApi(Constants.USER_PROFILE, data)
                                     }
                                 }
                             } catch (e: Exception) {

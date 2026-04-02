@@ -1,5 +1,6 @@
 package com.beballer.beballer.ui.player.dash_board.find.courts
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -66,6 +67,7 @@ class CourtAdapter(
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setList(newList: List<ViewItem>) {
         listItem.clear()
         listItem.addAll(newList)

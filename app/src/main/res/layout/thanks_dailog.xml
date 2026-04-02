@@ -23,12 +23,12 @@
             style="@style/TextView.InterSemiBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_15sdp"
             android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginStart="@dimen/_18sdp"
             android:gravity="center"
-            android:text="@string/upcoming_features"
+            android:lineSpacingExtra="@dimen/_2sdp"
             android:textColor="@color/black"
-            android:textSize="@dimen/_16ssp"
+            android:textSize="@dimen/_14ssp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,25 +39,26 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_5sdp"
             android:gravity="start"
-            android:text="@string/beballer_keeps_working_to_improve_the_app_new_features_will_be_soon_available"
             android:textColor="@color/grey"
             android:textSize="@dimen/_12ssp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/tvApply"
             app:layout_constraintTop_toBottomOf="@+id/tvApply" />
 
+
+
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnConfirm"
+            android:id="@+id/btnAdd"
             style="@style/GreenButton"
             android:layout_width="0dp"
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginTop="@dimen/_18sdp"
             android:layout_marginEnd="@dimen/_18sdp"
+            android:fontFamily="@font/inter_semi_bold"
             android:layout_marginBottom="@dimen/_20sdp"
             android:background="@drawable/btn_bg"
-            android:fontFamily="@font/inter_semi_bold"
             android:onClick="@{v->callback.onViewClick(v)}"
-            android:text="I can not wait to see it"
+            android:text="@string/ok"
             android:textColor="@color/black"
             android:textSize="@dimen/_13ssp"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okio.Source
 import javax.inject.Inject
 
 
@@ -22,7 +21,10 @@ import javax.inject.Inject
 class AddPhotoFragmentVM @Inject constructor(private val apiHelper: ApiHelper) : BaseViewModel() {
     val observeCommon = SingleRequestEvent<JsonObject>()
 
-    // create court api
+    /**
+     * Create or Edit Court API
+     * @param courtId If null, it's Create mode (POST). If not null, it's Edit mode (PUT).
+     */
     fun createCourt(
         name: String,
         address: String,
@@ -41,9 +43,10 @@ class AddPhotoFragmentVM @Inject constructor(private val apiHelper: ApiHelper) :
         zipCode: String,
         region: String,
         description: String,
-        photos: MutableList<MultipartBody.Part>
+        photos: MutableList<MultipartBody.Part>,
+        courtId: String? = null
     ) {
-        val request = hashMapOf<String, RequestBody>(
+        val request = hashMapOf(
             "name" to name.toRequestBody(),
             "addressString" to address.toRequestBody(),
             "accessibility" to accessibility.toRequestBody(),
@@ -55,14 +58,33 @@ class AddPhotoFragmentVM @Inject constructor(private val apiHelper: ApiHelper) :
             "floorType" to floorType.toRequestBody(),
             "hasWaterPoint" to hasWaterPoint.toString().toRequestBody(),
             "areDimensionsStandard" to areDimensionsStandard.toString().toRequestBody(),
-            "grade" to grade.toRequestBody(),
+            "rating" to grade.toRequestBody(),
             "country" to country.toRequestBody(),
             "city" to city.toRequestBody(),
             "zipCode" to zipCode.toRequestBody(),
             "region" to region.toRequestBody(),
             "description" to description.toRequestBody(),
         )
-        callApi(Constants.NEW_COURT, request, photos)
+        val imageOrderParts = mutableListOf<MultipartBody.Part>()
+        if (!courtId.isNullOrEmpty()) {
+            for (i in photos.indices) {
+                imageOrderParts.add(
+                    MultipartBody.Part.createFormData(
+                        "imageOrder[]", "NEW_IMAGE"
+                    )
+                )
+            }
+            photos.addAll(imageOrderParts)
+
+            val urlWithId = "${Constants.UPDATE_COURT}/$courtId"
+            putAllApi(urlWithId, request, photos)
+        } else {
+            for (i in 1..photos.size) {
+                imageOrderParts.add(MultipartBody.Part.createFormData("imageOrder[]", i.toString()))
+            }
+            photos.addAll(imageOrderParts)
+            callApi(Constants.NEW_COURT, request, photos)
+        }
     }
 
 
@@ -75,6 +97,29 @@ class AddPhotoFragmentVM @Inject constructor(private val apiHelper: ApiHelper) :
                 val response = apiHelper.apiForPostMultipartList(url, map, part)
                 if (response.isSuccessful) {
                     observeCommon.postValue(Resource.success("createCourt", response.body()))
+                } else {
+                    val errorMsg = handleErrorResponse(response.errorBody(), response.code())
+                    observeCommon.postValue(Resource.error(errorMsg, null))
+                }
+            }.onFailure { e ->
+                Log.e("apiErrorOccurred", "Error: ${e.message}", e)
+                observeCommon.postValue(Resource.error("${e.message}", null))
+            }
+        }
+    }
+
+    /**
+     * PUT method for Edit mode
+     */
+    fun putAllApi(
+        url: String, map: HashMap<String, RequestBody>, part: MutableList<MultipartBody.Part>
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            observeCommon.postValue(Resource.loading(null))
+            runCatching {
+                val response = apiHelper.apiForMultipartPut(url, map, part)
+                if (response.isSuccessful) {
+                    observeCommon.postValue(Resource.success("updateAPiCall", response.body()))
                 } else {
                     val errorMsg = handleErrorResponse(response.errorBody(), response.code())
                     observeCommon.postValue(Resource.error(errorMsg, null))

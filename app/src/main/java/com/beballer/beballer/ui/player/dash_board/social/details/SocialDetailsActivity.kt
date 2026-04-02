@@ -56,7 +56,7 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
     var currentCommentUserLikeCount: Int = 0
     var postCommentCount = 0
     var currentPage: Int = 1
-    var chatList = ArrayList<PostCommentData>()
+    var chatList = ArrayList<PostCommentData?>()
     private var postPosition = -1
     private var nextPosition = -1
     private var userCommentId = ""
@@ -104,21 +104,21 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
             binding.tvComment.text = postCommentCount.toString()
 
 
-            val dateTime = item?.game?.date
+            val dateTime = item.game?.date
             if (dateTime?.isNotEmpty() == true) {
-                val (date, time) = BindingUtils.formatDateTime(dateTime.toString())
+                val (date, time) = BindingUtils.formatDateTime(dateTime)
                 binding.tvGameDate.text = date
                 binding.tvGameTime.text = time
             }
 
 
             //game status
-            item?.let { game ->
+            item.let { game ->
 
-                // ✅ 1. Parse Date
+                //  1. Parse Date
                 val parsedDate = parseServerDate(game.date)
 
-                // ✅ 2. Calculate Invite Response
+                //  2. Calculate Invite Response
                 val team1 = game.game?.team1Players ?: emptyList()
                 val team2 = game.game?.team2Players ?: emptyList()
 
@@ -128,8 +128,7 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
                             team2.any { it.id == userId && it.accepted == false }
 
 
-
-                // ✅ 3. Apply Status Display
+                //  3. Apply Status Display
                 if (parsedDate != null) {
 
                     val display = gameStatusDisplay(
@@ -436,7 +435,7 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
 
     /**  Pagination Function **/
     private fun paginationRecyclerView() {
-        binding.customScrollview.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+        binding.customScrollview.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
             val tolerance = 50
             if (scrollY >= (v.getChildAt(0).measuredHeight - v.measuredHeight - tolerance)) {
                 if (scroll == 1) {
@@ -501,8 +500,7 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
                                 if (myDataModel != null) {
                                     if (myDataModel.data != null) {
                                         if (currentPage == 1) {
-                                            chatList =
-                                                myDataModel.data as ArrayList<PostCommentData>
+                                            chatList = myDataModel.data as ArrayList<PostCommentData?>
                                             chatAdapter.list = chatList
                                         } else {
                                             chatAdapter.addToList(myDataModel.data)
@@ -579,7 +577,7 @@ class SocialDetailsActivity : BaseActivity<ActivitySocialDetailsBinding>() {
         }
     }
 
-    /** handle out side adapter **/
+    /** handle outside adapter **/
     private fun initChatAdapter() {
         chatAdapter =
             SimpleRecyclerViewAdapter(R.layout.social_rv_chat_item, BR.bean) { v, m, pos ->

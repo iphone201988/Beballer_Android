@@ -350,7 +350,7 @@ data class FollowingResponse(
 )
 
 data class FollowingData(
-    val followingUser: List<FollowingUser?>?, val pagination: Pagination?
+    val followingUser: List<FollowingUser>?, val pagination: Pagination?
 )
 
 data class FollowingUser(
@@ -374,7 +374,7 @@ data class FollowersResponse(
 )
 
 data class FollowersData(
-    val followerUser: List<FollowerUser?>?, val pagination: Pagination?
+    val followerUser: List<FollowerUser>?, val pagination: Pagination?
 )
 
 data class FollowerUser(
@@ -530,17 +530,24 @@ data class ProfileByUser(
     val referralCode: Any?,
     val region: Any?,
     val score: Int?,
-    val sector: Any?,
+    val sector: String?,
     val setProfilePopup: Boolean?,
     val setSettingsPopup: Boolean?,
     val totalProgression: Int?,
     val username: String?,
     val verified: Boolean?
+
+
+
 )
 
 data class ProfileByFavoriteProTeam(
     val _id: String?, val id: String?, val imageURL: String?, val name: String?
 )
+
+
+
+
 
 
 /** Get Court Api response **/
@@ -608,7 +615,7 @@ data class CourtDataById(
     val long: Double?,
     val name: String?,
     val netType: String?,
-    val photos: List<String?>?,
+    val photos: List<String>?,
     val userInformation: UserInformation?,
     val zipCode: String?
 ) : Parcelable
@@ -621,6 +628,16 @@ data class UserInformation(
 
 data class AddCourtDataClass(
     val courtId: String?, val message: String?, val success: Boolean?
+)
+
+data class UpdateCourtData(
+    val `data`: UpdateCourt,
+    val message: String,
+    val success: Boolean
+)
+
+data class UpdateCourt(
+    val message: String
 )
 
 /**

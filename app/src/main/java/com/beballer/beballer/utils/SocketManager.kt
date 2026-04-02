@@ -1,22 +1,18 @@
 package com.beballer.beballer.utils
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.widget.Toast
+import io.socket.client.IO
 import io.socket.client.Manager
 import io.socket.client.Socket
-import io.socket.client.IO
 import io.socket.engineio.client.Transport
-
 import java.net.URISyntaxException
-import kotlin.apply
 
+@Suppress("UNCHECKED_CAST")
 object SocketManager {
     private const val SERVER_URL = "http://98.86.12.144:9000"
-//    private const val SERVER_URL = "http://192.168.1.57:8888"
-    var mSocket: Socket? = null
 
+    //    private const val SERVER_URL = "http://192.168.1.57:8888"
+    var mSocket: Socket? = null
 
 
     @Synchronized
@@ -45,7 +41,8 @@ object SocketManager {
                     val transport = args[0] as? Transport ?: return@on
                     transport.on(Transport.EVENT_REQUEST_HEADERS) { headerArgs ->
                         try {
-                            val headers = headerArgs[0] as? MutableMap<String, List<String>> ?: return@on
+                         val headers =
+                                headerArgs[0] as? MutableMap<String, List<String>> ?: return@on
                             headers["token"] = listOf(token.trim())  // Attach token dynamically
                             Log.i("SocketHandler", "Added token dynamically: $headers")
                         } catch (e: Exception) {
@@ -65,33 +62,30 @@ object SocketManager {
     }
 
 
-
-
-
-
     @Synchronized
     fun getSocket(): Socket? {
         if (mSocket?.connected() == true) {
-            Log.d("_root_ide_package_.com.tech.young.SocketManager.mSocket", "getSocket: Already Connected")
+            Log.d(
+                "_root_ide_package_.com.tech.young.SocketManager.mSocket",
+                "getSocket: Already Connected"
+            )
         } else if (mSocket?.connected() == false) {
-            Log.d("_root_ide_package_.com.tech.young.SocketManager.mSocket", "getSocket: Socket is disconnected, attempting to reconnect.")
+            Log.d(
+                "_root_ide_package_.com.tech.young.SocketManager.mSocket",
+                "getSocket: Socket is disconnected, attempting to reconnect."
+            )
             mSocket?.connect()
         } else {
-            Log.d("_root_ide_package_.com.tech.young.SocketManager.mSocket", "getSocket: Socket is neither connected nor disconnected, attempting to connect.")
+            Log.d(
+                "_root_ide_package_.com.tech.young.SocketManager.mSocket",
+                "getSocket: Socket is neither connected nor disconnected, attempting to connect."
+            )
             mSocket?.connect()
         }
 
         return mSocket
     }
 
-
-    @Synchronized
-    fun socketIsConnected(): Boolean {
-        val isConnected = mSocket?.connected() == true
-        Log.d("SocketHandler", "Socket connection status: $isConnected")
-        mSocket?.emit("Connected", if (isConnected) "Connected" else "Disconnected")
-        return isConnected
-    }
 
     @Synchronized
     fun establishConnection() {
@@ -102,7 +96,10 @@ object SocketManager {
 
         if (!mSocket!!.connected()) {
             mSocket!!.connect()
-            Log.d("SocketHandler", "Attempting to establish _root_ide_package_.com.tech.young.SocketManager.mSocket connection...")
+            Log.d(
+                "SocketHandler",
+                "Attempting to establish _root_ide_package_.com.tech.young.SocketManager.mSocket connection..."
+            )
 
             // Listen for successful connection
             mSocket!!.on(Socket.EVENT_CONNECT) {
@@ -120,22 +117,11 @@ object SocketManager {
             }
 
 
-
-
         } else {
             Log.d("SocketHandler", "Socket is already connected.")
         }
     }
 
 
-    @Synchronized
-    fun closeConnection() {
-        if (mSocket != null && mSocket!!.connected()) {
-            mSocket!!.disconnect()
-            Log.d("SocketHandler", "Socket disconnected successfully.")
-        } else {
-            Log.d("SocketHandler", "Socket is already disconnected or not initialized.")
-        }
-    }
 }
 

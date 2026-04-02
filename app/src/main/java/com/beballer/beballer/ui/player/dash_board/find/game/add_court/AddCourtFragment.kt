@@ -2,7 +2,6 @@ package com.beballer.beballer.ui.player.dash_board.find.game.add_court
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Bundle
@@ -18,16 +17,13 @@ import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.base.SimpleRecyclerViewAdapter
-import com.beballer.beballer.data.model.GameModeModel
+import com.beballer.beballer.data.model.CourtDataById
 import com.beballer.beballer.data.model.GameModes
 import com.beballer.beballer.databinding.AccessibilityDialogItemBinding
 import com.beballer.beballer.databinding.FragmentAddCourtBinding
 import com.beballer.beballer.databinding.RvGameModeItemBinding
-import com.beballer.beballer.ui.player.dash_board.profile.user.UserProfileActivity
 import com.beballer.beballer.utils.BaseCustomBottomSheet
 import com.beballer.beballer.utils.BindingUtils
-import com.beballer.beballer.utils.BindingUtils.lat
-import com.beballer.beballer.utils.BindingUtils.long
 import com.beballer.beballer.utils.DummyList.getListAccessibility
 import com.beballer.beballer.utils.DummyList.getListHoopsCount
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -68,6 +64,38 @@ class AddCourtFragment : BaseFragment<FragmentAddCourtBinding>() {
         initOnCLick()
         // places search
         initPlaces()
+        // prefill data if editing
+        prefillData()
+    }
+
+    /**
+     * prefill data if editing
+     */
+    private fun prefillData() {
+        arguments?.getParcelable<CourtDataById>("courtData")?.let { courtData ->
+            binding.etCourtName.setText(courtData.name)
+            binding.etCourtAddress.setText(courtData.address)
+
+            // Map the API value to the display title
+            val accessibilityTitle =
+                getListAccessibility().find { it.apiValue == courtData.accessibility }?.title
+                    ?: courtData.accessibility
+            binding.etAccessibility.setText(accessibilityTitle)
+
+            // For hoops count, show the title from dummy list (which includes "hoops")
+            val hoopsTitle =
+                getListHoopsCount().find { it.apiValue == courtData.hoopsCount?.toString() }?.title
+                    ?: courtData.hoopsCount?.toString()
+            binding.etHoopsCount.setText(if (hoopsTitle != null && !hoopsTitle.contains("hoop")) "$hoopsTitle hoops" else hoopsTitle)
+
+            saveLat = courtData.lat?.toString()
+            saveLong = courtData.long?.toString()
+            city = courtData.city
+            country = courtData.country
+            zipCode = courtData.zipCode
+
+            checkAllFieldsNotEmpty()
+        }
     }
 
 
@@ -76,7 +104,7 @@ class AddCourtFragment : BaseFragment<FragmentAddCourtBinding>() {
         viewModel.onClick.observe(viewLifecycleOwner) {
             when (it?.id) {
                 R.id.cancelImage -> {
-                   requireActivity().finish()
+                    requireActivity().finish()
                 }
 
                 R.id.btnNext -> {
@@ -84,12 +112,11 @@ class AddCourtFragment : BaseFragment<FragmentAddCourtBinding>() {
                     val courtAddress = binding.etCourtAddress.text.toString().trim()
                     val accessibility = binding.etAccessibility.text.toString().trim()
                     val hoopsCount = binding.etHoopsCount.text.toString().trim()
-                    if (!validate(courtName, courtAddress, accessibility, hoopsCount)) {
+                    if (validate(courtName, courtAddress, accessibility, hoopsCount)) {
 //                        if (saveLat.isNullOrBlank() || saveLong.isNullOrBlank()) {
 //                            showErrorToast("Location not found. Please select location again.")
 //                            return@observe
 //                        }
-
                         val bundle = Bundle().apply {
                             putString("courtName", courtName)
                             putString("courtAddress", courtAddress)
@@ -101,6 +128,15 @@ class AddCourtFragment : BaseFragment<FragmentAddCourtBinding>() {
                             putString("country", country)
                             putString("region", region)
                             putString("zipCode", zipCode)
+                            // pass the id and full data for the next screen
+                            putString(
+                                "courtId",
+                                arguments?.getParcelable<CourtDataById>("courtData")?.id
+                            )
+                            putParcelable(
+                                "courtData",
+                                arguments?.getParcelable<CourtDataById>("courtData")
+                            )
                         }
 
                         BindingUtils.navigateWithSlide(
@@ -206,7 +242,7 @@ class AddCourtFragment : BaseFragment<FragmentAddCourtBinding>() {
     /** handle game mode adapter **/
     private fun initAccessibilityAdapter(type: Int) {
         accessibilityAdapter =
-            SimpleRecyclerViewAdapter(R.layout.rv_game_mode_item, BR.bean) { v, m, pos ->
+            SimpleRecyclerViewAdapter(R.layout.rv_game_mode_item, BR.bean) { v, m, _ ->
                 when (v.id) {
                     R.id.clGame -> {
                         accessibilityDialog.dismiss()
@@ -214,7 +250,9 @@ class AddCourtFragment : BaseFragment<FragmentAddCourtBinding>() {
                             binding.etAccessibility.setText(m.title)
                             binding.etCourtName.clearFocus()
                         } else {
-                            binding.etHoopsCount.setText(m.title)
+                            // When selecting from bottom sheet, append "hoops" (or "hoop" for 1)
+                            val displayText = if (m.title == "1") "1 hoop" else "${m.title} hoops"
+                            binding.etHoopsCount.setText(displayText)
                             binding.etCourtName.clearFocus()
                         }
 

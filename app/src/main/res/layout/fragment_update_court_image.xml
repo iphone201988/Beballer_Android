@@ -7,15 +7,13 @@
 
         <variable
             name="vm"
-            type="com.beballer.beballer.ui.player.dash_board.find.game.add_photo.AddPhotoFragmentVM" />
-
-
+            type="com.beballer.beballer.ui.player.dash_board.find.courts.update.UpdateCourtImageFragmentVM" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.dash_board.find.game.add_photo.AddPhotoFragment">
+        tools:context=".ui.player.dash_board.find.courts.update.UpdateCourtImageFragment">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/cancelImage"
@@ -54,7 +52,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_14sdp"
                 android:paddingVertical="26dp">
-
 
 
                 <androidx.cardview.widget.CardView
@@ -117,10 +114,10 @@
                     android:id="@+id/ivFirst"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:scaleType="centerCrop"
                     android:elevation="@dimen/_2sdp"
-                    android:visibility="gone"
                     android:onClick="@{v->vm.onClick(v)}"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/cardAddImage1"
                     app:layout_constraintEnd_toEndOf="@+id/cardAddImage1"
                     app:layout_constraintStart_toStartOf="@+id/cardAddImage1"
@@ -149,8 +146,6 @@
                         android:src="@drawable/camera_image"
                         app:tint="@color/grey" />
                 </androidx.cardview.widget.CardView>
-
-
 
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -186,10 +181,10 @@
                     android:id="@+id/ivSecond"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:scaleType="centerCrop"
                     android:elevation="@dimen/_2sdp"
-                    android:visibility="gone"
                     android:onClick="@{v->vm.onClick(v)}"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/cardAddImage2"
                     app:layout_constraintEnd_toEndOf="@+id/cardAddImage2"
                     app:layout_constraintStart_toStartOf="@+id/cardAddImage2"
@@ -254,9 +249,9 @@
                     android:id="@+id/ivThird"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:scaleType="centerCrop"
                     android:elevation="@dimen/_2sdp"
                     android:onClick="@{v->vm.onClick(v)}"
+                    android:scaleType="centerCrop"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/cardAddImage3"
                     app:layout_constraintEnd_toEndOf="@+id/cardAddImage3"
@@ -372,7 +367,6 @@
                         app:layout_constraintTop_toTopOf="@+id/courtRatingBar" />
 
 
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -439,6 +433,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

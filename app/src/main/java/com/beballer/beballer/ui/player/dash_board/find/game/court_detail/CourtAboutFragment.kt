@@ -1,6 +1,5 @@
 package com.beballer.beballer.ui.player.dash_board.find.game.court_detail
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,12 +11,11 @@ import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.base.SimpleRecyclerViewAdapter
-import com.beballer.beballer.data.model.GameModeModel
+import com.beballer.beballer.data.model.CourtDataById
 import com.beballer.beballer.data.model.GameModes
 import com.beballer.beballer.databinding.AccessibilityDialogItemBinding
 import com.beballer.beballer.databinding.FragmentCourtAboutBinding
 import com.beballer.beballer.databinding.RvGameModeItemBinding
-import com.beballer.beballer.ui.player.dash_board.profile.user.UserProfileActivity
 import com.beballer.beballer.utils.BaseCustomBottomSheet
 import com.beballer.beballer.utils.BindingUtils
 import com.beballer.beballer.utils.DummyList.getListBoardType
@@ -45,20 +43,50 @@ class CourtAboutFragment : BaseFragment<FragmentCourtAboutBinding>() {
     override fun onCreateView(view: View) {
         // click
         initOnclick()
+        // prefill data if editing
+        prefillData()
+    }
+
+    /**
+     * prefill data if editing
+     */
+    private fun prefillData() {
+        arguments?.getParcelable<CourtDataById>("courtData")?.let { courtData ->
+            // Map Board Type
+            val boardTitle = getListBoardType().find { it.apiValue == courtData.boardType }?.title ?: courtData.boardType
+            binding.etCourtName.setText(if (boardTitle != null) "$boardTitle boards" else null)
+
+            // Map Net Type
+            val netTitle = getListNetType().find { it.apiValue == courtData.netType }?.title ?: courtData.netType
+            binding.etCourtAddress.setText(if (netTitle != null) "$netTitle nets" else null)
+
+            // Map Floor Type
+            val floorTitle = getListFloorType().find { it.apiValue == courtData.floorType }?.title ?: courtData.floorType
+            binding.etAccessibility.setText(floorTitle)
+
+            val lines = if (courtData.areDimensionsStandard == true) "Up to standards" else "Not up to standard"
+            binding.etHoopsCount.setText(lines)
+
+            val water = if (courtData.hasWaterPoint == true) "With" else "Without"
+            binding.etWaterPoint.setText(water)
+
+            checkAllFieldsNotEmpty()
+        }
     }
 
     /*** click event handel **/
     private fun initOnclick() {
         viewModel.onClick.observe(viewLifecycleOwner) {
             when (it?.id) {
-                R.id.cancelImage ->   requireActivity().finish()
+                R.id.cancelImage -> requireActivity().finish()
                 R.id.btnNext -> {
-                    val board = binding.etCourtName.text.toString().trim()
-                    val net = binding.etCourtAddress.text.toString().trim()
+                    val board = binding.etCourtName.text.toString().trim().removeSuffix(" boards")
+                    val net = binding.etCourtAddress.text.toString().trim().removeSuffix(" nets")
                     val floor = binding.etAccessibility.text.toString().trim()
                     val lines = binding.etHoopsCount.text.toString().trim()
                     val water = binding.etWaterPoint.text.toString().trim()
-                    if (!validate(board, net, floor, lines, water)) {
+
+                    if (validate(board, net, floor, lines, water)) {
                         val courtName = arguments?.getString("courtName").orEmpty()
                         val courtAddress = arguments?.getString("courtAddress").orEmpty()
                         val accessibility = arguments?.getString("accessibility").orEmpty()
@@ -69,6 +97,8 @@ class CourtAboutFragment : BaseFragment<FragmentCourtAboutBinding>() {
                         val country = arguments?.getString("country").orEmpty()
                         val region = arguments?.getString("region").orEmpty()
                         val zipCode = arguments?.getString("zipCode").orEmpty()
+                        val courtId = arguments?.getString("courtId").orEmpty()
+                        
                         val bundle = Bundle().apply {
                             putString("courtName", courtName)
                             putString("courtAddress", courtAddress)
@@ -80,11 +110,14 @@ class CourtAboutFragment : BaseFragment<FragmentCourtAboutBinding>() {
                             putString("country", country)
                             putString("region", region)
                             putString("zipCode", zipCode)
+                            putString("courtId", courtId)
                             putString("board", board)
                             putString("net", net)
                             putString("floor", floor)
                             putString("lines", lines)
                             putString("water", water)
+                            // also pass the original parcelable just in case
+                            putParcelable("courtData", arguments?.getParcelable<CourtDataById>("courtData"))
                         }
                         BindingUtils.navigateWithSlide(
                             findNavController(), R.id.navigateAddPhotoFragment, bundle
@@ -154,13 +187,13 @@ class CourtAboutFragment : BaseFragment<FragmentCourtAboutBinding>() {
     /** handle game mode adapter **/
     private fun initAccessibilityAdapter(type: Int) {
         accessibilityAdapter =
-            SimpleRecyclerViewAdapter(R.layout.rv_game_mode_item, BR.bean) { v, m, pos ->
+            SimpleRecyclerViewAdapter(R.layout.rv_game_mode_item, BR.bean) { v, m, _ ->
                 when (v.id) {
                     R.id.clGame -> {
                         accessibilityDialog.dismiss()
                         when (type) {
-                            1 -> binding.etCourtName.setText(m.title)
-                            2 -> binding.etCourtAddress.setText(m.title)
+                            1 -> binding.etCourtName.setText("${m.title} boards")
+                            2 -> binding.etCourtAddress.setText("${m.title} nets")
                             3 -> binding.etAccessibility.setText(m.title)
                             4 -> binding.etHoopsCount.setText(m.title)
                             5 -> binding.etWaterPoint.setText(m.title)

@@ -12,8 +12,15 @@ import android.provider.MediaStore
 import android.text.TextUtils
 import androidx.loader.content.CursorLoader
 import java.lang.Long
+import kotlin.Array
+import kotlin.Boolean
+import kotlin.Exception
+import kotlin.String
+import kotlin.arrayOf
 
+@SuppressLint("ObsoleteSdkInt")
 object RealPath {
+
 
     fun getRealPath(context: Context, fileUri: Uri): String? {
         // SDK >= 11 && SDK < 19
@@ -42,15 +49,15 @@ object RealPath {
     }
 
     /**
-     * Get a file path from a Uri. This will get the the path for Storage Access
+     * Get a file path from a Uri. This will get the path for Storage Access
      * Framework Documents, as well as the _data field for the MediaStore and
      * other file-based ContentProviders.
      *
      * @param context The context.
      * @param uri     The Uri to query.
-     * @author Niks
+     * @author Nicks
      */
-    @SuppressLint("NewApi")
+    @SuppressLint("NewApi", "UseKtx")
     fun getRealPathFromURIAPI19(context: Context, uri: Uri): String? {
 
         val isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
@@ -69,13 +76,18 @@ object RealPath {
             } else if (isDownloadsDocument(uri)) {
                 var cursor: Cursor? = null
                 try {
-                    cursor = context.contentResolver.query(uri, arrayOf(MediaStore.MediaColumns.DISPLAY_NAME), null, null, null)
+                    cursor = context.contentResolver.query(
+                        uri, arrayOf(MediaStore.MediaColumns.DISPLAY_NAME), null, null, null
+                    )
                     cursor!!.moveToNext()
                     val fileName = cursor.getString(0)
-                    val path = Environment.getExternalStorageDirectory().toString() + "/Download/" + fileName
+                    val path = Environment.getExternalStorageDirectory()
+                        .toString() + "/Download/" + fileName
                     if (!TextUtils.isEmpty(path)) {
                         return path
                     }
+                } catch (_: Exception) {
+
                 } finally {
                     cursor?.close()
                 }
@@ -83,7 +95,8 @@ object RealPath {
                 if (id.startsWith("raw:")) {
                     return id.replaceFirst("raw:".toRegex(), "")
                 }
-                val contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads"), Long.valueOf(id))
+                val contentUri =
+                    ContentUris.withAppendedId(Uri.parse("content://downloads"), Long.valueOf(id))
 
                 return getDataColumn(context, contentUri, null, null)
             } else if (isMediaDocument(uri)) {
@@ -107,7 +120,9 @@ object RealPath {
         } else if ("content".equals(uri.scheme!!, ignoreCase = true)) {
 
             // Return the remote address
-            return if (isGooglePhotosUri(uri)) uri.lastPathSegment else getDataColumn(context, uri, null, null)
+            return if (isGooglePhotosUri(uri)) uri.lastPathSegment else getDataColumn(
+                context, uri, null, null
+            )
         } else if ("file".equals(uri.scheme!!, ignoreCase = true)) {
             return uri.path
         }// File
@@ -125,21 +140,25 @@ object RealPath {
      * @param selection     (Optional) Filter used in the query.
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
-     * @author Niks
+     * @author Nicks
      */
-    private fun getDataColumn(context: Context, uri: Uri?, selection: String?,
-                              selectionArgs: Array<String>?): String? {
+    private fun getDataColumn(
+        context: Context, uri: Uri?, selection: String?, selectionArgs: Array<String>?
+    ): String? {
 
         var cursor: Cursor? = null
         val column = "_data"
         val projection = arrayOf(column)
 
         try {
-            cursor = context.contentResolver.query(uri!!, projection, selection, selectionArgs, null)
+            cursor =
+                context.contentResolver.query(uri!!, projection, selection, selectionArgs, null)
             if (cursor != null && cursor.moveToFirst()) {
                 val index = cursor.getColumnIndexOrThrow(column)
                 return cursor.getString(index)
             }
+        } catch (_: Exception) {
+
         } finally {
             cursor?.close()
         }

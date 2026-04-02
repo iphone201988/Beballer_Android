@@ -1,4 +1,4 @@
-package com.beballer.beballer.ui.player.dash_board.find.game.add_photo
+package com.beballer.beballer.ui.player.dash_board.find.courts.update
 
 import android.Manifest
 import android.content.Context
@@ -14,16 +14,14 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.data.api.Constants
-import com.beballer.beballer.data.model.AddCourtDataClass
 import com.beballer.beballer.data.model.CourtDataById
 import com.beballer.beballer.data.model.UpdateCourtData
 import com.beballer.beballer.databinding.AddPhotoDialogItemBinding
-import com.beballer.beballer.databinding.FragmentAddPhotoBinding
+import com.beballer.beballer.databinding.FragmentUpdateCourtImageBinding
 import com.beballer.beballer.databinding.VideoImagePickerDialogBoxBinding
 import com.beballer.beballer.ui.enums.ImageType
 import com.beballer.beballer.utils.AppUtils.createImageFile
@@ -42,8 +40,9 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
 @AndroidEntryPoint
-class AddPhotoFragment : BaseFragment<FragmentAddPhotoBinding>() {
-    private val viewModel: AddPhotoFragmentVM by viewModels()
+class UpdateCourtImageFragment : BaseFragment<FragmentUpdateCourtImageBinding>() {
+
+    private val viewModel: UpdateCourtImageFragmentVM by viewModels()
     private var addDialogItem: BaseCustomDialog<AddPhotoDialogItemBinding>? = null
     private var imageDialog: BaseCustomDialog<VideoImagePickerDialogBoxBinding>? = null
     private var photoFile: File? = null
@@ -52,26 +51,13 @@ class AddPhotoFragment : BaseFragment<FragmentAddPhotoBinding>() {
     private var multipartPart2: MultipartBody.Part? = null
     private var multipartPart3: MultipartBody.Part? = null
     private var clickType: ImageType = ImageType.FIRST
-    private lateinit var courtName: String
-    private lateinit var courtAddress: String
-    private lateinit var accessibility: String
-    private lateinit var hoopsCount: String
-    private lateinit var latitude: String
-    private lateinit var longitude: String
 
-    private lateinit var board: String
-    private lateinit var net: String
-    private lateinit var floor: String
-    private lateinit var lines: String
-    private lateinit var water: String
-    private lateinit var city: String
-    private lateinit var country: String
-    private lateinit var region: String
-    private lateinit var zipCode: String
     private var courtId: String? = null
+
     private var grade = 0.0f
+
     override fun getLayoutResource(): Int {
-        return R.layout.fragment_add_photo
+        return R.layout.fragment_update_court_image
     }
 
     override fun getViewModel(): BaseViewModel {
@@ -83,29 +69,18 @@ class AddPhotoFragment : BaseFragment<FragmentAddPhotoBinding>() {
         initOnclick()
 
         arguments?.let { bundle ->
-            courtName = bundle.getString("courtName").orEmpty()
-            courtAddress = bundle.getString("courtAddress").orEmpty()
-            accessibility = bundle.getString("accessibility").orEmpty()
-            hoopsCount = bundle.getString("hoopsCount").orEmpty()
-            latitude = bundle.getString("lat").orEmpty()
-            longitude = bundle.getString("long").orEmpty()
-            city = bundle.getString("city").orEmpty()
-            country = bundle.getString("country").orEmpty()
-            region = bundle.getString("region").orEmpty()
-            zipCode = bundle.getString("zipCode").orEmpty()
-            board = bundle.getString("board").orEmpty()
-            net = bundle.getString("net").orEmpty()
-            floor = bundle.getString("floor").orEmpty()
-            lines = bundle.getString("lines").orEmpty()
-            water = bundle.getString("water").orEmpty()
-            courtId = bundle.getString("courtId")
-
             // prefill if editing
             bundle.getParcelable<CourtDataById>("courtData")?.let { courtData ->
                 binding.etCourtDescription.setText(courtData.description)
+
                 binding.courtRatingBar.rating = courtData.rating?.toFloat() ?: 0.0f
+
                 grade = courtData.rating?.toFloat() ?: 0.0f
+
                 binding.tvRatings.text = grade.toString()
+
+                courtId = courtData.id
+
                 courtData.photos?.forEachIndexed { index, url ->
                     val imageUrl = if (url.startsWith("/")) {
                         Constants.IMAGE_URL + url
@@ -177,7 +152,7 @@ class AddPhotoFragment : BaseFragment<FragmentAddPhotoBinding>() {
         viewModel.onClick.observe(viewLifecycleOwner) {
             when (it?.id) {
                 R.id.cancelImage -> {
-                    findNavController().popBackStack()
+                    requireActivity().finish()
                 }
 
                 R.id.btnNext -> {
@@ -195,26 +170,8 @@ class AddPhotoFragment : BaseFragment<FragmentAddPhotoBinding>() {
                         return@observe
                     }
 
-                    viewModel.createCourt(
-                        courtName,
-                        courtAddress,
-                        mapAccessibility(accessibility),
-                        mapHoopsCount(hoopsCount),
-                        latitude,
-                        longitude,
-                        mapBoard(board),
-                        mapNet(net),
-                        mapFloor(floor),
-                        mapWaterPoint(water),
-                        mapDimensions(lines),
-                        country,
-                        grade = grade.toString(),
-                        city,
-                        zipCode,
-                        region,
-                        desc,
-                        images.toMutableList(),
-                        courtId // Passing courtId here
+                    viewModel.updateImageCourt(
+                        grade = grade.toString(), desc, images.toMutableList(), courtId
                     )
 
 
@@ -241,59 +198,6 @@ class AddPhotoFragment : BaseFragment<FragmentAddPhotoBinding>() {
     }
 
 
-    private fun mapAccessibility(v: String) = when (v) {
-        "Available to everyone" -> "availableToEveryone"
-        "Available to licensees" -> "availableToLicensees"
-        "Special opening hours" -> "specialOpeningHours"
-        else -> "availableToEveryone"
-    }
-
-    private fun mapHoopsCount(v: String): Int {
-        val cleanValue = v.replace(" hoops", "").replace(" hoop", "").trim()
-        return when (cleanValue) {
-            "1" -> 1
-            "2" -> 2
-            "3" -> 3
-            "4" -> 4
-            "5+" -> 5
-            else -> 1
-        }
-    }
-
-    private fun mapBoard(v: String) = when (v) {
-        "Steel" -> "steel"
-        "Wood" -> "wood"
-        "Plastic" -> "plastic"
-        "Plexiglas" -> "plexiglas"
-        else -> "steel"
-    }
-
-    private fun mapNet(v: String) = when (v) {
-        "String" -> "string"
-        "Chain" -> "chains"
-        "Plastic" -> "plastic"
-        "No nets" -> "without"
-        else -> "without"
-    }
-
-    private fun mapFloor(v: String) = when (v) {
-        "Asphalt with gravel" -> "gravelBitumen"
-        "Bitumen without gravel" -> "bitumen"
-        "Synth" -> "synthetic"
-        "Parquet" -> "woodenFloor"
-        else -> "bitumen"
-    }
-
-    fun mapDimensions(value: String): Boolean {
-        return value == "Up to standards"
-    }
-
-
-    fun mapWaterPoint(value: String): Boolean {
-        return value == "With"
-    }
-
-
     private fun getImageParts(): List<MultipartBody.Part> {
         val list = mutableListOf<MultipartBody.Part>()
 
@@ -312,27 +216,6 @@ class AddPhotoFragment : BaseFragment<FragmentAddPhotoBinding>() {
             when (it?.status) {
                 Status.SUCCESS -> {
                     when (it.message) {
-                        "createCourt" -> {
-                            runCatching {
-                                val model =
-                                    BindingUtils.parseJson<AddCourtDataClass>(it.data.toString())
-                                if (model?.success == true && (model.courtId?.isNotEmpty() == true || model.message?.contains(
-                                        "success", true
-                                    ) == true)
-                                ) {
-                                    showSuccessToast(model.message.toString())
-                                    showAddPhotoDialogItem()
-                                } else {
-                                    showErrorToast(model?.message.toString())
-                                }
-
-                            }.onFailure { e ->
-                                showErrorToast(e.message.toString())
-                            }.also {
-                                hideLoading()
-                            }
-                        }
-
                         "updateAPiCall" -> {
                             runCatching {
                                 val model =
@@ -470,10 +353,9 @@ class AddPhotoFragment : BaseFragment<FragmentAddPhotoBinding>() {
         uri: Uri, imageView: ImageView, onMultipartReady: (MultipartBody.Part?) -> Unit
     ) {
 
-        Glide.with(this).load(uri)
-            .placeholder(R.drawable.progress_animation_small)
-            .error(R.drawable.ic_round_account_circle_40)
-            .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView)
+        Glide.with(this).load(uri).placeholder(R.drawable.progress_animation_small)
+            .error(R.drawable.ic_round_account_circle_40).diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into(imageView)
         onMultipartReady(uriToMultipart(uri))
     }
 
@@ -544,10 +426,7 @@ class AddPhotoFragment : BaseFragment<FragmentAddPhotoBinding>() {
      */
     private suspend fun urlToMultipartWithGlide(url: String): MultipartBody.Part? {
         return try {
-            val futureTarget = Glide.with(requireContext())
-                .asBitmap()
-                .load(url)
-                .submit()
+            val futureTarget = Glide.with(requireContext()).asBitmap().load(url).submit()
 
             val bitmap = withContext(Dispatchers.IO) {
                 futureTarget.get()
@@ -562,9 +441,7 @@ class AddPhotoFragment : BaseFragment<FragmentAddPhotoBinding>() {
             Glide.with(requireContext()).clear(futureTarget)
 
             MultipartBody.Part.createFormData(
-                "photos",
-                file.name,
-                file.asRequestBody("image/*".toMediaTypeOrNull())
+                "photos", file.name, file.asRequestBody("image/*".toMediaTypeOrNull())
             )
 
         } catch (e: Exception) {
@@ -574,5 +451,7 @@ class AddPhotoFragment : BaseFragment<FragmentAddPhotoBinding>() {
     }
 
 }
+
+
 
 

@@ -77,7 +77,6 @@ class ProfileClassmateFragment : BaseFragment<FragmentProfileClassemeteBinding>(
 
         }
 
-        Log.i("jhgjghjg", "onCreateView:  $userLocation")
 
         userLocation?.let { location ->
             loadPlayers(location, LocationScope.CITY)

@@ -3,6 +3,7 @@ package com.beballer.beballer.ui.player.dash_board.find.details
 import android.util.Log
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.data.api.ApiHelper
+import com.beballer.beballer.data.api.Constants
 import com.beballer.beballer.utils.Resource
 import com.beballer.beballer.utils.event.SingleRequestEvent
 import com.google.gson.JsonObject
@@ -50,4 +51,24 @@ class CourtsDetailsFragmentVM @Inject constructor(private val apiHelper: ApiHelp
             }
         }
     }
+
+
+    fun courtReportAPi(data : HashMap<String, Any>, url: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            commonObserver.postValue(Resource.loading(null))
+            try {
+                apiHelper.apiPostForRawBody(url,data).let {
+                    if (it.isSuccessful) {
+                        commonObserver.postValue(Resource.success("courtReportAPi", it.body()))
+                    } else commonObserver.postValue(
+                        Resource.error(handleErrorResponse(it.errorBody(), it.code()), null)
+                    )
+                }
+            } catch (e: Exception) {
+                Log.d("error", "getPostApi: $e")
+            }
+        }
+    }
+
+
 }

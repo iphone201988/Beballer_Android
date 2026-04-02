@@ -26,7 +26,6 @@
             android:layout_width="@dimen/_30sdp"
             android:layout_height="@dimen/_30sdp"
             android:layout_marginStart="2dp"
-            android:layout_marginTop="@dimen/_25sdp"
             android:onClick="@{v->vm.onClick(v)}"
             android:padding="6dp"
             android:src="@drawable/back_button"

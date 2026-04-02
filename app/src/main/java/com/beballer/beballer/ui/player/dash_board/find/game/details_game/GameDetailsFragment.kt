@@ -186,7 +186,6 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
     }
 
     private fun initPopup() {
-
         ratingPopup = BaseCustomDialog(requireContext(), R.layout.rating_dialog) {
             when (it.id) {
                 R.id.btnCreateGame -> {

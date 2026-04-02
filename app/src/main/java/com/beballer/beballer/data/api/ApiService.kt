@@ -133,7 +133,7 @@ interface ApiService {
         @Url url: String,
         @Header("Authorization") token: String,
         @PartMap data: Map<String, RequestBody>?,
-        @Part profilePic: MultipartBody.Part?,
+        @Part parts: MutableList<MultipartBody.Part>,
     ): Response<JsonObject>
 
 

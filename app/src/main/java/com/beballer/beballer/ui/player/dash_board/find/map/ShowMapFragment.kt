@@ -50,7 +50,6 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.Marker
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.maps.android.clustering.ClusterManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -117,7 +116,7 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
         initFabMenu()
         // search
         setupSearch()
-        val data =arguments?.getString("mapType")
+        val data = arguments?.getString("mapType")
         when (data) {
             "court" -> apiType = 1
             "game" -> apiType = 2
@@ -213,9 +212,6 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
                 R.id.AddButton -> {
                     val intent = Intent(requireContext(), AddCourtActivity::class.java)
                     startActivity(intent)
-                    requireActivity().overridePendingTransition(
-                        R.anim.slide_in_right, R.anim.slide_out_left
-                    )
                 }
 
                 R.id.cancelImage -> {
@@ -288,7 +284,9 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
                                     BindingUtils.parseJson<GetMapBoundData>(it.data.toString())
                                 if (model?.success == true && model.courts != null) {
                                     list.clear()
-                                    model.courts.forEach { list.add(MapListItem.Court(it)) }
+                                    model.courts.forEach { it ->
+                                        list.add(MapListItem.Court(it))
+                                    }
                                     adapter.submitList(list)
                                     addMarkers(list)
 
@@ -310,7 +308,9 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
                                 if (model?.success == true && model.data != null) {
                                     val games = model.data.games
                                     list.clear()
-                                    games?.forEach { list.add(MapListItem.Game(it)) }
+                                    games?.forEach { it ->
+                                        list.add(MapListItem.Game(it))
+                                    }
                                     adapter.submitList(list)
                                     addMarkers(list)
 
@@ -332,7 +332,9 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
                                     BindingUtils.parseJson<GetMapBoundData>(it.data.toString())
                                 if (model?.success == true && model.courts != null) {
                                     list.clear()
-                                    model.courts.forEach { list.add(MapListItem.Court(it)) }
+                                    model.courts.forEach { it ->
+                                        list.add(MapListItem.Court(it))
+                                    }
                                     adapter.submitList(list)
                                     addMarkers(list)
 
@@ -354,7 +356,9 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
                                 if (model?.success == true && model.courts != null) {
                                     val tournaments = model.courts
                                     list.clear()
-                                    tournaments.forEach { list.add(MapListItem.Court(it)) }
+                                    tournaments.forEach { it ->
+                                        list.add(MapListItem.Court(it))
+                                    }
                                     adapter.submitList(list)
                                     addMarkers(list)
                                 } else {
@@ -375,7 +379,9 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
                                 if (model?.success == true && model.courts != null) {
                                     val camps = model.courts
                                     list.clear()
-                                    camps.forEach { list.add(MapListItem.Court(it)) }
+                                    camps.forEach { it ->
+                                        list.add(MapListItem.Court(it))
+                                    }
                                     adapter.submitList(list)
                                     addMarkers(list)
                                 } else {
@@ -443,9 +449,7 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
                     intent.putExtra("userType", "courtDetailsFragment")
                     intent.putExtra("courtId", item.data.id.toString())
                     startActivity(intent)
-                    requireActivity().overridePendingTransition(
-                        R.anim.slide_in_right, R.anim.slide_out_left
-                    )
+
                 }
 
                 is MapListItem.Game -> {}
@@ -560,17 +564,19 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
 
     /*** Initialize search adapter once ***/
     private fun initSearchAdapter() {
-        searchDataAdapter = SimpleRecyclerViewAdapter(R.layout.rv_search_map_item, BR.bean) { v, m, _ ->
-            if (v?.id == R.id.clMapSearch) {
-                m?.let { moveToCourtFromSearch(it) }
+        searchDataAdapter =
+            SimpleRecyclerViewAdapter(R.layout.rv_search_map_item, BR.bean) { v, m, _ ->
+                if (v?.id == R.id.clMapSearch) {
+                    m?.let { moveToCourtFromSearch(it) }
+                }
             }
-        }
         binding.searchBottomSheet.rvMapSearch.adapter = searchDataAdapter
     }
 
     /**
      * Show search results in bottom sheet
      */
+    @SuppressLint("NotifyDataSetChanged")
     private fun showSearchData(courts: List<MapCourt?>?) {
         val hasData = !courts.isNullOrEmpty()
         binding.searchBottomSheet.apply {
@@ -587,6 +593,7 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
     }
 
     private var isSearchSelection = false
+
     /**
      * Shows marker, info window, and scrolls RecyclerView
      */
@@ -640,8 +647,6 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
     }
 
 
-
-
     /**
      * show no result
      */
@@ -653,7 +658,6 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
     }
-
 
 
     /**
@@ -725,7 +729,7 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
 
         mMap?.setOnMapClickListener {
             binding.rvCourtMapBound.visibility = View.GONE
-             clusterRenderer.clearSelection()
+            clusterRenderer.clearSelection()
             selectedCourtId = null
             isRecyclerScrollFromMarker = false
         }
@@ -795,7 +799,6 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
             }
         }
     }
-
 
 
     /**
@@ -893,8 +896,6 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
     }
 
 
-
-
     /**
      * should refresh
      */
@@ -920,7 +921,7 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
 
         val minMovementThreshold = 0.001
         val movementThreshold = max(newZoomDelta * 0.2, minMovementThreshold)
-      //  val movementThreshold = newZoomDelta * 0.20
+        //  val movementThreshold = newZoomDelta * 0.20
         if (movementDistance > movementThreshold) {
             return true
         }
@@ -945,7 +946,6 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
         val factor = 10.0.pow(decimals)
         return (this * factor).toInt() / factor
     }
-
 
 
     /**
@@ -983,8 +983,6 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
             southWestLng = finalWestLng
         )
     }
-
-
 
 
 }

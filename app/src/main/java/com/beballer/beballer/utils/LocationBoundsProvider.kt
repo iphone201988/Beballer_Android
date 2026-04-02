@@ -134,7 +134,7 @@ class LocationBoundsProvider(
                     location.longitude,
                     1
                 )?.firstOrNull()?.countryCode
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -147,7 +147,7 @@ class LocationBoundsProvider(
                     location.longitude,
                     1
                 )?.firstOrNull()?.adminArea
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -201,7 +201,7 @@ class LocationBoundsProvider(
             val type = object : TypeToken<Map<String, OptimizedCountry>>() {}.type
             Gson().fromJson(json, type)
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emptyMap()
         }
     }

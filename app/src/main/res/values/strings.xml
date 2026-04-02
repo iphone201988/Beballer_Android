@@ -219,5 +219,9 @@
     <string name="create_tournament">Create Tournament</string>
     <string name="choose_the_tournament_to_fill_in">Choose the tournament to fill in</string>
     <string name="start_organizing_the_tournament">Start organizing the tournament:</string>
+    <string name="ok">OK</string>
+    <string name="localisation_du_tereain">Localisation du tereain</string>
+    <string name="courts">Courts</string>
+    <string name="courts_nearby">Courts nearby :</string>
 
 </resources>

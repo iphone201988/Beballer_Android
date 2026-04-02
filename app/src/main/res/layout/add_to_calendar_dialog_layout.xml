@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -38,11 +39,11 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnCancel"
             style="@style/GreenButton"
-            android:layout_width="0dp"
+            android:layout_width="152dp"
+            android:layout_height="46dp"
             android:layout_marginStart="@dimen/_18sdp"
             android:layout_marginEnd="@dimen/_10sdp"
-            android:background="@drawable/chat_et_bg"
-            android:backgroundTint="@color/view_color"
+            android:background="@drawable/btn_bg"
             android:fontFamily="@font/inter_semi_bold"
             android:onClick="@{v->callback.onViewClick(v)}"
             android:text="@string/cancel"
@@ -61,8 +62,7 @@
             android:layout_marginTop="@dimen/_18sdp"
             android:layout_marginEnd="@dimen/_18sdp"
             android:layout_marginBottom="@dimen/_20sdp"
-            android:background="@drawable/chat_et_bg"
-            android:backgroundTint="@color/view_color"
+            android:background="@drawable/btn_bg"
             android:fontFamily="@font/inter_semi_bold"
             android:onClick="@{v->callback.onViewClick(v)}"
             android:text="@string/yes"

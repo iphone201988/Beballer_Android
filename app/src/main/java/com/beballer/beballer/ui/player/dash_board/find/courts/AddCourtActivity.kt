@@ -1,5 +1,7 @@
 package com.beballer.beballer.ui.player.dash_board.find.courts
 
+import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -9,6 +11,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseActivity
 import com.beballer.beballer.base.BaseViewModel
+import com.beballer.beballer.data.model.CourtDataById
 import com.beballer.beballer.databinding.ActivityAddCourtBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -37,15 +40,27 @@ class AddCourtActivity : BaseActivity<ActivityAddCourtBinding>() {
      * setup navigation
      */
     private fun setupNavigation() {
+        val courtData = intent.getParcelableExtra<CourtDataById>("courtData")
+        val courtType = intent.getStringExtra("courtType")
+
+        val bundle = Bundle().apply {
+            putParcelable("courtData", courtData)
+        }
+
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                navController.graph =
-                    navController.navInflater.inflate(R.navigation.add_court).apply {
-                        setStartDestination(R.id.addCourtFragment)
-                    }
+
+                val graph = navController.navInflater.inflate(R.navigation.add_court)
+
+                val startDestination = if (courtType?.contains("updateCourt") == true) {
+                    R.id.addCourtFragment
+                } else {
+                    R.id.updatePhotoFragment
+                }
+                graph.setStartDestination(startDestination)
+
+                navController.setGraph(graph, bundle)
             }
         }
     }
 }
-
-

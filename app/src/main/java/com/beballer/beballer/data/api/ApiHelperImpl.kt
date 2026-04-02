@@ -82,9 +82,9 @@ class ApiHelperImpl @Inject constructor(
 
 
     override suspend fun apiForMultipartPut(
-        url: String, map: HashMap<String, RequestBody>?, part: MultipartBody.Part?
+        url: String, map: HashMap<String, RequestBody>?, parts: MutableList<MultipartBody.Part>
     ): Response<JsonObject> {
-        return apiService.apiForMultipartPut(url, getTokenFromSPref(), map, part)
+        return apiService.apiForMultipartPut(url, getTokenFromSPref(), map, parts)
     }
 
     override suspend fun apiPutForRawBody(

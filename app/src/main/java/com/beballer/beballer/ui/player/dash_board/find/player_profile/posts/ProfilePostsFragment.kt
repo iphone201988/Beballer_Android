@@ -11,10 +11,13 @@ import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.base.SimpleRecyclerViewAdapter
 import com.beballer.beballer.data.api.Constants
+import com.beballer.beballer.data.api.Constants.profileId
+import com.beballer.beballer.data.api.Constants.userPostId
 import com.beballer.beballer.data.model.PlayerData
 import com.beballer.beballer.data.model.PlayerProfileResponse
 import com.beballer.beballer.databinding.FragmentProfilePostsBinding
 import com.beballer.beballer.databinding.PlayerPostRvItemBinding
+import com.beballer.beballer.ui.player.dash_board.find.player_profile.PlayerProfileActivity
 import com.beballer.beballer.ui.player.post_details.PlayerPostDetailsActivity
 import com.beballer.beballer.utils.BindingUtils
 import com.beballer.beballer.utils.Status
@@ -43,11 +46,10 @@ class ProfilePostsFragment : BaseFragment<FragmentProfilePostsBinding>() {
 
         // api call
         val data = HashMap<String, Any>()
-        var userId = sharedPrefManager.getLoginData()?.data?.user?.id
         data["page"] = currentPage
         data["limit"] = 20
         data["type"] = "players"
-        viewModel.postPublisherId(Constants.POST_PUBLISHER_ID + "$userId", data)
+        viewModel.postPublisherId(Constants.POST_PUBLISHER_ID + "$userPostId", data)
         // pagination
         paginationHandel()
     }
@@ -82,7 +84,7 @@ class ProfilePostsFragment : BaseFragment<FragmentProfilePostsBinding>() {
         isLoading = true
         currentPage++
         val data = HashMap<String, Any>()
-        var userId = sharedPrefManager.getLoginData()?.data?.user?.id
+        val userId = sharedPrefManager.getLoginData()?.data?.user?.id
         data["page"] = currentPage
         data["limit"] = 20
         data["type"] = "players"
@@ -107,8 +109,8 @@ class ProfilePostsFragment : BaseFragment<FragmentProfilePostsBinding>() {
                                 BindingUtils.parseJson(it.data.toString())
                             if (myDataModel?.data != null) {
                                 if (currentPage == 1) {
-                                    myDataModel.data.let {
-                                        playerPostAdapter.setList(it)
+                                    myDataModel.data.let { data ->
+                                        playerPostAdapter.setList(data)
                                     }
                                 } else {
                                     playerPostAdapter.addToList(myDataModel.data)
@@ -141,7 +143,7 @@ class ProfilePostsFragment : BaseFragment<FragmentProfilePostsBinding>() {
     /** handle adapter **/
     private fun initAvatarAdapter() {
         playerPostAdapter =
-            SimpleRecyclerViewAdapter(R.layout.player_post_rv_item, BR.bean) { v, m, pos ->
+            SimpleRecyclerViewAdapter(R.layout.player_post_rv_item, BR.bean) { v, m, _ ->
                 when (v.id) {
                     R.id.clPlayerPost -> {
                         val intent =

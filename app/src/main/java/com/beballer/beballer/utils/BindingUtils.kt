@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.beballer.beballer.utils
 
 import android.Manifest
@@ -6,11 +8,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.location.Location
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.SpannableString
@@ -57,7 +57,6 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 object BindingUtils {
@@ -102,17 +101,15 @@ object BindingUtils {
             gson.fromJson(json, T::class.java)
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.e("dfsddfsd", "parseJson: $e")
+            Log.e("jsonError", "parseJson: $e")
             null
         }
     }
 
 
+    @SuppressLint("UseKtx")
     fun vectorToBitmapDescriptor(
-        context: Context,
-        @DrawableRes vectorResId: Int,
-        widthDp: Int,
-        heightDp: Int
+        context: Context, @DrawableRes vectorResId: Int, widthDp: Int, heightDp: Int
     ): BitmapDescriptor {
 
         val drawable = ContextCompat.getDrawable(context, vectorResId)
@@ -123,9 +120,7 @@ object BindingUtils {
         val heightPx = (heightDp * density).toInt()
 
         val bitmap = Bitmap.createBitmap(
-            widthPx,
-            heightPx,
-            Bitmap.Config.ARGB_8888
+            widthPx, heightPx, Bitmap.Config.ARGB_8888
         )
 
         val canvas = Canvas(bitmap)
@@ -134,7 +129,6 @@ object BindingUtils {
 
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
-
 
 
     fun formatBirthDate(dateString: String): String {
@@ -146,7 +140,7 @@ object BindingUtils {
         return try {
             val date = inputFormat.parse(dateString)
             outputFormat.format(date!!)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             "-"
         }
     }
@@ -192,8 +186,7 @@ object BindingUtils {
                 }
 
                 Glide.with(image.context).load(imageUrl)
-                    .placeholder(R.drawable.progress_animation_small)
-                    .error(R.drawable.iv_event)
+                    .placeholder(R.drawable.progress_animation_small).error(R.drawable.iv_event)
                     .diskCacheStrategy(DiskCacheStrategy.ALL).into(image)
             } else {
                 image.setImageResource(R.drawable.iv_event)
@@ -218,12 +211,9 @@ object BindingUtils {
                 Constants.IMAGE_URL + "/$uri"
             }
 
-            Glide.with(image.context)
-                .load(imageUrl)
-                .placeholder(R.drawable.progress_animation_small)
-                .error(R.drawable.iv_event)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(image)
+            Glide.with(image.context).load(imageUrl)
+                .placeholder(R.drawable.progress_animation_small).error(R.drawable.iv_event)
+                .diskCacheStrategy(DiskCacheStrategy.ALL).into(image)
 
         } else {
             image.setImageResource(R.drawable.iv_event)
@@ -242,15 +232,23 @@ object BindingUtils {
                 Constants.IMAGE_URL + "/$url"
             }
 
-            Glide.with(image.context)
-                .load(imageUrl)
+            Glide.with(image.context).load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
                 .error(R.drawable.ic_round_account_circle_40)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(image)
+                .diskCacheStrategy(DiskCacheStrategy.ALL).into(image)
 
         } else {
             image.setImageResource(R.drawable.ic_round_account_circle_40)
+        }
+    }
+
+    @BindingAdapter("hoopsText")
+    @JvmStatic
+    fun hoopsText(view: AppCompatTextView, count: Int) {
+        view.text = if (count < 5) {
+            "$count Hoops"
+        } else {
+            "5+ Hoops"
         }
     }
 
@@ -259,24 +257,34 @@ object BindingUtils {
     @JvmStatic
     fun setImageFromUrlList(imageView: ImageView, photos: List<String?>?) {
         val rawUrl = photos?.firstOrNull()
-        val imageUrl = rawUrl
-            ?.trim()
-            ?.removePrefix("/")
-            ?.takeIf { it.isNotEmpty() }
+        val imageUrl = rawUrl?.trim()?.removePrefix("/")?.takeIf { it.isNotEmpty() }
         if (imageUrl != null) {
-            Glide.with(imageView.context)
-                .load(Constants.IMAGE_URL + imageUrl)
+            Glide.with(imageView.context).load(Constants.IMAGE_URL + imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
-                .error(R.drawable.ic_beballer_grey_800)
-                .into(imageView)
+                .error(R.drawable.ic_beballer_grey_800).into(imageView)
         } else {
             imageView.setImageResource(R.drawable.ic_beballer_grey_800)
         }
     }
 
 
+    @BindingAdapter("setDistanceText")
+    @JvmStatic
+    fun setDistanceText(view: AppCompatTextView, distance: Double?) {
 
+        if (distance == null) {
+            view.text = ""
+            return
+        }
 
+        val text = if (distance % 1.0 == 0.0) {
+            "${distance.toInt()} km"
+        } else {
+            String.format(Locale.US, "%.1f km", distance)
+        }
+
+        view.text = text
+    }
     fun formattedDistance(
         eventLat: Double, eventLon: Double, currentLat: Double, currentLon: Double
     ): String {
@@ -321,7 +329,10 @@ object BindingUtils {
 
     @BindingAdapter("setRatings")
     @JvmStatic
-    fun setRatings(ratings: com.github.bilalnasir9.library.ratingbar.CustomRatingBar, url: Double?) {
+    fun setRatings(
+        ratings: com.github.bilalnasir9.library.ratingbar.CustomRatingBar,
+        url: Double?
+    ) {
         if (url != null) {
             ratings.rating = url.toFloat()
         }
@@ -330,14 +341,13 @@ object BindingUtils {
     @BindingAdapter("setTime")
     @JvmStatic
     fun setTime(tvHour: AppCompatTextView, time: String?) {
-            if (time?.isNotEmpty() == true) {
-                val rawDate = time
-                if (rawDate.isNotEmpty() == true) {
-                    val date = convertToDate(rawDate)
-                    val relative = DateHelper.formatRelativeDate(date)
-                    tvHour.text = relative
-                }
+        if (time?.isNotEmpty() == true) {
+            if (time.isNotEmpty()) {
+                val date = convertToDate(time)
+                val relative = DateHelper.formatRelativeDate(date)
+                tvHour.text = relative
             }
+        }
 
     }
 
@@ -378,11 +388,11 @@ object BindingUtils {
     @BindingAdapter("setTextEmptyCheck")
     @JvmStatic
     fun setTextEmptyCheck(textView: AppCompatTextView, name: String?) {
-            if (name?.isNotEmpty() == true) {
-                textView.text = name
-            }else{
-                textView.text = ""
-            }
+        if (name?.isNotEmpty() == true) {
+            textView.text = name
+        } else {
+            textView.text = ""
+        }
 
     }
 
@@ -393,9 +403,8 @@ object BindingUtils {
             val firstName: String? = user.firstName?.takeIf { it.isNotBlank() }
             val lastName: String? = user.lastName?.takeIf { it.isNotBlank() }
 
-            val fullName: String = listOfNotNull(firstName, lastName)
-                .joinToString(" ")
-                .ifBlank { "-" }
+            val fullName: String =
+                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "-" }
 
             textView.text = fullName
         } else {
@@ -410,9 +419,8 @@ object BindingUtils {
             val firstName: String? = user.userInformation?.firstName?.takeIf { it.isNotEmpty() }
             val lastName: String? = user.userInformation?.lastName?.takeIf { it.isNotBlank() }
 
-            val fullName: String = listOfNotNull(firstName, lastName)
-                .joinToString(" ")
-                .ifBlank { "-" }
+            val fullName: String =
+                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "-" }
 
             val text = "By @$fullName"
             val spannable = SpannableString(text)
@@ -431,10 +439,7 @@ object BindingUtils {
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
             )
             spannable.setSpan(
-                UnderlineSpan(),
-                3,
-                text.length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                UnderlineSpan(), 3, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
             )
 
             textView.text = spannable
@@ -444,7 +449,6 @@ object BindingUtils {
     }
 
 
-
     @BindingAdapter("setNameFollowingUser")
     @JvmStatic
     fun setNameFollowingUser(textView: AppCompatTextView, user: FollowingUser?) {
@@ -452,9 +456,8 @@ object BindingUtils {
             val firstName: String? = user.firstName?.takeIf { it.isNotBlank() }
             val lastName: String? = user.lastName?.takeIf { it.isNotBlank() }
 
-            val fullName: String = listOfNotNull(firstName, lastName)
-                .joinToString(" ")
-                .ifBlank { "-" }
+            val fullName: String =
+                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "-" }
 
             textView.text = fullName
         } else {
@@ -469,9 +472,8 @@ object BindingUtils {
             val firstName: String? = user.firstName?.takeIf { it.isNotBlank() }
             val lastName: String? = user.lastName?.takeIf { it.isNotBlank() }
 
-            val fullName: String = listOfNotNull(firstName, lastName)
-                .joinToString(" ")
-                .ifBlank { "-" }
+            val fullName: String =
+                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "-" }
 
             textView.text = fullName
         } else {
@@ -486,9 +488,8 @@ object BindingUtils {
             val firstName: String? = user.country?.takeIf { it.isNotBlank() }
             val lastName: String? = user.city?.takeIf { it.isNotBlank() }
 
-            val fullName: String = listOfNotNull(firstName, lastName)
-                .joinToString(" ")
-                .ifBlank { "" }
+            val fullName: String =
+                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "" }
 
             textView.text = fullName
         } else {
@@ -504,9 +505,8 @@ object BindingUtils {
             val firstName: String? = user.country?.takeIf { it.isNotBlank() }
             val lastName: String? = user.city?.takeIf { it.isNotBlank() }
 
-            val fullName: String = listOfNotNull(firstName, lastName)
-                .joinToString(" ")
-                .ifBlank { "" }
+            val fullName: String =
+                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "" }
 
             textView.text = fullName
         } else {
@@ -521,9 +521,8 @@ object BindingUtils {
             val firstName: String? = user.country?.takeIf { it.isNotBlank() }
             val lastName: String? = user.city?.takeIf { it.isNotBlank() }
 
-            val fullName: String = listOfNotNull(firstName, lastName)
-                .joinToString(" ")
-                .ifBlank { "" }
+            val fullName: String =
+                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "" }
 
             textView.text = fullName
         } else {
@@ -552,7 +551,6 @@ object BindingUtils {
             }
         }
     }
-
 
 
     @BindingAdapter("setProgress")
@@ -623,7 +621,7 @@ object BindingUtils {
         if (from == null) return Date()
         return try {
             isoFormatter.parse(from) ?: Date()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Date()
         }
     }
@@ -638,8 +636,6 @@ object BindingUtils {
             ).toString()
         }
     }
-
-
 
 
     @BindingAdapter("formattedDate")
@@ -663,7 +659,7 @@ object BindingUtils {
 
             text = date?.let { outputFormat.format(it) } ?: ""
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             text = ""
         }
     }
@@ -689,12 +685,13 @@ object BindingUtils {
 
             text = date?.let { outputFormat.format(it) } ?: ""
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             text = ""
         }
     }
 
 
+    @SuppressLint("SetTextI18n")
     @BindingAdapter("modeFormat")
     @JvmStatic
     fun TextView.setModeFormat(mode: Int?) {
@@ -708,13 +705,9 @@ object BindingUtils {
     }
 
 
-
-
-
     fun gameStatusDisplay(
         date: Date?,   // ✅ Accept Date instead of String
-        status: String?,
-        needsInviteResponse: Boolean
+        status: String?, needsInviteResponse: Boolean
     ): GameStatusDisplay {
 
         if (date == null) return GameStatusDisplay("", 0)
@@ -726,15 +719,13 @@ object BindingUtils {
 
             "inProgress" -> {
                 GameStatusDisplay(
-                    text = "In progress",
-                    iconRes = R.drawable.iv_preview
+                    text = "In progress", iconRes = R.drawable.iv_preview
                 )
             }
 
             "done" -> {
                 GameStatusDisplay(
-                    text = "Done",
-                    iconRes = R.drawable.iv_left_arrow
+                    text = "Done", iconRes = R.drawable.iv_left_arrow
                 )
             }
 
@@ -744,21 +735,18 @@ object BindingUtils {
 
                     intervalSeconds <= -3600 -> {
                         GameStatusDisplay(
-                            text = "Starting soon",
-                            iconRes = R.drawable.iv_multiple_circle
+                            text = "Starting soon", iconRes = R.drawable.iv_multiple_circle
                         )
                     }
 
                     intervalSeconds in -3600..1800 -> {
                         if (needsInviteResponse) {
                             GameStatusDisplay(
-                                text = "Invitation received",
-                                iconRes = R.drawable.iv_down_arrow
+                                text = "Invitation received", iconRes = R.drawable.iv_down_arrow
                             )
                         } else {
                             GameStatusDisplay(
-                                text = "Starting soon",
-                                iconRes = R.drawable.iv_multiple_circle
+                                text = "Starting soon", iconRes = R.drawable.iv_multiple_circle
                             )
                         }
                     }
@@ -766,21 +754,18 @@ object BindingUtils {
                     intervalSeconds > 1800 -> {
                         if (needsInviteResponse) {
                             GameStatusDisplay(
-                                text = "Invitation received",
-                                iconRes = R.drawable.iv_down_arrow
+                                text = "Invitation received", iconRes = R.drawable.iv_down_arrow
                             )
                         } else {
                             GameStatusDisplay(
-                                text = "Incoming",
-                                iconRes = R.drawable.iv_right_arrow
+                                text = "Incoming", iconRes = R.drawable.iv_right_arrow
                             )
                         }
                     }
 
                     else -> {
                         GameStatusDisplay(
-                            text = "Starting soon",
-                            iconRes = R.drawable.iv_multiple_circle
+                            text = "Starting soon", iconRes = R.drawable.iv_multiple_circle
                         )
                     }
                 }
@@ -791,25 +776,19 @@ object BindingUtils {
     }
 
 
-
     fun parseServerDate(dateString: String?): Date? {
         if (dateString.isNullOrEmpty()) return null
 
         return try {
             val sdf = SimpleDateFormat(
-                "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                Locale.getDefault()
+                "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault()
             )
             sdf.timeZone = TimeZone.getTimeZone("UTC")
             sdf.parse(dateString)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
-
-
-
-
 
 
     @BindingAdapter("formattedGameDate")
@@ -834,18 +813,16 @@ object BindingUtils {
                 calendar.time = it
 
                 val outputFormat = SimpleDateFormat(
-                    "EEEE dd MMMM\nyyyy",
-                    Locale.getDefault()
+                    "EEEE dd MMMM\nyyyy", Locale.getDefault()
                 )
 
                 textView.text = outputFormat.format(calendar.time).lowercase()
             }
 
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             textView.text = dateString
         }
     }
-
 
 
     @BindingAdapter("waterPointStatus")
@@ -866,12 +843,11 @@ object BindingUtils {
 
         return try {
             val inputFormatter = SimpleDateFormat(
-                "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-                Locale.US
+                "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US
             )
             inputFormatter.timeZone = TimeZone.getTimeZone("UTC")
             inputFormatter.parse(isoDate)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
 
@@ -882,8 +858,7 @@ object BindingUtils {
         if (date == null) return ""
 
         val formatter = SimpleDateFormat(
-            "EEEE dd MMMM",
-            Locale.getDefault()
+            "EEEE dd MMMM", Locale.getDefault()
         )
 
         val formatted = formatter.format(date)
@@ -894,17 +869,6 @@ object BindingUtils {
         }
     }
 
-
-
-    @JvmStatic
-    @BindingAdapter("setMatchDate")
-    fun setMatchDate(textView: TextView, isoDate: String?) {
-
-        val date = convertToISODate(isoDate)
-        val formatted = formattedMatchDate(date)
-
-        textView.text = formatted
-    }
 
 
     fun applySystemBarMargins(view: View) {
@@ -923,6 +887,7 @@ object BindingUtils {
     }
 
 
+    @SuppressLint("ObsoleteSdkInt")
     fun statusBarStyleWhite(activity: Activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.window.decorView.systemUiVisibility =

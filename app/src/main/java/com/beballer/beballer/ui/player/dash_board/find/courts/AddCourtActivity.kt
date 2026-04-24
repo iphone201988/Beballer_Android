@@ -52,7 +52,7 @@ class AddCourtActivity : BaseActivity<ActivityAddCourtBinding>() {
 
                 val graph = navController.navInflater.inflate(R.navigation.add_court)
 
-                val startDestination = if (courtType?.contains("updateCourt") == true) {
+                val startDestination = if (courtType == null || courtType.contains("updateCourt")) {
                     R.id.addCourtFragment
                 } else {
                     R.id.updatePhotoFragment

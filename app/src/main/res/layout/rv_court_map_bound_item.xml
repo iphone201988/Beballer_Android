@@ -94,7 +94,7 @@
 
                 <com.github.bilalnasir9.library.ratingbar.CustomRatingBar
                     android:id="@+id/ratingBarCourt"
-                    setRatings="@{bean.grade}"
+                    setRatings="@{bean.rating}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_2sdp"
@@ -115,7 +115,7 @@
                     android:layout_marginEnd="4dp"
                     android:fontFamily="@font/inter_bold"
                     android:includeFontPadding="false"
-                    android:text="@{String.valueOf(bean.grade)}"
+                    android:text="@{String.valueOf(bean.rating)}"
                     android:textColor="#BFBFBF"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -132,7 +132,7 @@
                 android:fontFamily="@font/inter_regular"
                 android:includeFontPadding="false"
                 android:maxLines="2"
-                android:text="0.0km"
+                setAddressKm="@{bean}"
                 android:textColor="#989898"
                 android:textSize="@dimen/_9ssp"
                 app:layout_constraintEnd_toEndOf="@+id/tvCourtName"

@@ -43,8 +43,13 @@ import com.beballer.beballer.data.api.Constants
 import com.beballer.beballer.data.model.CourtDataById
 import com.beballer.beballer.data.model.FollowerUser
 import com.beballer.beballer.data.model.FollowingUser
+import com.beballer.beballer.data.model.GameData
 import com.beballer.beballer.data.model.GameStatusDisplay
+import com.beballer.beballer.data.model.MapCourt
+import com.beballer.beballer.data.model.MyGame
+import com.beballer.beballer.data.model.MyGamesApiResponse
 import com.beballer.beballer.data.model.SuggestedUser
+import com.beballer.beballer.data.model.TournamentsEvent
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -151,7 +156,9 @@ object BindingUtils {
         sdf.timeZone = TimeZone.getTimeZone("UTC")
 
         val birthDate = sdf.parse(dateString) ?: return 0
-        val birthCalendar = Calendar.getInstance().apply { time = birthDate }
+        val birthCalendar = Calendar.getInstance().apply {
+            time = birthDate
+        }
 
         val today = Calendar.getInstance()
         var age = today.get(Calendar.YEAR) - birthCalendar.get(Calendar.YEAR)
@@ -220,6 +227,56 @@ object BindingUtils {
         }
     }
 
+    @SuppressLint("SetTextI18n")
+    @BindingAdapter(value = ["myGameStatus", "currentUserId"], requireAll = false)
+    @JvmStatic
+    fun setMyGameStatus(textView: AppCompatTextView, game: MyGame?, userId: String?) {
+        if (game == null) {
+            textView.text = ""
+            textView.setCompoundDrawables(null, null, null, null)
+            return
+        }
+
+        // 1. Parse Date
+        val parsedDate = parseServerDate(game.date)
+
+        // 2. Calculate Invite Response
+        val team1 = game.team1Players ?: emptyList()
+        val team2 = game.team2Players ?: emptyList()
+
+        val needsInviteResponse = userId != null && (
+                team1.any { it.id == userId && it.accepted == false } ||
+                        team2.any { it.id == userId && it.accepted == false }
+                )
+
+        // 3. Apply Status Display
+        if (parsedDate != null) {
+            val display = gameStatusDisplay(
+                parsedDate,
+                game.status,
+                needsInviteResponse
+            )
+
+            textView.text = display.text
+
+            if (display.iconRes != 0) {
+                val drawable = ContextCompat.getDrawable(textView.context, display.iconRes)
+                drawable?.let {
+                    val sizeInDp = 16
+                    val scale = textView.context.resources.displayMetrics.density
+                    val sizeInPx = (sizeInDp * scale).toInt()
+                    it.setBounds(0, 0, sizeInPx, sizeInPx)
+                    textView.setCompoundDrawables(null, it, null, null)
+                }
+            } else {
+                textView.setCompoundDrawables(null, null, null, null)
+            }
+        } else {
+            textView.text = ""
+            textView.setCompoundDrawables(null, null, null, null)
+        }
+    }
+
     @BindingAdapter("setImageFromUrl")
     @JvmStatic
     fun setImageFromUrl(image: ShapeableImageView, url: String?) {
@@ -253,21 +310,6 @@ object BindingUtils {
     }
 
 
-    @BindingAdapter("setImageFromUrlList")
-    @JvmStatic
-    fun setImageFromUrlList(imageView: ImageView, photos: List<String?>?) {
-        val rawUrl = photos?.firstOrNull()
-        val imageUrl = rawUrl?.trim()?.removePrefix("/")?.takeIf { it.isNotEmpty() }
-        if (imageUrl != null) {
-            Glide.with(imageView.context).load(Constants.IMAGE_URL + imageUrl)
-                .placeholder(R.drawable.progress_animation_small)
-                .error(R.drawable.ic_beballer_grey_800).into(imageView)
-        } else {
-            imageView.setImageResource(R.drawable.ic_beballer_grey_800)
-        }
-    }
-
-
     @BindingAdapter("setDistanceText")
     @JvmStatic
     fun setDistanceText(view: AppCompatTextView, distance: Double?) {
@@ -285,6 +327,28 @@ object BindingUtils {
 
         view.text = text
     }
+
+
+    @BindingAdapter("setDistanceTournament")
+    @JvmStatic
+    fun setDistanceTournament(view: AppCompatTextView, distance: TournamentsEvent?) {
+
+        if (distance == null) {
+            view.text = ""
+            return
+        }
+        val lat1 = distance.lat
+        val lon1 = distance.long
+        val lat2 = lat
+        val lon2 = long
+        if (lat1 != null && lon1 != null) {
+            val distance = formattedDistance(lat1, lon1, lat2, lon2)
+            view.text = distance
+        }
+
+    }
+
+
     fun formattedDistance(
         eventLat: Double, eventLon: Double, currentLat: Double, currentLon: Double
     ): String {
@@ -324,17 +388,49 @@ object BindingUtils {
                     .diskCacheStrategy(DiskCacheStrategy.ALL).into(image)
             }
         }
-
     }
 
     @BindingAdapter("setRatings")
     @JvmStatic
     fun setRatings(
-        ratings: com.github.bilalnasir9.library.ratingbar.CustomRatingBar,
-        url: Double?
+        ratings: com.github.bilalnasir9.library.ratingbar.CustomRatingBar, url: Double?
     ) {
         if (url != null) {
             ratings.rating = url.toFloat()
+        }
+    }
+
+    @BindingAdapter("setAddressKm")
+    @JvmStatic
+    fun setAddressKm(
+        tv: AppCompatTextView,
+        bean: MapCourt?,
+    ) {
+        val distanceText = if (bean?.lat != null && bean.long != null) {
+            formatDistanceMeters(bean.lat, bean.long, lat, long)
+        } else {
+            ""
+        }
+
+        tv.text = distanceText
+    }
+
+    @SuppressLint("DefaultLocale")
+    fun formatDistanceMeters(
+        lat1: Double, lon1: Double, lat2: Double, lon2: Double
+    ): String {
+        val results = FloatArray(1)
+        Location.distanceBetween(
+            lat1, lon1, lat2, lon2, results
+        )
+
+        val distanceInMeters = results[0]
+
+        return if (distanceInMeters < 100) {
+            "${distanceInMeters.toInt()} m"
+        } else {
+            val km = distanceInMeters / 1000
+            String.format("%.1f km", km)
         }
     }
 
@@ -348,7 +444,6 @@ object BindingUtils {
                 tvHour.text = relative
             }
         }
-
     }
 
     @BindingAdapter("setImageTeam")
@@ -361,8 +456,6 @@ object BindingUtils {
                 .placeholder(R.drawable.progress_animation_small).error(R.drawable.round_team_24)
                 .diskCacheStrategy(DiskCacheStrategy.ALL).into(image)
         }
-
-
     }
 
     @JvmStatic
@@ -393,18 +486,22 @@ object BindingUtils {
         } else {
             textView.text = ""
         }
-
     }
 
     @BindingAdapter("setName")
     @JvmStatic
     fun setName(textView: AppCompatTextView, user: SuggestedUser?) {
         if (user != null) {
-            val firstName: String? = user.firstName?.takeIf { it.isNotBlank() }
-            val lastName: String? = user.lastName?.takeIf { it.isNotBlank() }
+            val firstName: String? = user.firstName?.takeIf {
+                it.isNotBlank()
+            }
+            val lastName: String? = user.lastName?.takeIf {
+                it.isNotBlank()
+            }
 
-            val fullName: String =
-                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "-" }
+            val fullName: String = listOfNotNull(firstName, lastName).joinToString(" ").ifBlank {
+                "-"
+            }
 
             textView.text = fullName
         } else {
@@ -416,11 +513,16 @@ object BindingUtils {
     @JvmStatic
     fun setNameCourt(textView: AppCompatTextView, user: CourtDataById?) {
         if (user != null) {
-            val firstName: String? = user.userInformation?.firstName?.takeIf { it.isNotEmpty() }
-            val lastName: String? = user.userInformation?.lastName?.takeIf { it.isNotBlank() }
+            val firstName: String? = user.userInformation?.firstName?.takeIf {
+                it.isNotEmpty()
+            }
+            val lastName: String? = user.userInformation?.lastName?.takeIf {
+                it.isNotBlank()
+            }
 
-            val fullName: String =
-                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "-" }
+            val fullName: String = listOfNotNull(firstName, lastName).joinToString(" ").ifBlank {
+                "-"
+            }
 
             val text = "By @$fullName"
             val spannable = SpannableString(text)
@@ -453,11 +555,16 @@ object BindingUtils {
     @JvmStatic
     fun setNameFollowingUser(textView: AppCompatTextView, user: FollowingUser?) {
         if (user != null) {
-            val firstName: String? = user.firstName?.takeIf { it.isNotBlank() }
-            val lastName: String? = user.lastName?.takeIf { it.isNotBlank() }
+            val firstName: String? = user.firstName?.takeIf {
+                it.isNotBlank()
+            }
+            val lastName: String? = user.lastName?.takeIf {
+                it.isNotBlank()
+            }
 
-            val fullName: String =
-                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "-" }
+            val fullName: String = listOfNotNull(firstName, lastName).joinToString(" ").ifBlank {
+                "-"
+            }
 
             textView.text = fullName
         } else {
@@ -469,11 +576,16 @@ object BindingUtils {
     @JvmStatic
     fun setNameFollowerUser(textView: AppCompatTextView, user: FollowerUser?) {
         if (user != null) {
-            val firstName: String? = user.firstName?.takeIf { it.isNotBlank() }
-            val lastName: String? = user.lastName?.takeIf { it.isNotBlank() }
+            val firstName: String? = user.firstName?.takeIf {
+                it.isNotBlank()
+            }
+            val lastName: String? = user.lastName?.takeIf {
+                it.isNotBlank()
+            }
 
-            val fullName: String =
-                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "-" }
+            val fullName: String = listOfNotNull(firstName, lastName).joinToString(" ").ifBlank {
+                "-"
+            }
 
             textView.text = fullName
         } else {
@@ -485,11 +597,16 @@ object BindingUtils {
     @JvmStatic
     fun setCountryNameFollowerUser(textView: AppCompatTextView, user: FollowerUser?) {
         if (user != null) {
-            val firstName: String? = user.country?.takeIf { it.isNotBlank() }
-            val lastName: String? = user.city?.takeIf { it.isNotBlank() }
+            val firstName: String? = user.country?.takeIf {
+                it.isNotBlank()
+            }
+            val lastName: String? = user.city?.takeIf {
+                it.isNotBlank()
+            }
 
-            val fullName: String =
-                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "" }
+            val fullName: String = listOfNotNull(firstName, lastName).joinToString(" ").ifBlank {
+                ""
+            }
 
             textView.text = fullName
         } else {
@@ -502,11 +619,16 @@ object BindingUtils {
     @JvmStatic
     fun setCountryNameFollowingUser(textView: AppCompatTextView, user: FollowingUser?) {
         if (user != null) {
-            val firstName: String? = user.country?.takeIf { it.isNotBlank() }
-            val lastName: String? = user.city?.takeIf { it.isNotBlank() }
+            val firstName: String? = user.country?.takeIf {
+                it.isNotBlank()
+            }
+            val lastName: String? = user.city?.takeIf {
+                it.isNotBlank()
+            }
 
-            val fullName: String =
-                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "" }
+            val fullName: String = listOfNotNull(firstName, lastName).joinToString(" ").ifBlank {
+                ""
+            }
 
             textView.text = fullName
         } else {
@@ -518,11 +640,16 @@ object BindingUtils {
     @JvmStatic
     fun setCountryName(textView: AppCompatTextView, user: SuggestedUser?) {
         if (user != null) {
-            val firstName: String? = user.country?.takeIf { it.isNotBlank() }
-            val lastName: String? = user.city?.takeIf { it.isNotBlank() }
+            val firstName: String? = user.country?.takeIf {
+                it.isNotBlank()
+            }
+            val lastName: String? = user.city?.takeIf {
+                it.isNotBlank()
+            }
 
-            val fullName: String =
-                listOfNotNull(firstName, lastName).joinToString(" ").ifBlank { "" }
+            val fullName: String = listOfNotNull(firstName, lastName).joinToString(" ").ifBlank {
+                ""
+            }
 
             textView.text = fullName
         } else {
@@ -599,17 +726,6 @@ object BindingUtils {
         WindowInsetsControllerCompat(
             activity.window, activity.window.decorView
         ).isAppearanceLightStatusBars = isDark
-    }
-
-    fun formatDateTime(dateString: String): Pair<String, String> {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-        inputFormat.timeZone = TimeZone.getTimeZone("UTC")
-        val date = inputFormat.parse(dateString)!!
-        val dateFormat = SimpleDateFormat("EEEE dd.MM.yyyy", Locale.US)
-        val timeFormat = SimpleDateFormat("HH:mm", Locale.US)
-        dateFormat.timeZone = TimeZone.getDefault()
-        timeFormat.timeZone = TimeZone.getDefault()
-        return dateFormat.format(date) to timeFormat.format(date)
     }
 
 
@@ -690,6 +806,99 @@ object BindingUtils {
         }
     }
 
+    var gameUserid: String? = null
+
+    @SuppressLint("SetTextI18n")
+    @BindingAdapter("gameStatus")
+    @JvmStatic
+    fun gameStatus(textView: AppCompatTextView, mode: GameData?) {
+        //game status
+        mode?.let { game ->
+            //  1. Parse Date
+            val parsedDate = parseServerDate(game.date)
+            // 2. Calculate Invite Response
+            val team1 = game.team1Players ?: emptyList()
+            val team2 = game.team2Players ?: emptyList()
+
+            val needsInviteResponse =
+                team1.any { it.id == gameUserid && it.accepted == false } || team2.any {
+                    it.id == gameUserid && it.accepted == false
+                }
+
+            //  3. Apply Status Display
+            if (parsedDate != null) {
+
+                val display = gameStatusDisplay(
+                    parsedDate, game.status, needsInviteResponse
+                )
+
+                textView.text = display.text
+
+                if (display.iconRes != 0) {
+
+                    val drawable = ContextCompat.getDrawable(
+                        textView.context, display.iconRes
+                    )
+
+                    drawable?.let {
+
+                        val sizeInDp = 16
+                        val scale = textView.context.resources.displayMetrics.density
+                        val sizeInPx = (sizeInDp * scale).toInt()
+
+                        it.setBounds(0, 0, sizeInPx, sizeInPx)
+
+                        textView.setCompoundDrawables(
+                            null, it, null, null
+                        )
+                    }
+
+                } else {
+                    textView.setCompoundDrawables(null, null, null, null)
+                }
+            }
+        }
+    }
+
+
+    @SuppressLint("SetTextI18n")
+    @BindingAdapter("setGameDate")
+    @JvmStatic
+    fun TextView.setGameDate(dateTime: String?) {
+        if (dateTime.isNullOrEmpty()) {
+            text = ""
+            return
+        }
+        val (date, _) = formatDateTime(dateTime)
+
+        text = date
+    }
+
+    @SuppressLint("SetTextI18n")
+    @BindingAdapter("setGameTime")
+    @JvmStatic
+    fun TextView.setGameTime(dateTime: String?) {
+        if (dateTime.isNullOrEmpty()) {
+            text = ""
+            return
+        }
+        val (_, time) = formatDateTime(dateTime)
+
+        text = time
+    }
+
+
+    fun formatDateTime(dateString: String): Pair<String, String> {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+        val date = inputFormat.parse(dateString)!!
+        val dateFormat = SimpleDateFormat("EEEE dd.MM.yyyy", Locale.US)
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.US)
+        dateFormat.timeZone = TimeZone.getDefault()
+        timeFormat.timeZone = TimeZone.getDefault()
+        return dateFormat.format(date) to timeFormat.format(date)
+    }
+
 
     @SuppressLint("SetTextI18n")
     @BindingAdapter("modeFormat")
@@ -705,9 +914,85 @@ object BindingUtils {
     }
 
 
+    fun getGameSubtitle(game: GameData?): String {
+        if (game == null) return ""
+
+        val dateStr = game.date?.let {
+            try {
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+                inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+                val date = inputFormat.parse(it)
+                val outputFormat = SimpleDateFormat("EEEE dd.MM.yyyy", Locale.getDefault())
+                date?.let { date ->
+                    outputFormat.format(date)
+                }
+            } catch (_: Exception) {
+                null
+            }
+        }
+
+        val timeStr = game.date?.let {
+            try {
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+                inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+                val date = inputFormat.parse(it)
+                val outputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                date?.let { date ->
+                    outputFormat.format(date)
+                }
+            } catch (_: Exception) {
+                null
+            }
+        }
+
+        val modeStr = game.mode?.let {
+            "${it}x${it}"
+        }
+
+        val statusObj = gameStatusDisplay(
+            parseServerDate(game.date),
+            game.status,
+            false // Defaulting to false for simple subtitle
+        )
+        val statusStr = statusObj.text
+
+        val components = listOfNotNull(dateStr, timeStr, modeStr, statusStr.ifBlank { null })
+        return if (components.isNotEmpty()) {
+            components.joinToString(" • ")
+        } else {
+            game.field?.address ?: ""
+        }
+    }
+
+
+    fun getTournamentSubtitle(event: TournamentsEvent?): String {
+        if (event == null) return ""
+
+        val address = event.address
+
+        val start = convertToISODate(event.startDate)
+        val end = convertToISODate(event.endDate)
+
+        val dateStr = if (start != null && end != null) {
+            val displayFormat = SimpleDateFormat("EEEE dd/MM", Locale.ENGLISH)
+            val startStr = displayFormat.format(start)
+            val endStr = displayFormat.format(end)
+            if (startStr == endStr) {
+                startStr
+            } else {
+                "$startStr - $endStr"
+            }
+        } else {
+            null
+        }
+
+        val components = listOfNotNull(address?.takeIf { it.isNotBlank() }, dateStr)
+        return components.joinToString(" • ")
+    }
+
+
     fun gameStatusDisplay(
-        date: Date?,   // ✅ Accept Date instead of String
-        status: String?, needsInviteResponse: Boolean
+        date: Date?, status: String?, needsInviteResponse: Boolean
     ): GameStatusDisplay {
 
         if (date == null) return GameStatusDisplay("", 0)
@@ -751,7 +1036,7 @@ object BindingUtils {
                         }
                     }
 
-                    intervalSeconds > 1800 -> {
+                    else -> {
                         if (needsInviteResponse) {
                             GameStatusDisplay(
                                 text = "Invitation received", iconRes = R.drawable.iv_down_arrow
@@ -761,12 +1046,6 @@ object BindingUtils {
                                 text = "Incoming", iconRes = R.drawable.iv_right_arrow
                             )
                         }
-                    }
-
-                    else -> {
-                        GameStatusDisplay(
-                            text = "Starting soon", iconRes = R.drawable.iv_multiple_circle
-                        )
                     }
                 }
             }
@@ -850,7 +1129,34 @@ object BindingUtils {
         } catch (_: Exception) {
             null
         }
+    }
 
+    @SuppressLint("SetTextI18n")
+    @JvmStatic
+    @BindingAdapter("setTournamentDateRange")
+    fun setTournamentDateRange(
+        view: AppCompatTextView, event: TournamentsEvent?
+    ) {
+        if (event == null || event.startDate == null || event.endDate == null) {
+            view.text = view.context.getString(R.string.test_court_is_empty)
+            return
+        }
+
+        val start = convertToISODate(event.startDate)
+        val end = convertToISODate(event.endDate)
+
+        if (start != null && end != null) {
+            val displayFormat = SimpleDateFormat("EEEE dd/MM", Locale.ENGLISH)
+            val startStr = displayFormat.format(start)
+            val endStr = displayFormat.format(end)
+            if (startStr == endStr) {
+                view.text = startStr
+            } else {
+                view.text = "$startStr - $endStr"
+            }
+        } else {
+            view.text = view.context.getString(R.string.test_court_is_empty)
+        }
     }
 
     @JvmStatic
@@ -868,7 +1174,6 @@ object BindingUtils {
             else it.toString()
         }
     }
-
 
 
     fun applySystemBarMargins(view: View) {
@@ -896,5 +1201,12 @@ object BindingUtils {
         }
     }
 
+
+    @BindingAdapter("setImageFromUrl")
+    fun setImageFromUrl(imageView: ImageView, url: String?) {
+        Glide.with(imageView.context).load(url).placeholder(R.drawable.ic_beballer_grey_800)
+            .error(R.drawable.ic_beballer_grey_800).into(imageView)
+    }
 }
+
 

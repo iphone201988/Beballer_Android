@@ -9,7 +9,7 @@ class MapClusterItem(
 ) : ClusterItem {
     override fun getPosition(): LatLng = LatLng(item.lat, item.lng)
     override fun getTitle(): String = item.title
-    override fun getSnippet(): String? = item.address
+    override fun getSnippet(): String = item.address
 }
 
 

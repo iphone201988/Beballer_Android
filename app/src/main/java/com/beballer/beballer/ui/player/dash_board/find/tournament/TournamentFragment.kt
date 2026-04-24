@@ -1,7 +1,10 @@
 package com.beballer.beballer.ui.player.dash_board.find.tournament
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.view.View
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.viewModels
 import com.beballer.beballer.BR
 import com.beballer.beballer.R
@@ -9,28 +12,29 @@ import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.base.SimpleRecyclerViewAdapter
 import com.beballer.beballer.data.model.FindModel
-import com.beballer.beballer.data.model.PlaceDetails
 import com.beballer.beballer.databinding.CreateTournamentDialogItemBinding
 import com.beballer.beballer.databinding.FragmentTournamentBinding
 import com.beballer.beballer.databinding.RvTournamentItemBinding
 import com.beballer.beballer.ui.player.dash_board.profile.user.UserProfileActivity
 import com.beballer.beballer.utils.BaseCustomDialog
-import com.beballer.beballer.utils.BindingUtils
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken
-import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.gms.maps.model.MapStyleOptions
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TournamentFragment : BaseFragment<FragmentTournamentBinding>(){
+class TournamentFragment : BaseFragment<FragmentTournamentBinding>(), OnMapReadyCallback {
     private val viewModel: TournamentFragmentVM by viewModels()
     private lateinit var tournamentAdapter: SimpleRecyclerViewAdapter<FindModel, RvTournamentItemBinding>
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    private var mMap: GoogleMap? = null
 
     private lateinit var createTournamentDialogItem: BaseCustomDialog<CreateTournamentDialogItemBinding>
     override fun getLayoutResource(): Int {
@@ -42,26 +46,18 @@ class TournamentFragment : BaseFragment<FragmentTournamentBinding>(){
     }
 
     override fun onCreateView(view: View) {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        // map
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
         // observer
         initObserver()
-
-
-
-
-
         // click
         initOnClick()
-        setupSystemUI()
         // adapter
         initTournamentAdapter()
     }
 
-
-    private fun setupSystemUI() {
-        BindingUtils.applySystemBarMargins(binding.consMain)
-        BindingUtils.statusBarStyleWhite(requireActivity())
-
-    }
 
     /** handle click **/
     private fun initOnClick() {
@@ -82,6 +78,16 @@ class TournamentFragment : BaseFragment<FragmentTournamentBinding>(){
 
                 R.id.cardView -> {
                     createTournamentDialogItem()
+                }
+
+                R.id.courtsMapCard, R.id.view -> {
+                    val intent = Intent(requireContext(), UserProfileActivity::class.java)
+                    intent.putExtra("userType", "showMapFragment")
+                    intent.putExtra("mapType", "tournament")
+                    startActivity(intent)
+                    requireActivity().overridePendingTransition(
+                        R.anim.slide_in_right, R.anim.slide_out_left
+                    )
                 }
             }
         }
@@ -145,6 +151,52 @@ class TournamentFragment : BaseFragment<FragmentTournamentBinding>(){
     private fun initObserver() {
 
 
+    }
+
+    /**
+     * add marker
+     */
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+        try {
+            mMap?.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    requireContext(), R.raw.map_style
+                )
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        setCurrentLocation()
+
+    }
+
+    /**
+     * set current location
+     */
+    private fun setCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1001
+            )
+            return
+        }
+
+        mMap?.isMyLocationEnabled = true
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let {
+                val latLng = LatLng(it.latitude, it.longitude)
+
+                mMap?.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(latLng, 14f)
+                )
+            }
+        }
     }
 
 

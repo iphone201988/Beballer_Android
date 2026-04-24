@@ -190,7 +190,11 @@
     <string name="games">Games</string>
     <string name="tournaments">Tournaments</string>
     <string name="camps">Camps</string>
-    <string name="court_search">Court search</string>
+    <string name="court_search">Searching for courts…</string>
+    <string name="game_search">Searching for games…</string>
+    <string name="ticket_search">Searching for tickets…</string>
+    <string name="tournament_search">Searching for tournaments…</string>
+    <string name="camp_search">Searching for camps…</string>
     <string name="no_search_results_found">No search results found</string>
     <string name="ticketing">Ticketing</string>
     <string name="game_mode">Game Mode</string>
@@ -223,5 +227,16 @@
     <string name="localisation_du_tereain">Localisation du tereain</string>
     <string name="courts">Courts</string>
     <string name="courts_nearby">Courts nearby :</string>
+    <string name="add_a_camps">Add a camps</string>
+    <string name="add_a_tournament">Add a tournament</string>
+    <string name="add_a_ticket">Add a ticket</string>
+    <string name="add_a_game">Add a game</string>
+    <string name="test_court_is_empty">Test court is empty</string>
+    <string name="create_a_game">Create a game</string>
+    <string name="my_games">My Games</string>
+    <string name="my_game_data_empty">My game data empty</string>
+    <string name="public_game_data_empty">Public game data empty</string>
+    <string name="done_games">Done Games</string>
+    <string name="public_games">Public games</string>
 
 </resources>

@@ -210,7 +210,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_regular"
                 android:includeFontPadding="false"
-                android:text='@{String.valueOf(bean.score)+"0.pts"}'
+                android:text='@{String.valueOf(bean.score)+".0 pts"}'
                 android:textColor="#7A8FA6"
                 android:textSize="@dimen/_9ssp"
                 app:layout_constraintStart_toEndOf="@+id/middle"
@@ -224,7 +224,6 @@
                 android:fontFamily="@font/inter_semi_bold"
                 android:gravity="center"
                 android:onClick="@{v->vm.onClick(v)}"
-
                 android:text="@{String.valueOf(bean.followersCount)}"
                 android:textColor="#646464"
                 android:textSize="@dimen/_8ssp"

@@ -3,8 +3,11 @@ package com.beballer.beballer.ui.player.dash_board.find.player_profile
 import android.content.Intent
 import android.util.Log
 import android.view.View
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseActivity
 import com.beballer.beballer.base.BaseViewModel
@@ -39,6 +42,10 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
     }
 
     override fun onCreateView() {
+        enableEdgeToEdgePaddingTobBottom(binding.root)
+        // Status bar setup
+        BindingUtils.statusBarStyle(this)
+        BindingUtils.statusBarTextColor(this, true)
         // check
         binding.pos = 1
         binding.first.visibility = View.INVISIBLE
@@ -274,5 +281,15 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
 
     }
 
-
+    /**
+     * edge to edge margin
+     */
+    private fun enableEdgeToEdgePaddingTobBottom(rootView: View) {
+        enableEdgeToEdge()
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(0,systemBars.top, 0, systemBars.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+    }
 }

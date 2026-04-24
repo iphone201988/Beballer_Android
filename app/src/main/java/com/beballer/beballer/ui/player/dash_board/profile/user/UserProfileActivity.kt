@@ -36,6 +36,7 @@ class UserProfileActivity : BaseActivity<ActivityUserProfileBinding>() {
     }
 
     override fun onCreateView() {
+        enableEdgeToEdgePaddingTobBottom(binding.root)
         // Status bar setup
         BindingUtils.statusBarStyle(this)
         BindingUtils.statusBarTextColor(this, true)
@@ -234,7 +235,7 @@ class UserProfileActivity : BaseActivity<ActivityUserProfileBinding>() {
         enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(0, systemBars.top, 0, systemBars.bottom)
+            view.setPadding(0,0, 0, systemBars.bottom)
             WindowInsetsCompat.CONSUMED
         }
     }

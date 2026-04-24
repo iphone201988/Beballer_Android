@@ -52,7 +52,7 @@
                 android:layout_marginStart="-5dp"
                 android:layout_marginBottom="@dimen/_2sdp"
                 android:gravity="center"
-                android:text="Games"
+                android:text="@string/games"
                 android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toBottomOf="@+id/ivNotification"
                 app:layout_constraintStart_toEndOf="@+id/cancelImage"
@@ -104,7 +104,7 @@
                 android:background="@{pos==1?@drawable/round_corner_bg:null}"
                 android:gravity="center"
                 android:onClick="@{v->vm.onClick(v)}"
-                android:text="My Games"
+                android:text="@string/my_games"
                 android:textColor="@color/black_000000"
                 android:textSize="@dimen/_12ssp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -122,7 +122,7 @@
                 android:background="@{pos==2?@drawable/round_corner_bg:null}"
                 android:gravity="center"
                 android:onClick="@{v->vm.onClick(v)}"
-                android:text="Public games"
+                android:text="@string/public_games"
                 android:textColor="@color/black_000000"
                 android:textSize="@dimen/_12ssp"
                 app:layout_constraintBottom_toBottomOf="@+id/tvFeed"
@@ -144,22 +144,33 @@
             app:layout_constraintTop_toBottomOf="@+id/clTab">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/courts_map_view_card"
+                android:id="@+id/courtsMapCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginVertical="8dp"
+                android:onClick="@{v -> vm.onClick(v)}"
                 app:cardCornerRadius="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <fragment
-                    android:id="@+id/map"
-                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_100sdp" />
+                    android:layout_height="@dimen/_120sdp">
+
+                    <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/map"
+                        android:name="com.google.android.gms.maps.SupportMapFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <View
+                        android:id="@+id/view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:onClick="@{v -> vm.onClick(v)}" />
+
+                </FrameLayout>
             </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -167,6 +178,7 @@
             android:id="@+id/cardView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
             android:layout_marginEnd="@dimen/_10sdp"
             android:onClick="@{v->vm.onClick(v)}"
             app:cardCornerRadius="@dimen/_5sdp"
@@ -184,7 +196,7 @@
                 android:includeFontPadding="false"
                 android:paddingHorizontal="@dimen/_15sdp"
                 android:paddingVertical="@dimen/_7sdp"
-                android:text="Create a game"
+                android:text="@string/create_a_game"
                 android:textColor="@color/white"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -201,10 +213,10 @@
             android:layout_marginStart="@dimen/_15sdp"
             android:layout_marginBottom="@dimen/_2sdp"
             android:gravity="center"
-            android:visibility="gone"
-            android:text="Done Games"
+            android:text="@string/done_games"
             android:textColor="@color/black_000000"
             android:textSize="@dimen/_14ssp"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
@@ -214,6 +226,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:indicator_overlay="false"
+            android:visibility="@{pos==1 ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -221,20 +234,35 @@
             app:lottie_rawRes="@raw/refresh">
 
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvMyGame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDoneGame"
-            app:layout_constraintVertical_bias="0.0"
-            tools:itemCount="4"
-            tools:listitem="@layout/my_game_rv_item" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMyGame"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"
+                    android:paddingBottom="@dimen/_15sdp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/my_game_rv_item" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvNoData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="@string/my_game_data_empty"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_14ssp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </com.nabilmh.lottieswiperefreshlayout.LottieSwipeRefreshLayout>
@@ -248,24 +276,41 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            android:visibility="@{pos==2 ? View.VISIBLE : View.GONE}"
             app:layout_constraintTop_toBottomOf="@+id/cardView"
             app:lottie_rawRes="@raw/refresh">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvPublicGames"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDoneGame"
-            app:layout_constraintVertical_bias="0.0"
-            tools:itemCount="4"
-            tools:listitem="@layout/my_game_rv_item" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPublicGames"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"
+                    android:paddingBottom="@dimen/_15sdp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="4"
+                    tools:listitem="@layout/my_game_rv_item" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvPublicNoData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="@string/public_game_data_empty"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_14ssp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </com.nabilmh.lottieswiperefreshlayout.LottieSwipeRefreshLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -44,6 +44,7 @@
     <color name="workouts_dark_color">#103E60</color>
     <color name="ticketing_dark_color">#3A9176</color>
     <color name="ticketing_light_color">#DFF5E0</color>
+    <color name="color_ff7953">#ff7953</color>
     <color name="tournaments_dark_color">#A4443E</color>
     <color name="tournaments_light_color">#FAB6B7</color>
     <color name="games_map_pin_color">#E7A28B</color>

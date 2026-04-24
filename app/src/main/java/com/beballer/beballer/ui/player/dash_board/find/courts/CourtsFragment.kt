@@ -102,27 +102,36 @@ class CourtsFragment : BaseFragment<FragmentCourtsBinding>(), OnMapReadyCallback
                                 val myDataModel: GetCourtApiResponse? =
                                     BindingUtils.parseJson(it.data.toString())
                                 if (myDataModel != null) {
-                                    if (myDataModel.courts?.isNotEmpty() == true) {
-                                        val pastSessionData = myDataModel.courts
+                                    val courtsList = myDataModel.courts ?: emptyList()
+                                    if (courtsList.isNotEmpty()) {
+                                        binding.tvNoData.visibility = View.GONE
                                         val feedItems: List<ViewItem> =
-                                            pastSessionData.filterNotNull()
+                                            courtsList.filterNotNull()
                                                 .map { list -> ViewItem.Post(list) }
                                         isLoading = false
                                         isLastPage = false
                                         isProgress = true
 
                                         if (currentPage == 1) {
-                                            myDataModel.courts.let { list ->
-                                                fullList = list as ArrayList<GetCourtData>
-                                                courtsAdapter.setList(feedItems)
-                                            }
+                                            fullList = courtsList as ArrayList<GetCourtData>
+                                            courtsAdapter.setList(feedItems)
                                         } else {
                                             courtsAdapter.addToList(feedItems)
                                         }
                                         isLastPage =
                                             currentPage == myDataModel.pagination?.totalPages
+                                    } else {
+                                        if (currentPage == 1) {
+                                            courtsAdapter.setList(emptyList())
+                                            binding.tvNoData.visibility = View.VISIBLE
+                                        }
                                     }
 
+                                } else {
+                                    if (currentPage == 1) {
+                                        courtsAdapter.setList(emptyList())
+                                        binding.tvNoData.visibility = View.VISIBLE
+                                    }
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()

@@ -7,6 +7,15 @@ enum class MapType(val url: String, val tag: String) {
     GAME(Constants.GAME_MAP_BOUNDS, Constants.GAME_MAP_BOUNDS),
     TICKET(Constants.TICKET_MAP_BOUNDS, Constants.TICKET_MAP_BOUNDS),
     TOURNAMENT(Constants.TOURNAMENTS_MAP_BOUNDS, Constants.TOURNAMENTS_MAP_BOUNDS),
-    CAMP(Constants.CAMPS_MAP_BOUNDS, Constants.CAMPS_MAP_BOUNDS),
-    SEARCH(Constants.COURT_MAP_BOUNDS, "search")
+    CAMP(Constants.CAMPS_MAP_BOUNDS, "CAMPS_MAP_BOUNDS"),
+
+    COURT_SEARCH(Constants.COURT_MAP_BOUNDS, "search"),
+
+    GAME_SEARCH(Constants.GAME_MAP_BOUNDS, "search"),
+
+    TICKET_SEARCH(Constants.TICKET_MAP_BOUNDS, "search"),
+
+    TOURNAMENT_SEARCH(Constants.TOURNAMENTS_MAP_BOUNDS, "search"),
+
+    CAMP_SEARCH(Constants.CAMPS_MAP_BOUNDS, "search")
 }

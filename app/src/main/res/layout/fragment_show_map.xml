@@ -38,6 +38,7 @@
                 app:layout_constraintTop_toTopOf="@+id/ivNotification" />
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/tvImageType"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
@@ -109,9 +110,9 @@
 
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/mapSearchView"
-                android:layout_width="376dp"
+                android:layout_width="0dp"
                 android:layout_height="45dp"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginHorizontal="@dimen/_14sdp"
                 android:layout_marginVertical="@dimen/_10sdp"
                 android:background="@drawable/search_view_background"
                 android:backgroundTint="@color/eeeeef"
@@ -120,6 +121,7 @@
                 app:defaultQueryHint="Search"
                 app:iconifiedByDefault="false"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:queryBackground="@null"
@@ -140,8 +142,8 @@
             app:layout_constraintTop_toBottomOf="@+id/clMap">
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="@dimen/_25sdp"
-                android:layout_height="@dimen/_25sdp"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
                 android:layout_gravity="center"
                 android:src="@drawable/filter_icon"
                 android:tint="@color/white" />
@@ -185,8 +187,8 @@
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:fontFamily="@font/inter_medium"
                 android:includeFontPadding="false"
-                android:text="Courts"
                 android:onClick="@{v->vm.onClick(v)}"
+                android:text="@string/courts"
                 android:textColor="@color/black_000000"
                 android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toBottomOf="@+id/cardViewCourt"
@@ -257,8 +259,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:fontFamily="@font/inter_medium"
-                android:onClick="@{v->vm.onClick(v)}"
                 android:includeFontPadding="false"
+                android:onClick="@{v->vm.onClick(v)}"
                 android:text="@string/ticketing"
                 android:textColor="@color/black_000000"
                 android:textSize="@dimen/_16ssp"
@@ -348,7 +350,7 @@
             android:layout_marginBottom="@dimen/_20sdp"
             android:contentDescription="@string/addicon"
             android:onClick="@{v->vm.onClick(v)}"
-            android:src="@drawable/circle"
+            android:src="@drawable/plus_circle_fill"
             app:layout_constraintBottom_toTopOf="@+id/rvCourtMapBound"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -374,9 +376,9 @@
             android:layout_marginBottom="@dimen/_10sdp"
             android:clipToPadding="false"
             android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/_5sdp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:paddingHorizontal="@dimen/_5sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:itemCount="1"
@@ -389,9 +391,9 @@
             android:layout_marginBottom="@dimen/_10sdp"
             android:clipToPadding="false"
             android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/_5sdp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:paddingHorizontal="@dimen/_5sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:itemCount="1"
@@ -404,9 +406,9 @@
             android:layout_marginBottom="@dimen/_10sdp"
             android:clipToPadding="false"
             android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/_5sdp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:paddingHorizontal="@dimen/_5sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:itemCount="1"
@@ -419,9 +421,9 @@
             android:layout_marginBottom="@dimen/_10sdp"
             android:clipToPadding="false"
             android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/_5sdp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:paddingHorizontal="@dimen/_5sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:itemCount="1"
@@ -434,9 +436,9 @@
             android:layout_marginBottom="@dimen/_10sdp"
             android:clipToPadding="false"
             android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/_5sdp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:paddingHorizontal="@dimen/_5sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:itemCount="1"
@@ -455,9 +457,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bottom_bg"
+                android:elevation="@dimen/_5sdp"
                 android:nestedScrollingEnabled="false"
                 android:paddingTop="@dimen/_10sdp"
-                android:elevation="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_20sdp"
                 app:behavior_hideable="true"
                 app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
@@ -475,12 +477,10 @@
                     app:vm="@{vm}" />
 
 
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

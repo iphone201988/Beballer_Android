@@ -64,7 +64,7 @@ import kotlin.math.abs
 class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, CommonPostInterface,
     AddPostInterface {
     private val viewModel: SocialsFragmentVM by viewModels()
-    // ✅ Shared Activity ViewModel
+    //  Shared Activity ViewModel
     private val dashboardVM: DashboardActivityVM by activityViewModels()
 
     private lateinit var createProfileDialogItem: BaseCustomDialog<CreateProfileDialogItemDesignBinding>
@@ -109,8 +109,6 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
         boundsProvider = LocationBoundsProvider(requireContext())
 
         dashboardVM.userLocation.observe(viewLifecycleOwner) { location ->
-
-            Log.i("location", "Received: ${location.latitude}, ${location.longitude}")
 
             loadPlayers(location, LocationScope.CITY)
         }
@@ -577,6 +575,12 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
 
                                 postList = myDataModel.data
                                 if (currentPage == 1) {
+                                    if (myDataModel.data.isEmpty()) {
+                                        binding.rvHome.visibility = View.GONE
+                                        // You might want to add a no data view in XML and show it here
+                                    } else {
+                                        binding.rvHome.visibility = View.VISIBLE
+                                    }
                                     myDataModel.data.let {
                                         homePostAdapter.setList(it, getList())
                                     }
@@ -672,6 +676,11 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                                     isLoadingSub = false
                                     isLastPageSub = false
                                     if (currentSubPage == 1) {
+                                        if (myDataModel.data.isEmpty()) {
+                                            binding.rvHomeSub.visibility = View.GONE
+                                        } else {
+                                            binding.rvHomeSub.visibility = View.VISIBLE
+                                        }
                                         myDataModel.data.let {
                                             homeSubPostAdapter.setList(it, getList())
                                         }

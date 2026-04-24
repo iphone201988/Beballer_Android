@@ -13,6 +13,7 @@ import android.view.animation.OvershootInterpolator
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -26,9 +27,11 @@ import com.beballer.beballer.base.SimpleRecyclerViewAdapter
 import com.beballer.beballer.data.api.Constants
 import com.beballer.beballer.data.model.GetGameMapBoundData
 import com.beballer.beballer.data.model.GetMapBoundData
+import com.beballer.beballer.data.model.GetTournamentsMapBoundData
 import com.beballer.beballer.data.model.MapBounds
-import com.beballer.beballer.data.model.MapCourt
 import com.beballer.beballer.data.model.SearchCourtApiData
+import com.beballer.beballer.data.model.SearchResultItem
+import com.beballer.beballer.data.model.toSearchResult
 import com.beballer.beballer.databinding.FragmentShowMapBinding
 import com.beballer.beballer.databinding.RvSearchMapItemBinding
 import com.beballer.beballer.ui.player.dash_board.find.courts.AddCourtActivity
@@ -65,11 +68,12 @@ import kotlin.math.sqrt
 @AndroidEntryPoint
 class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallback {
     private val viewModel: SingleDataFragmentVM by viewModels()
-    private lateinit var searchDataAdapter: SimpleRecyclerViewAdapter<MapCourt, RvSearchMapItemBinding>
+    private lateinit var searchDataAdapter: SimpleRecyclerViewAdapter<SearchResultItem, RvSearchMapItemBinding>
     private val translationYaxis = -100F
     private lateinit var adapter: MapMultiTypeAdapter
     private val list = mutableListOf<MapListItem>()
     private val markerCourtMap = mutableMapOf<String, MapListItem>()
+    private val searchResultsMap = mutableMapOf<String, MapListItem>()
 
     private var isFabMenuVisible = false
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
@@ -91,6 +95,7 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val interpolator = OvershootInterpolator()
+
     override fun getLayoutResource(): Int {
         return R.layout.fragment_show_map
     }
@@ -108,6 +113,10 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
         initOnCLick()
         initClickBottomSheet()
         // adapter
+        val userId: String =
+            sharedPrefManager.getLoginData()?.data?.user?._id.takeIf { !it.isNullOrEmpty() } ?: ""
+        BindingUtils.gameUserid = userId
+        // adapter
         initAdapter()
         initSearchAdapter()
         // observer
@@ -118,11 +127,70 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
         setupSearch()
         val data = arguments?.getString("mapType")
         when (data) {
-            "court" -> apiType = 1
-            "game" -> apiType = 2
-            "ticket" -> apiType = 3
-            "tournament" -> apiType = 4
-            "camps" -> apiType = 5
+            "court" -> {
+                binding.tvAddCourt.text = getString(R.string.add_a_court)
+                binding.tvTitle.text = getString(R.string.courts)
+                binding.AddButton.setColorFilter(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.courts_light_color
+                    )
+                )
+                binding.tvImageType.setImageResource(R.drawable.top_right_angle_court)
+                apiType = 1
+            }
+
+            "game" -> {
+                binding.tvAddCourt.text = getString(R.string.add_a_game)
+                binding.tvTitle.text = getString(R.string.games)
+                binding.AddButton.setColorFilter(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.color_ff7953
+                    )
+                )
+                binding.tvImageType.setImageResource(R.drawable.top_right_angle_red)
+                apiType = 2
+            }
+
+            "ticket" -> {
+                binding.tvAddCourt.text = getString(R.string.add_a_ticket)
+                binding.tvTitle.text = getString(R.string.ticketing)
+                binding.tvImageType.setImageResource(R.drawable.top_right_angle_ticketing)
+                binding.AddButton.setColorFilter(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.five_color
+                    )
+                )
+                apiType = 3
+            }
+
+            "tournament" -> {
+                binding.tvAddCourt.text = getString(R.string.add_a_tournament)
+                binding.tvTitle.text = getString(R.string.tournaments)
+                binding.tvImageType.setImageResource(R.drawable.top_right_angle_tournament)
+                binding.AddButton.setColorFilter(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.tournaments_light_color
+                    )
+                )
+                apiType = 4
+            }
+
+            "camps" -> {
+                binding.tvTitle.text = getString(R.string.camps)
+                binding.tvImageType.setImageResource(R.drawable.top_right_angle_camps)
+                binding.AddButton.setColorFilter(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.camps_light_color
+                    )
+                )
+                binding.tvAddCourt.text = getString(R.string.add_a_camps)
+                apiType = 5
+            }
         }
     }
 
@@ -174,33 +242,32 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
         binding.mapMenusLayout.translationY = translationYaxis
         binding.mapMenusLayout.isVisible = false
         binding.cardViewFilter.setOnClickListener {
-            when (isFabMenuVisible) {
-                true -> {
-                    binding.cardViewFilter.animate().rotation(0F).setInterpolator(interpolator)
-                        .setDuration(150).start()
-                    binding.mapMenusLayout.animate().translationY(translationYaxis).alpha(0F)
-                        .setInterpolator(interpolator).setDuration(300)
-                        .setListener(object : AnimatorListenerAdapter() {
-                            override fun onAnimationEnd(animation: Animator) {
-                                super.onAnimationEnd(animation)
-                                binding.mapMenusLayout.isVisible = false
-
-                            }
-                        }).start()
-                }
-
-                false -> {
-                    binding.mapMenusLayout.isVisible = true
-
-                    binding.cardViewFilter.animate().rotation(-90F).setInterpolator(interpolator)
-                        .setDuration(150).start()
-
-                    binding.mapMenusLayout.animate().translationY(0F).setListener(null).alpha(1F)
-                        .setInterpolator(interpolator).setDuration(300).start()
-                }
-            }
-            isFabMenuVisible = !isFabMenuVisible
+            toggleFabMenu()
         }
+    }
+
+    private fun toggleFabMenu() {
+        if (isFabMenuVisible) {
+            binding.cardViewFilter.animate().rotation(0F).setInterpolator(interpolator)
+                .setDuration(150).start()
+            binding.mapMenusLayout.animate().translationY(translationYaxis).alpha(0F)
+                .setInterpolator(interpolator).setDuration(300)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        super.onAnimationEnd(animation)
+                        binding.mapMenusLayout.isVisible = false
+                    }
+                }).start()
+        } else {
+            binding.mapMenusLayout.isVisible = true
+
+            binding.cardViewFilter.animate().rotation(-90F).setInterpolator(interpolator)
+                .setDuration(150).start()
+
+            binding.mapMenusLayout.animate().translationY(0F).setListener(null).alpha(1F)
+                .setInterpolator(interpolator).setDuration(300).start()
+        }
+        isFabMenuVisible = !isFabMenuVisible
     }
 
     /**
@@ -210,8 +277,14 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
         viewModel.onClick.observe(viewLifecycleOwner) {
             when (it?.id) {
                 R.id.AddButton -> {
-                    val intent = Intent(requireContext(), AddCourtActivity::class.java)
-                    startActivity(intent)
+                    if (apiType == 1) {
+                        val intent = Intent(requireContext(), AddCourtActivity::class.java)
+                        startActivity(intent)
+                        requireActivity().overridePendingTransition(
+                            R.anim.slide_in_right, R.anim.slide_out_left
+                        )
+                    }
+
                 }
 
                 R.id.cancelImage -> {
@@ -219,6 +292,16 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
                 }
 
                 R.id.cardViewCourtGame, R.id.tvGame -> {
+                    toggleFabMenu()
+                    binding.tvAddCourt.text = getString(R.string.add_a_game)
+                    binding.tvTitle.text = getString(R.string.games)
+                    binding.AddButton.setColorFilter(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.games_light_color
+                        )
+                    )
+                    binding.tvImageType.setImageResource(R.drawable.top_right_angle_red)
                     if (apiType != 2) {
                         apiType = 2
                         clearMapCache()
@@ -227,6 +310,16 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
                 }
 
                 R.id.cardViewCourt, R.id.tvCourt -> {
+                    toggleFabMenu()
+                    binding.tvAddCourt.text = getString(R.string.add_a_court)
+                    binding.tvImageType.setImageResource(R.drawable.top_right_angle_court)
+                    binding.AddButton.setColorFilter(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.courts_light_color
+                        )
+                    )
+                    binding.tvTitle.text = getString(R.string.courts)
                     if (apiType != 1) {
                         apiType = 1
                         clearMapCache()
@@ -235,14 +328,34 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
                 }
 
                 R.id.cardViewTicket, R.id.tvTicket -> {
-                    if (apiType != 3) {
-                        apiType = 3
-                        clearMapCache()
-                        fetchCourtsForBounds(apiType)
-                    }
+                    toggleFabMenu()
+                    binding.tvAddCourt.text = getString(R.string.add_a_ticket)
+                    binding.tvImageType.setImageResource(R.drawable.top_right_angle_ticketing)
+                    binding.tvTitle.text = getString(R.string.ticketing)
+                    binding.AddButton.setColorFilter(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.ticketing_light_color
+                        )
+                    )
+//                    if (apiType != 3) {
+//                        apiType = 3
+//                        clearMapCache()
+//                        fetchCourtsForBounds(apiType)
+//                    }
                 }
 
                 R.id.cardViewTournaments, R.id.tvTournaments -> {
+                    binding.tvTitle.text = getString(R.string.tournaments)
+                    binding.AddButton.setColorFilter(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.tournaments_light_color
+                        )
+                    )
+                    binding.tvImageType.setImageResource(R.drawable.top_right_angle_tournament)
+                    toggleFabMenu()
+                    binding.tvAddCourt.text = getString(R.string.add_a_tournament)
                     if (apiType != 4) {
                         apiType = 4
                         clearMapCache()
@@ -251,6 +364,16 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
                 }
 
                 R.id.cardViewCamps, R.id.tvCamps -> {
+                    binding.tvTitle.text = getString(R.string.camps)
+                    binding.tvImageType.setImageResource(R.drawable.top_right_angle_camps)
+                    binding.AddButton.setColorFilter(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.camps_light_color
+                        )
+                    )
+                    toggleFabMenu()
+                    binding.tvAddCourt.text = getString(R.string.add_a_camps)
                     if (apiType != 5) {
                         apiType = 5
                         clearMapCache()
@@ -352,12 +475,12 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
                         Constants.TOURNAMENTS_MAP_BOUNDS -> {
                             runCatching {
                                 val model =
-                                    BindingUtils.parseJson<GetMapBoundData>(it.data.toString())
-                                if (model?.success == true && model.courts != null) {
-                                    val tournaments = model.courts
+                                    BindingUtils.parseJson<GetTournamentsMapBoundData>(it.data.toString())
+                                if (model?.success == true && model.data != null) {
+                                    val tournaments = model.data.events
                                     list.clear()
-                                    tournaments.forEach { it ->
-                                        list.add(MapListItem.Court(it))
+                                    tournaments?.forEach { it ->
+                                        list.add(MapListItem.Tournament(it))
                                     }
                                     adapter.submitList(list)
                                     addMarkers(list)
@@ -372,15 +495,15 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
                             }
                         }
 
-                        Constants.CAMPS_MAP_BOUNDS -> {
+                        "CAMPS_MAP_BOUNDS" -> {
                             runCatching {
                                 val model =
-                                    BindingUtils.parseJson<GetMapBoundData>(it.data.toString())
-                                if (model?.success == true && model.courts != null) {
-                                    val camps = model.courts
+                                    BindingUtils.parseJson<GetTournamentsMapBoundData>(it.data.toString())
+                                if (model?.success == true && model.data != null) {
+                                    val tournaments = model.data.events
                                     list.clear()
-                                    camps.forEach { it ->
-                                        list.add(MapListItem.Court(it))
+                                    tournaments?.forEach { it ->
+                                        list.add(MapListItem.Tournament(it))
                                     }
                                     adapter.submitList(list)
                                     addMarkers(list)
@@ -397,15 +520,75 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
 
                         "search" -> {
                             runCatching {
-                                val model =
-                                    BindingUtils.parseJson<SearchCourtApiData>(it.data.toString())
-                                if (model?.success == true && model.courts != null) {
-                                    //addCourtMarkers(model.courts)
-                                    showSearchData(model.courts)
-                                } else {
-                                    showErrorToast(model?.message.toString())
-                                }
+                                searchResultsMap.clear()
+                                val jsonStr = it.data.toString()
+                                when (apiType) {
+                                    2 -> { // GAME
+                                        val model =
+                                            BindingUtils.parseJson<GetGameMapBoundData>(jsonStr)
+                                        if (model?.success == true && model.data?.games != null) {
+                                            val results = model.data.games.map { game ->
+                                                val searchItem = game.toSearchResult()
+                                                searchResultsMap[searchItem.id] =
+                                                    MapListItem.Game(game)
+                                                searchItem
+                                            }
+                                            showSearchData(results)
+                                        }
+                                    }
 
+                                    4 -> { // tournament
+                                        val model =
+                                            BindingUtils.parseJson<GetTournamentsMapBoundData>(
+                                                jsonStr
+                                            )
+                                        if (model?.success == true && model.data?.events != null) {
+                                            val results = model.data.events.map { event ->
+                                                val searchItem = event.toSearchResult()
+                                                searchResultsMap[searchItem.id] =
+                                                    MapListItem.Tournament(event)
+                                                searchItem
+                                            }
+                                            showSearchData(results)
+                                        }
+                                    }
+
+                                    5 -> { // camps
+                                        val model =
+                                            BindingUtils.parseJson<GetTournamentsMapBoundData>(
+                                                jsonStr
+                                            )
+                                        if (model?.success == true && model.data?.events != null) {
+                                            val results = model.data.events.map { event ->
+                                                val searchItem = event.toSearchResult()
+                                                searchResultsMap[searchItem.id] =
+                                                    MapListItem.Tournament(event)
+                                                searchItem
+                                            }
+                                            showSearchData(results)
+                                        }
+                                    }
+
+
+                                    else -> { // COURT, TICKET
+                                        val model =
+                                            BindingUtils.parseJson<SearchCourtApiData>(jsonStr)
+                                        if (model?.success == true && model.courts != null) {
+                                            val results =
+                                                model.courts.filterNotNull().map { court ->
+                                                    val searchItem = court.toSearchResult()
+                                                    val mapListItem = when (apiType) {
+                                                        1 -> MapListItem.Court(court)
+                                                        3 -> MapListItem.Ticket(court)
+                                                        else -> MapListItem.Court(court)
+                                                    }
+                                                    searchResultsMap[searchItem.id] = mapListItem
+                                                    searchItem
+                                                }
+                                            showSearchData(results)
+                                        }
+                                    }
+                                }
                             }.onFailure { e ->
                                 showErrorToast(e.message.toString())
                             }.also {
@@ -544,7 +727,15 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
      */
     private fun showSearchLoading() {
         binding.searchBottomSheet.apply {
-            tvStatus.text = getString(R.string.court_search)
+            val statusText = when (apiType) {
+                1 -> getString(R.string.court_search)
+                2 -> getString(R.string.game_search)
+                3 -> getString(R.string.ticket_search)
+                4 -> getString(R.string.tournament_search)
+                5 -> getString(R.string.camp_search)
+                else -> getString(R.string.court_search)
+            }
+            tvStatus.text = statusText
             tvStatus.isVisible = true
             rvMapSearch.isVisible = false
         }
@@ -559,7 +750,15 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
     private fun searchMapCourts(query: String) {
         binding.mapSearchView.clearFocus()
         showSearchLoading()
-        viewModel.getSearchMap(query)
+        val type = when (apiType) {
+            1 -> MapType.COURT_SEARCH
+            2 -> MapType.GAME_SEARCH
+            3 -> MapType.TICKET_SEARCH
+            4 -> MapType.TOURNAMENT_SEARCH
+            5 -> MapType.CAMP_SEARCH
+            else -> MapType.COURT_SEARCH
+        }
+        viewModel.getSearchMap(type, query)
     }
 
     /*** Initialize search adapter once ***/
@@ -577,13 +776,13 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
      * Show search results in bottom sheet
      */
     @SuppressLint("NotifyDataSetChanged")
-    private fun showSearchData(courts: List<MapCourt?>?) {
-        val hasData = !courts.isNullOrEmpty()
+    private fun showSearchData(items: List<SearchResultItem>) {
+        val hasData = items.isNotEmpty()
         binding.searchBottomSheet.apply {
             if (hasData) {
                 tvStatus.isVisible = false
                 rvMapSearch.isVisible = true
-                searchDataAdapter.list = courts.filterNotNull()
+                searchDataAdapter.list = items
                 searchDataAdapter.notifyDataSetChanged()
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             } else {
@@ -597,48 +796,48 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
     /**
      * Shows marker, info window, and scrolls RecyclerView
      */
-    private fun moveToCourtFromSearch(court: MapCourt) {
-        val id = court.id
-        val lat = court.lat
-        val lng = court.long
+    private fun moveToCourtFromSearch(item: SearchResultItem) {
+        val id = item.id
+        val lat = item.lat
+        val lng = item.lng
 
-        if (id == null || lat == null || lng == null) return
+        if (lat == null || lng == null) return
 
         isSearchSelection = true
         mapJob?.cancel()
 
         requireActivity().runOnUiThread {
+            val mapItem = searchResultsMap[id] ?: return@runOnUiThread
+
             clusterManager.clearItems()
             markerCourtMap.clear()
-
-            val mapItem = MapListItem.Court(court)
             markerCourtMap[id] = mapItem
-            val clusterItem = MapClusterItem(mapItem)
-            clusterManager.addItem(clusterItem)
+            clusterManager.addItem(MapClusterItem(mapItem))
             clusterManager.cluster()
 
             val latLng = LatLng(lat, lng)
             mMap?.animateCamera(
-                CameraUpdateFactory.newCameraPosition(
-                    CameraPosition.Builder().target(latLng).zoom(17.5f).build()
-                )
+                CameraUpdateFactory.newLatLngZoom(latLng, 17.5f)
             )
 
             selectedCourtId = id
-            clusterRenderer.selectMarker(id)
-            clusterRenderer.showMarkerInfoWindow(id)
+
+            // Give ClusterManager some time to render the marker
+            binding.root.postDelayed({
+                clusterRenderer.selectMarker(id)
+                clusterRenderer.showMarkerInfoWindow(id)
+            }, 500)
 
             binding.rvCourtMapBound.visibility = View.VISIBLE
 
-            val index = list.indexOfFirst { it is MapListItem.Court && it.data.id == id }
+            val index = list.indexOfFirst { it.id == id }
             if (index >= 0) {
-                // Court exists in main list → scroll to it
                 binding.rvCourtMapBound.post {
                     isRecyclerScrollFromMarker = true
                     binding.rvCourtMapBound.smoothScrollToPosition(index)
                 }
             } else {
-                // Court not in main list → show only selected court
+                // If not in current list, show only this search item
                 adapter.submitList(listOf(mapItem))
             }
 
@@ -748,52 +947,62 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
             fetchedBounds.add(key)
             when (type) {
                 1 -> {
+                    clusterRenderer.currentMapType = MapType.COURT
                     viewModel.getMapBound(
                         type = MapType.COURT,
                         northEastLat = expanded.northEastLat,
                         northEastLng = expanded.northEastLng,
                         southWestLat = expanded.southWestLat,
-                        southWestLng = expanded.southWestLng
+                        southWestLng = expanded.southWestLng,
+                        MapType.COURT
                     )
                 }
 
                 2 -> {
+                    clusterRenderer.currentMapType = MapType.GAME
                     viewModel.getMapBound(
                         type = MapType.GAME,
                         northEastLat = expanded.northEastLat,
                         northEastLng = expanded.northEastLng,
                         southWestLat = expanded.southWestLat,
-                        southWestLng = expanded.southWestLng
+                        southWestLng = expanded.southWestLng,
+                        MapType.GAME
                     )
                 }
 
                 3 -> {
+                    clusterRenderer.currentMapType = MapType.TICKET
                     viewModel.getMapBound(
                         type = MapType.TICKET,
                         northEastLat = expanded.northEastLat,
                         northEastLng = expanded.northEastLng,
                         southWestLat = expanded.southWestLat,
-                        southWestLng = expanded.southWestLng
+                        southWestLng = expanded.southWestLng,
+                        MapType.TICKET
                     )
                 }
 
                 4 -> {
+                    clusterRenderer.currentMapType = MapType.TOURNAMENT
                     viewModel.getMapBound(
                         type = MapType.TOURNAMENT,
                         northEastLat = expanded.northEastLat,
                         northEastLng = expanded.northEastLng,
                         southWestLat = expanded.southWestLat,
-                        southWestLng = expanded.southWestLng
+                        southWestLng = expanded.southWestLng,
+                        MapType.TOURNAMENT
                     )
                 }
 
                 5 -> {
+                    clusterRenderer.currentMapType = MapType.CAMP
                     viewModel.getMapBound(
                         type = MapType.CAMP,
                         northEastLat = expanded.northEastLat,
                         northEastLng = expanded.northEastLng,
                         southWestLat = expanded.southWestLat,
-                        southWestLng = expanded.southWestLng
+                        southWestLng = expanded.southWestLng,
+                        MapType.CAMP
                     )
                 }
             }
@@ -814,9 +1023,7 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
 
             binding.rvCourtMapBound.visibility = View.VISIBLE
 
-            val index = list.indexOfFirst {
-                it is MapListItem.Court && it.data.id == item.item.id
-            }
+            val index = list.indexOfFirst { it.id == item.item.id }
             if (index >= 0) {
                 binding.rvCourtMapBound.post {
                     binding.rvCourtMapBound.smoothScrollToPosition(index)
@@ -984,5 +1191,9 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
         )
     }
 
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        searchHandler?.removeCallbacksAndMessages(null)
+        mapJob?.cancel()
+    }
 }

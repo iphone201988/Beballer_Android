@@ -66,10 +66,11 @@ object Constants {
 
     // ticket section
     const val TICKET_MAP_BOUNDS = "ticket/map-bounds"
-    const val TOURNAMENTS_MAP_BOUNDS = "tournament/map-bounds"
+    const val TOURNAMENTS_MAP_BOUNDS = "event/map-bounds"
 
     // camps section
-    const val CAMPS_MAP_BOUNDS = "camps/map-bounds"
+    const val CAMPS_MAP_BOUNDS = "event/map-bounds"
+
 
     // player section
     const val NEARBY_PLAYER = "player/get-nearby-players"

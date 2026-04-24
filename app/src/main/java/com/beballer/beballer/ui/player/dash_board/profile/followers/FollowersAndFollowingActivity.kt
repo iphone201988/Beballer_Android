@@ -1,5 +1,6 @@
 package com.beballer.beballer.ui.player.dash_board.profile.followers
 
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -19,6 +20,7 @@ import com.beballer.beballer.data.model.FollowingUser
 import com.beballer.beballer.databinding.ActivityFollowersAndFollowingBinding
 import com.beballer.beballer.databinding.RvFollowersItemBinding
 import com.beballer.beballer.databinding.RvFollowingItemBinding
+import com.beballer.beballer.ui.player.dash_board.find.player_profile.PlayerProfileActivity
 import com.beballer.beballer.utils.BindingUtils
 import com.beballer.beballer.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
@@ -217,8 +219,18 @@ class FollowersAndFollowingActivity : BaseActivity<ActivityFollowersAndFollowing
     /** handle following adapter **/
     private fun initFollowingAdapter() {
         followingAdapter =
-            SimpleRecyclerViewAdapter(R.layout.rv_following_item, BR.bean) { _, _, _ ->
-
+            SimpleRecyclerViewAdapter(R.layout.rv_following_item, BR.bean) { v, m, _ ->
+               when(v?.id){
+                   R.id.clImageHeader->{
+                       val intent = Intent(this@FollowersAndFollowingActivity, PlayerProfileActivity::class.java)
+                       intent.putExtra("playerProfile",m._id)
+                       startActivity(intent)
+                       overridePendingTransition(
+                           com.airbnb.lottie.R.anim.abc_slide_in_bottom,
+                           com.airbnb.lottie.R.anim.abc_fade_out
+                       )
+                   }
+               }
             }
 
         binding.rvFollowing.adapter = followingAdapter
@@ -230,8 +242,18 @@ class FollowersAndFollowingActivity : BaseActivity<ActivityFollowersAndFollowing
      */
     private fun initFollowersAdapter() {
         followersAdapter =
-            SimpleRecyclerViewAdapter(R.layout.rv_followers_item, BR.bean) { _, _, _ ->
-
+            SimpleRecyclerViewAdapter(R.layout.rv_followers_item, BR.bean) { v, m, _ ->
+                when(v?.id){
+                    R.id.clImageHeader->{
+                        val intent = Intent(this@FollowersAndFollowingActivity, PlayerProfileActivity::class.java)
+                        intent.putExtra("playerProfile",m._id)
+                        startActivity(intent)
+                        overridePendingTransition(
+                            com.airbnb.lottie.R.anim.abc_slide_in_bottom,
+                            com.airbnb.lottie.R.anim.abc_fade_out
+                        )
+                    }
+                }
             }
 
         binding.rvFollowers.adapter = followersAdapter

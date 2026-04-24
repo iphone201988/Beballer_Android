@@ -24,16 +24,17 @@
         android:id="@+id/clImageHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{v->callback.onItemClick(v,bean,pos)}"
         android:padding="@dimen/_5sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivCommonPostProfile"
+            setImageFromUrl="@{bean.profilePicture}"
             android:layout_width="@dimen/_40sdp"
             android:layout_height="@dimen/_40sdp"
             android:scaleType="centerCrop"
-            setImageFromUrl="@{bean.profilePicture}"
             android:src="@drawable/ic_round_account_circle_40"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,6 +43,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvCommonPostName"
+            setNameFollowingUser="@{bean}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_8sdp"
@@ -49,7 +51,6 @@
             android:fontFamily="@font/inter_semi_bold"
             android:includeFontPadding="false"
             android:maxLines="1"
-            setNameFollowingUser="@{bean}"
             android:textColor="@color/black_040404"
             android:textSize="@dimen/_12ssp"
             app:layout_constraintEnd_toStartOf="@id/ivCommonMenu"
@@ -60,14 +61,13 @@
             app:layout_constraintVertical_chainStyle="packed" />
 
 
-
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvImageTypeUsername"
+            setTextEmptyCheck="@{bean.username}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_regular"
             android:includeFontPadding="false"
-            setTextEmptyCheck="@{bean.username}"
             android:textColor="@color/grey_50"
             android:textSize="@dimen/_8ssp"
             app:layout_constraintBottom_toTopOf="@id/tvImageSector"
@@ -76,11 +76,11 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvImageSector"
+            setCountryNameFollowingUser="@{bean}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_regular"
             android:includeFontPadding="false"
-            setCountryNameFollowingUser="@{bean}"
             android:textColor="@color/beballer_medium_grey"
             android:textSize="@dimen/_8ssp"
             app:layout_constraintBottom_toBottomOf="@+id/ivCommonPostProfile"
@@ -93,10 +93,9 @@
             android:layout_width="@dimen/_25sdp"
             android:layout_height="@dimen/_25sdp"
             android:layout_marginEnd="@dimen/_3sdp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@+id/ivCommonPostProfile"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/ivCommonPostProfile"
-            app:srcCompat="@drawable/badgeloading"
-             />
+            app:srcCompat="@drawable/badgeloading" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

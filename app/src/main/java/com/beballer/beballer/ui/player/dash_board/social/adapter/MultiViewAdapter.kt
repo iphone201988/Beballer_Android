@@ -1,5 +1,6 @@
 package com.beballer.beballer.ui.player.dash_board.social.adapter
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +9,6 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
-import androidx.collection.longIntMapOf
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
@@ -32,10 +32,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.imageview.ShapeableImageView
 
+@SuppressLint("NotifyDataSetChanged", "SetTextI18n")
 class MultiViewAdapter(
     private val listener: OnItemClickListener, private val userid: String?
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
-{
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val listItem: MutableList<FeedItem> = mutableListOf()
 
     companion object {
@@ -62,16 +62,14 @@ class MultiViewAdapter(
                     "video" -> TYPE_VIDEO
                     "textOnly" -> TYPE_TEXT
                     "court" -> TYPE_COURT
-                   "event" -> TYPE_EVENT
+                    "event" -> TYPE_EVENT
                     "game" -> TYPE_GAME
                     else -> TYPE_IMAGE
                 }
             }
 
             is FeedItem.Loader -> TYPE_LOADER
-            null -> {
-                TYPE_IMAGE
-            }
+
         }
     }
 
@@ -126,11 +124,6 @@ class MultiViewAdapter(
     override fun getItemCount() = listItem.size
 
 
-    fun clearList() {
-        listItem.clear()
-        notifyDataSetChanged()
-    }
-
     fun getPostAt(position: Int): GetUserPostData? {
         val item = listItem.getOrNull(position)
         return if (item is FeedItem.Post) item.post else null
@@ -173,7 +166,6 @@ class MultiViewAdapter(
             notifyItemRemoved(position)
         }
     }
-
 
 
     fun showLoader() {
@@ -228,10 +220,7 @@ class MultiViewAdapter(
             }
 
             is FeedItem.Loader -> Unit
-            null -> {
 
-
-            }
         }
     }
 
@@ -248,47 +237,62 @@ class MultiViewAdapter(
     fun setCurrentlyPlayingHolder(holder: VideoPostViewHolder?) {
         currentlyPlayingHolder = holder
     }
+
     // loader type
     class LoaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
     // image type
     inner class ImagePostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvCommonPostName: AppCompatTextView = itemView.findViewById(R.id.tvCommonPostName)
+        private val tvCommonPostName: AppCompatTextView =
+            itemView.findViewById(R.id.tvCommonPostName)
         private val tvSubscribe: AppCompatTextView = itemView.findViewById(R.id.tvSubscribe)
         private val tvImageTypeUsername: AppCompatTextView =
             itemView.findViewById(R.id.tvImageTypeUsername)
         private val tvImageSector: AppCompatTextView = itemView.findViewById(R.id.tvImageSector)
         private val ivImage: ShapeableImageView = itemView.findViewById(R.id.ivImage)
-        private val ivCommonPostProfile: ShapeableImageView = itemView.findViewById(R.id.ivCommonPostProfile)
-        private val tvCommonPostDesc: AppCompatTextView = itemView.findViewById(R.id.tvCommonPostDesc)
+        private val ivCommonPostProfile: ShapeableImageView =
+            itemView.findViewById(R.id.ivCommonPostProfile)
+        private val tvCommonPostDesc: AppCompatTextView =
+            itemView.findViewById(R.id.tvCommonPostDesc)
 
-        private val eventName : AppCompatTextView = itemView.findViewById(R.id.tvName)
-        private val eventLocation : AppCompatTextView = itemView.findViewById(R.id.tvCountryName)
-        private val ivCommonLike: AppCompatImageView =
-            itemView.findViewById(R.id.ivCommonLike)
+        private val eventName: AppCompatTextView = itemView.findViewById(R.id.tvName)
+        private val eventLocation: AppCompatTextView = itemView.findViewById(R.id.tvCountryName)
+        private val ivCommonLike: AppCompatImageView = itemView.findViewById(R.id.ivCommonLike)
         private val ivCommonComment: AppCompatImageView =
             itemView.findViewById(R.id.ivCommonComment)
         private val ivCommonMenu: AppCompatImageView = itemView.findViewById(R.id.ivCommonMenu)
-        private val ivCommonShare: AppCompatImageView =
-            itemView.findViewById(R.id.ivCommonShare)
+        private val ivCommonShare: AppCompatImageView = itemView.findViewById(R.id.ivCommonShare)
         private val tvImageLike: AppCompatTextView = itemView.findViewById(R.id.tvImageLike)
         private val tvImageComment: AppCompatTextView = itemView.findViewById(R.id.tvImageComment)
         private val shareCount: AppCompatTextView = itemView.findViewById(R.id.share_tv)
         private val tvHour: AppCompatTextView = itemView.findViewById(R.id.tvHour)
         private val clCommon: ConstraintLayout = itemView.findViewById(R.id.clCommon)
+
+        @SuppressLint("SetTextI18n")
         fun bind(item: GetUserPostData?, listener: OnItemClickListener, position: Int) {
             // subscription button handel
-            if (userid.equals(item?.publisherData?._id)){
+            if (userid.equals(item?.publisherData?._id)) {
                 tvSubscribe.visibility = View.GONE
-            }else{
+            } else {
                 tvSubscribe.visibility = View.VISIBLE
             }
 
-            if (item?.isSubscribed==true){
+            if (item?.isSubscribed == true) {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribed)
-                tvSubscribe.setTextColor(ContextCompat.getColor(tvSubscribe.context, R.color.black_040404))
-            }else{
+                tvSubscribe.setTextColor(
+                    ContextCompat.getColor(
+                        tvSubscribe.context,
+                        R.color.black_040404
+                    )
+                )
+            } else {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribe)
-                tvSubscribe.setTextColor(ContextCompat.getColor(tvSubscribe.context, R.color.blue_00bef5))
+                tvSubscribe.setTextColor(
+                    ContextCompat.getColor(
+                        tvSubscribe.context,
+                        R.color.blue_00bef5
+                    )
+                )
             }
 
             eventName.setIfNotEmpty(item?.event?.name)
@@ -297,7 +301,6 @@ class MultiViewAdapter(
                 item?.publisherData?.firstName?.takeIf { it.isNotBlank() },
                 item?.publisherData?.lastName?.takeIf { it.isNotBlank() }).joinToString(" ")
                 .ifBlank { item?.publisherData?.username }
-            Log.i("fsfssdf", "bind: $fullName ")
 
             tvCommonPostName.text = fullName
             val username = item?.publisherData?.username?.takeIf { it.isNotBlank() } ?: "user"
@@ -319,12 +322,10 @@ class MultiViewAdapter(
             }
 
             Log.i("Fdsfdsfds", "bind: $imageUrl")
-            Glide.with(ivCommonPostProfile.context)
-                .load(imageUrl)
+            Glide.with(ivCommonPostProfile.context).load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
                 .error(R.drawable.ic_round_account_circle_40)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(ivCommonPostProfile)
+                .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivCommonPostProfile)
             //  commentCount.text = item?.likesCount.toString()
 
 
@@ -338,15 +339,13 @@ class MultiViewAdapter(
 
                 imageUrl?.let {
 
-                    Glide.with(ivImage.context)
-                        .load(it)
+                    Glide.with(ivImage.context).load(it)
                         .placeholder(R.drawable.progress_animation_small)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(ivImage)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivImage)
                 }
             }
             val rawDate = item?.date
-            if (rawDate?.isNotEmpty() == true){
+            if (rawDate?.isNotEmpty() == true) {
                 val date = BindingUtils.convertToDate(rawDate)
                 val relative = BindingUtils.DateHelper.formatRelativeDate(date)
                 tvHour.text = relative
@@ -373,24 +372,25 @@ class MultiViewAdapter(
         }
 
     }
+
     // video type
     inner class VideoPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val postVideoPlayer: PlayerView =
-            itemView.findViewById(R.id.postVideoPlayer)
+        private val postVideoPlayer: PlayerView = itemView.findViewById(R.id.postVideoPlayer)
         private val videoThumbnail: AppCompatImageView = itemView.findViewById(R.id.videoThumbnail)
         private val tvHour: AppCompatTextView = itemView.findViewById(R.id.tvHour)
-        private val ivCommonPostProfile: ShapeableImageView = itemView.findViewById(R.id.ivCommonPostProfile)
+        private val ivCommonPostProfile: ShapeableImageView =
+            itemView.findViewById(R.id.ivCommonPostProfile)
         private val clCommon: ConstraintLayout = itemView.findViewById(R.id.clCommon)
         private val tvLike: AppCompatTextView = itemView.findViewById(R.id.tvLike)
         private val tvPublisherUsername: AppCompatTextView =
             itemView.findViewById(R.id.tvPublisherUsername)
-        private val tvCommonPostName: AppCompatTextView = itemView.findViewById(R.id.tvCommonPostName)
+        private val tvCommonPostName: AppCompatTextView =
+            itemView.findViewById(R.id.tvCommonPostName)
         private val tvComment: AppCompatTextView = itemView.findViewById(R.id.tvComment)
         private val ivCommonLike: AppCompatImageView = itemView.findViewById(R.id.ivCommonLike)
         private val ivCommonComment: AppCompatImageView =
             itemView.findViewById(R.id.ivCommonComment)
-        private val ivCommonShare: AppCompatImageView =
-            itemView.findViewById(R.id.ivCommonShare)
+        private val ivCommonShare: AppCompatImageView = itemView.findViewById(R.id.ivCommonShare)
         private val ivCommonMenu: AppCompatImageView = itemView.findViewById(R.id.ivCommonMenu)
         private val tvVideoPost: AppCompatTextView = itemView.findViewById(R.id.tvVideoPost)
         private val tvShare: AppCompatTextView = itemView.findViewById(R.id.tvComment)
@@ -399,20 +399,31 @@ class MultiViewAdapter(
         private var videoPlayer: ExoPlayer? = null
         private var currentVideoUrl: String? = null
 
+
         fun bind(item: GetUserPostData?, listener: OnItemClickListener, position: Int) {
             // subscription button handel
-            if (userid.equals(item?.publisherData?._id)){
+            if (userid.equals(item?.publisherData?._id)) {
                 tvSubscribe.visibility = View.GONE
-            }else{
+            } else {
                 tvSubscribe.visibility = View.VISIBLE
             }
 
-            if (item?.isSubscribed==true){
+            if (item?.isSubscribed == true) {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribed)
-                tvSubscribe.setTextColor(ContextCompat.getColor(tvSubscribe.context, R.color.black_040404))
-            }else{
+                tvSubscribe.setTextColor(
+                    ContextCompat.getColor(
+                        tvSubscribe.context,
+                        R.color.black_040404
+                    )
+                )
+            } else {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribe)
-                tvSubscribe.setTextColor(ContextCompat.getColor(tvSubscribe.context, R.color.blue_00bef5))
+                tvSubscribe.setTextColor(
+                    ContextCompat.getColor(
+                        tvSubscribe.context,
+                        R.color.blue_00bef5
+                    )
+                )
             }
             tvLike.text = item?.likesCount.toString()
             tvComment.text = item?.commentCount.toString()
@@ -429,20 +440,16 @@ class MultiViewAdapter(
             currentVideoUrl = videoUrl
             val profilePath = item?.publisherData?.profilePicture
 
-            val imageUrl = profilePath
-                ?.takeIf { it.isNotBlank() }
-                ?.let {
+            val imageUrl = profilePath?.takeIf { it.isNotBlank() }?.let {
                     Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
                 }
 
-            Glide.with(ivCommonPostProfile.context)
-                .load(imageUrl)
+            Glide.with(ivCommonPostProfile.context).load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
                 .error(R.drawable.ic_round_account_circle_40)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(ivCommonPostProfile)
+                .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivCommonPostProfile)
             val rawDate = item?.date
-            if (rawDate?.isNotEmpty() == true){
+            if (rawDate?.isNotEmpty() == true) {
                 val date = BindingUtils.convertToDate(rawDate)
                 val relative = BindingUtils.DateHelper.formatRelativeDate(date)
                 tvHour.text = relative
@@ -468,7 +475,7 @@ class MultiViewAdapter(
 //                val aspectRatio = originalWidth.toFloat() / originalHeight.toFloat()
 //
 //                val layoutParams = postVideoPlayer.layoutParams
-//                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+//                .width = ViewGroup.LayoutParams.MATCH_PARENT
 //
 //                // You can adjust this based on your max allowed height
 //                val maxWidth = itemView.resources.displayMetrics.widthPixels
@@ -573,15 +580,18 @@ class MultiViewAdapter(
         }
 
     }
+
     // text type
     inner class TextPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvCommonPostName: AppCompatTextView = itemView.findViewById(R.id.tvCommonPostName)
+        private val tvCommonPostName: AppCompatTextView =
+            itemView.findViewById(R.id.tvCommonPostName)
         private val tvLike: AppCompatTextView = itemView.findViewById(R.id.tvLike)
         private val tvHour: AppCompatTextView = itemView.findViewById(R.id.tvHour)
         private val tvComment: AppCompatTextView = itemView.findViewById(R.id.tvComment)
         private val tvShare: AppCompatTextView = itemView.findViewById(R.id.tvShare)
         private val ivCommonLike: AppCompatImageView = itemView.findViewById(R.id.ivCommonLike)
-        private val ivCommonComment: AppCompatImageView = itemView.findViewById(R.id.ivCommonComment)
+        private val ivCommonComment: AppCompatImageView =
+            itemView.findViewById(R.id.ivCommonComment)
         private val ivCommonShare: AppCompatImageView = itemView.findViewById(R.id.ivCommonShare)
         private val ivCommonMenu: AppCompatImageView = itemView.findViewById(R.id.ivCommonMenu)
         private val tvTextUsername: AppCompatTextView = itemView.findViewById(R.id.tvTextUsername)
@@ -591,23 +601,34 @@ class MultiViewAdapter(
         private val tvSubscribe: AppCompatTextView = itemView.findViewById(R.id.tvSubscribe)
         private val ivTextVerification: AppCompatImageView =
             itemView.findViewById(R.id.ivTextVerification)
-        private val ivCommonPostProfile: ShapeableImageView = itemView.findViewById(R.id.ivCommonPostProfile)
+        private val ivCommonPostProfile: ShapeableImageView =
+            itemView.findViewById(R.id.ivCommonPostProfile)
         private val clCommon: ConstraintLayout = itemView.findViewById(R.id.clCommon)
         fun bind(item: GetUserPostData?, listener: OnItemClickListener, position: Int) {
 
             // subscription button handel
-            if (userid.equals(item?.publisherData?._id)){
+            if (userid.equals(item?.publisherData?._id)) {
                 tvSubscribe.visibility = View.GONE
-            }else{
+            } else {
                 tvSubscribe.visibility = View.VISIBLE
             }
 
-            if (item?.isSubscribed==true){
+            if (item?.isSubscribed == true) {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribed)
-                tvSubscribe.setTextColor(ContextCompat.getColor(tvSubscribe.context, R.color.black_040404))
-            }else{
+                tvSubscribe.setTextColor(
+                    ContextCompat.getColor(
+                        tvSubscribe.context,
+                        R.color.black_040404
+                    )
+                )
+            } else {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribe)
-                tvSubscribe.setTextColor(ContextCompat.getColor(tvSubscribe.context, R.color.blue_00bef5))
+                tvSubscribe.setTextColor(
+                    ContextCompat.getColor(
+                        tvSubscribe.context,
+                        R.color.blue_00bef5
+                    )
+                )
             }
 
             val imageUrl = Constants.IMAGE_URL + item?.publisherData?.profilePicture
@@ -617,7 +638,7 @@ class MultiViewAdapter(
                 .error(R.drawable.ic_round_account_circle_40)
                 .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivCommonPostProfile)
             val rawDate = item?.date
-            if (rawDate?.isNotEmpty() == true){
+            if (rawDate?.isNotEmpty() == true) {
                 val date = BindingUtils.convertToDate(rawDate)
                 val relative = BindingUtils.DateHelper.formatRelativeDate(date)
                 tvHour.text = relative
@@ -660,9 +681,11 @@ class MultiViewAdapter(
             clCommon.setOnClickListener { listener.onItemClick(item, it.id, position) }
         }
     }
+
     // court type
     inner class CourtPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvCommonPostName: AppCompatTextView = itemView.findViewById(R.id.tvCommonPostName)
+        private val tvCommonPostName: AppCompatTextView =
+            itemView.findViewById(R.id.tvCommonPostName)
         private val tvTitleCourtName: AppCompatTextView =
             itemView.findViewById(R.id.tvTitleCourtName)
         private val tvHour: AppCompatTextView = itemView.findViewById(R.id.tvHour)
@@ -675,10 +698,10 @@ class MultiViewAdapter(
         private val tvCourtSector: AppCompatTextView = itemView.findViewById(R.id.tvCourtSector)
         private val tvCourtTextPost: AppCompatTextView = itemView.findViewById(R.id.tvCourtTextPost)
         private val ivCommonLike: AppCompatImageView = itemView.findViewById(R.id.ivCommonLike)
-        private val ivCommonShare: AppCompatImageView =
-            itemView.findViewById(R.id.ivCommonShare)
+        private val ivCommonShare: AppCompatImageView = itemView.findViewById(R.id.ivCommonShare)
         private val clCommon: ConstraintLayout = itemView.findViewById(R.id.clCommon)
-        private val ivCommonPostProfile: ShapeableImageView = itemView.findViewById(R.id.ivCommonPostProfile)
+        private val ivCommonPostProfile: ShapeableImageView =
+            itemView.findViewById(R.id.ivCommonPostProfile)
         private val ivCourt: ShapeableImageView = itemView.findViewById(R.id.ivCourt)
         private val ivCommonComment: AppCompatImageView =
             itemView.findViewById(R.id.ivCommonComment)
@@ -691,18 +714,28 @@ class MultiViewAdapter(
 
 
             // subscription button handel
-            if (userid.equals(item?.publisherData?._id)){
+            if (userid.equals(item?.publisherData?._id)) {
                 tvSubscribe.visibility = View.GONE
-            }else{
+            } else {
                 tvSubscribe.visibility = View.VISIBLE
             }
 
-            if (item?.isSubscribed==true){
+            if (item?.isSubscribed == true) {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribed)
-                tvSubscribe.setTextColor(ContextCompat.getColor(tvSubscribe.context, R.color.black_040404))
-            }else{
+                tvSubscribe.setTextColor(
+                    ContextCompat.getColor(
+                        tvSubscribe.context,
+                        R.color.black_040404
+                    )
+                )
+            } else {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribe)
-                tvSubscribe.setTextColor(ContextCompat.getColor(tvSubscribe.context, R.color.blue_00bef5))
+                tvSubscribe.setTextColor(
+                    ContextCompat.getColor(
+                        tvSubscribe.context,
+                        R.color.blue_00bef5
+                    )
+                )
             }
 
 
@@ -722,19 +755,16 @@ class MultiViewAdapter(
             tvCourtTextPost.text = item?.description
             val profilePath = item?.publisherData?.profilePicture
 
-            val imageUrl = profilePath
-                ?.takeIf { it.isNotBlank() }
+            val imageUrl = profilePath?.takeIf { it.isNotBlank() }
                 ?.let { Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/') }
 
             Log.i("Fdsfdsfds", "Courtbind: $imageUrl")
 
 
-            Glide.with(ivCommonPostProfile.context)
-                .load(imageUrl)
+            Glide.with(ivCommonPostProfile.context).load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
                 .error(R.drawable.ic_round_account_circle_40)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(ivCommonPostProfile)
+                .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivCommonPostProfile)
 
             tvLike.text = item?.likesCount.toString()
             tvComment.text = item?.commentCount.toString()
@@ -747,12 +777,10 @@ class MultiViewAdapter(
 
                 val imageUrl = Constants.IMAGE_URL.trimEnd('/') + "/" + firstPhoto.trimStart('/')
 
-                Glide.with(ivCourt.context)
-                    .load(imageUrl)
+                Glide.with(ivCourt.context).load(imageUrl)
                     .placeholder(R.drawable.progress_animation_small)
                     .error(R.drawable.ic_round_account_circle_40)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(ivCourt)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivCourt)
 
             } else {
                 ivCourt.setImageResource(R.drawable.ic_round_account_circle_40)
@@ -775,7 +803,7 @@ class MultiViewAdapter(
             }
 
             val rawDate = item?.date
-            if (rawDate?.isNotEmpty() == true){
+            if (rawDate?.isNotEmpty() == true) {
                 val date = BindingUtils.convertToDate(rawDate)
                 val relative = BindingUtils.DateHelper.formatRelativeDate(date)
                 tvHour.text = relative
@@ -798,10 +826,13 @@ class MultiViewAdapter(
             clCommon.setOnClickListener { listener.onItemClick(item, it.id, position) }
         }
     }
+
     // game type
     inner class GamePostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val tvCommonPostName: AppCompatTextView = itemView.findViewById(R.id.tvCommonPostName)
-        private val tvCommonPostDesc: AppCompatTextView = itemView.findViewById(R.id.tvCommonPostDesc)
+        private val tvCommonPostName: AppCompatTextView =
+            itemView.findViewById(R.id.tvCommonPostName)
+        private val tvCommonPostDesc: AppCompatTextView =
+            itemView.findViewById(R.id.tvCommonPostDesc)
         private val tvHour: AppCompatTextView = itemView.findViewById(R.id.tvHour)
         private val tvGameTypeUsername: AppCompatTextView =
             itemView.findViewById(R.id.tvGameTypeUsername)
@@ -812,10 +843,8 @@ class MultiViewAdapter(
         private val tvGameStatus: AppCompatTextView = itemView.findViewById(R.id.tvGameStatus)
         private val tvGameCity: AppCompatTextView = itemView.findViewById(R.id.tvGameCity)
         private val tvGameCountry: AppCompatTextView = itemView.findViewById(R.id.tvGameCountry)
-        private val ivCommonLike: AppCompatImageView =
-            itemView.findViewById(R.id.ivCommonLike)
-        private val ivCommonShare: AppCompatImageView =
-            itemView.findViewById(R.id.ivCommonShare)
+        private val ivCommonLike: AppCompatImageView = itemView.findViewById(R.id.ivCommonLike)
+        private val ivCommonShare: AppCompatImageView = itemView.findViewById(R.id.ivCommonShare)
         private val clCommon: ConstraintLayout = itemView.findViewById(R.id.clCommon)
         private val ivCommonPostProfile: ShapeableImageView =
             itemView.findViewById(R.id.ivCommonPostProfile)
@@ -832,18 +861,28 @@ class MultiViewAdapter(
         fun bind(item: GetUserPostData?, listener: OnItemClickListener, position: Int) {
 
             // subscription button handel
-            if (userid.equals(item?.publisherData?._id)){
+            if (userid.equals(item?.publisherData?._id)) {
                 tvSubscribe.visibility = View.GONE
-            }else{
+            } else {
                 tvSubscribe.visibility = View.VISIBLE
             }
 
-            if (item?.isSubscribed==true){
+            if (item?.isSubscribed == true) {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribed)
-                tvSubscribe.setTextColor(ContextCompat.getColor(tvSubscribe.context, R.color.black_040404))
-            }else{
+                tvSubscribe.setTextColor(
+                    ContextCompat.getColor(
+                        tvSubscribe.context,
+                        R.color.black_040404
+                    )
+                )
+            } else {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribe)
-                tvSubscribe.setTextColor(ContextCompat.getColor(tvSubscribe.context, R.color.blue_00bef5))
+                tvSubscribe.setTextColor(
+                    ContextCompat.getColor(
+                        tvSubscribe.context,
+                        R.color.blue_00bef5
+                    )
+                )
             }
 
 
@@ -857,31 +896,26 @@ class MultiViewAdapter(
             }
 
 
-
             //game status
             item?.let { game ->
 
-                // ✅ 1. Parse Date
+                //  1. Parse Date
                 val parsedDate = parseServerDate(game.date)
 
-                // ✅ 2. Calculate Invite Response
+                // 2. Calculate Invite Response
                 val team1 = game.game?.team1Players ?: emptyList()
                 val team2 = game.game?.team2Players ?: emptyList()
 
 
                 val needsInviteResponse =
-                    team1.any { it.id == userid && it.accepted == false } ||
-                            team2.any { it.id == userid && it.accepted == false }
+                    team1.any { it.id == userid && it.accepted == false } || team2.any { it.id == userid && it.accepted == false }
 
 
-
-                // ✅ 3. Apply Status Display
+                //  3. Apply Status Display
                 if (parsedDate != null) {
 
                     val display = gameStatusDisplay(
-                        parsedDate,
-                        game.game?.status,
-                        needsInviteResponse
+                        parsedDate, game.game?.status, needsInviteResponse
                     )
 
                     tvGameStatus.text = display.text
@@ -889,8 +923,7 @@ class MultiViewAdapter(
                     if (display.iconRes != 0) {
 
                         val drawable = ContextCompat.getDrawable(
-                            itemView.context,
-                            display.iconRes
+                            itemView.context, display.iconRes
                         )
 
                         drawable?.let {
@@ -902,10 +935,7 @@ class MultiViewAdapter(
                             it.setBounds(0, 0, sizeInPx, sizeInPx)
 
                             tvGameStatus.setCompoundDrawables(
-                                null,
-                                it,
-                                null,
-                                null
+                                null, it, null, null
                             )
                         }
 
@@ -917,11 +947,10 @@ class MultiViewAdapter(
 
 
 
-            if (item?.game?.totalJoinedPlayers != null){
-                tvGamePlayers.text =    item.game.totalJoinedPlayers + " players"
+            if (item?.game?.totalJoinedPlayers != null) {
+                tvGamePlayers.text = item.game.totalJoinedPlayers + " players"
 
             }
-
 
             tvGameCity.text = item?.game?.field?.name
             tvGameCountry.text = item?.game?.field?.country
@@ -931,38 +960,25 @@ class MultiViewAdapter(
                 Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
             }
 
-            Log.i("Fdsfdsfds", "Gamebind: $imageUrl")
 
-            Glide.with(ivCommonPostProfile.context)
-                .load(imageUrl)
+            Glide.with(ivCommonPostProfile.context).load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
                 .error(R.drawable.ic_round_account_circle_40)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(ivCommonPostProfile)
-
-
+                .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivCommonPostProfile)
 
 
             val photoList = item?.game?.field?.photos
 
-            val gameImageUrl = photoList
-                ?.firstOrNull()
-                ?.takeIf { it.isNotBlank() }
-                ?.let {
+            val gameImageUrl = photoList?.firstOrNull()?.takeIf { it.isNotBlank() }?.let {
                     Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
                 }
 
-            Glide.with(ivGame.context)
-                .load(gameImageUrl)
+            Glide.with(ivGame.context).load(gameImageUrl)
                 .placeholder(R.drawable.progress_animation_small)
                 .error(R.drawable.ic_round_account_circle_40)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(ivGame)
+                .diskCacheStrategy(DiskCacheStrategy.ALL).into(ivGame)
 
 
-
-
-            Log.i("dfdsfds", "bind: $item")
             val fullName = listOfNotNull(
                 item?.publisherData?.firstName?.takeIf { it.isNotBlank() },
                 item?.publisherData?.lastName?.takeIf { it.isNotBlank() }).joinToString(" ")
@@ -979,13 +995,13 @@ class MultiViewAdapter(
 
             val dateTime = item?.game?.date
             if (dateTime?.isNotEmpty() == true) {
-                val (date, time) = BindingUtils.formatDateTime(dateTime.toString())
+                val (date, time) = BindingUtils.formatDateTime(dateTime)
                 tvGameDate.text = date
                 tvGameTime.text = time
             }
 
             val rawDate = item?.date
-            if (rawDate?.isNotEmpty() == true){
+            if (rawDate?.isNotEmpty() == true) {
                 val date = BindingUtils.convertToDate(rawDate)
                 val relative = BindingUtils.DateHelper.formatRelativeDate(date)
                 tvHour.text = relative
@@ -1008,15 +1024,16 @@ class MultiViewAdapter(
             clCommon.setOnClickListener { listener.onItemClick(item, it.id, position) }
         }
     }
+
     // event type
     class EventPostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvName: AppCompatTextView = itemView.findViewById(R.id.tvPublisherName)
-        private val profileImage : ShapeableImageView = itemView.findViewById(R.id.ivPerson)
-        private val eventImage : ShapeableImageView = itemView.findViewById(R.id.ivEvent)
-        private val userName : AppCompatTextView = itemView.findViewById(R.id.tvPublisherUsername)
+        private val profileImage: ShapeableImageView = itemView.findViewById(R.id.ivPerson)
+        private val eventImage: ShapeableImageView = itemView.findViewById(R.id.ivEvent)
+        private val userName: AppCompatTextView = itemView.findViewById(R.id.tvPublisherUsername)
         private val tvHour: AppCompatTextView = itemView.findViewById(R.id.tvHour)
-        private val tvEventName : AppCompatTextView = itemView.findViewById(R.id.tvName)
-        private val tvAddress : AppCompatTextView = itemView.findViewById(R.id.tvCountryName)
+        private val tvEventName: AppCompatTextView = itemView.findViewById(R.id.tvName)
+        private val tvAddress: AppCompatTextView = itemView.findViewById(R.id.tvCountryName)
 
         private val tvImageLike: AppCompatTextView = itemView.findViewById(R.id.like_tv)
         private val tvImageComment: AppCompatTextView = itemView.findViewById(R.id.comment_tv)
@@ -1053,11 +1070,9 @@ class MultiViewAdapter(
                 }
 
                 imageUrl?.let {
-                    Glide.with(eventImage.context)
-                        .load(it)
+                    Glide.with(eventImage.context).load(it)
                         .placeholder(R.drawable.progress_animation_small)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(eventImage)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL).into(eventImage)
                 }
             } ?: run {
                 // Optional fallback (when no image)
@@ -1065,19 +1080,17 @@ class MultiViewAdapter(
             }
 
             Log.i("Fdsfdsfds", "bind: $imageUrl")
-            Glide.with(profileImage.context)
-                .load(imageUrl)
+            Glide.with(profileImage.context).load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
                 .error(R.drawable.ic_round_account_circle_40)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(profileImage)
+                .diskCacheStrategy(DiskCacheStrategy.ALL).into(profileImage)
 
 
             tvImageLike.text = item?.likesCount.toString()
             tvImageComment.text = item?.commentCount.toString()
 
             val rawDate = item?.date
-            if (rawDate?.isNotEmpty() == true){
+            if (rawDate?.isNotEmpty() == true) {
                 val date = BindingUtils.convertToDate(rawDate)
                 val relative = BindingUtils.DateHelper.formatRelativeDate(date)
                 tvHour.text = relative
@@ -1085,6 +1098,7 @@ class MultiViewAdapter(
 
         }
     }
+
     // mvp view holder add 0 index data
     class MvpViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val rvMvp: RecyclerView = itemView.findViewById(R.id.rvMvp)
@@ -1094,10 +1108,8 @@ class MultiViewAdapter(
                 LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
             val mvpAdapter = SimpleRecyclerViewAdapter<MpvModel, RvMpvItemLayoutBinding>(
                 R.layout.rv_mpv_item_layout, BR.bean
-            ) { v, m, pos ->
-                when (v.id) {
+            ) { _, _, _ ->
 
-                }
             }
             mvpAdapter.list = item
             rvMvp.adapter = mvpAdapter

@@ -1,7 +1,10 @@
 package com.beballer.beballer.ui.player.dash_board.find.camps
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.view.View
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.viewModels
 import com.beballer.beballer.BR
 import com.beballer.beballer.R
@@ -14,13 +17,27 @@ import com.beballer.beballer.databinding.FragmentCampsBinding
 import com.beballer.beballer.databinding.RvCampsItemBinding
 import com.beballer.beballer.ui.player.dash_board.profile.user.UserProfileActivity
 import com.beballer.beballer.utils.BaseCustomDialog
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CampsFragment : BaseFragment<FragmentCampsBinding>() {
+class CampsFragment : BaseFragment<FragmentCampsBinding>(), OnMapReadyCallback {
     private val viewModel: CampsFragmentVM by viewModels()
     private lateinit var campsAdapter: SimpleRecyclerViewAdapter<FindModel, RvCampsItemBinding>
     private lateinit var createCampsDialogItem: BaseCustomDialog<CreateTournamentDialogItemBinding>
+
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private var mMap: GoogleMap? = null
+
     override fun getLayoutResource(): Int {
         return R.layout.fragment_camps
     }
@@ -30,6 +47,10 @@ class CampsFragment : BaseFragment<FragmentCampsBinding>() {
     }
 
     override fun onCreateView(view: View) {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        // map
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
         // observer
         initObserver()
         // click
@@ -57,6 +78,16 @@ class CampsFragment : BaseFragment<FragmentCampsBinding>() {
 
                 R.id.cardView -> {
                     createTournamentDialogItem()
+                }
+
+                R.id.courtsMapCard, R.id.view -> {
+                    val intent = Intent(requireContext(), UserProfileActivity::class.java)
+                    intent.putExtra("userType", "showMapFragment")
+                    intent.putExtra("mapType", "camps")
+                    startActivity(intent)
+                    requireActivity().overridePendingTransition(
+                        R.anim.slide_in_right, R.anim.slide_out_left
+                    )
                 }
             }
         }
@@ -125,4 +156,51 @@ class CampsFragment : BaseFragment<FragmentCampsBinding>() {
 
 
     }
+
+    /**
+     * add marker
+     */
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+        try {
+            mMap?.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    requireContext(), R.raw.map_style
+                )
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        setCurrentLocation()
+
+    }
+
+    /**
+     * set current location
+     */
+    private fun setCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1001
+            )
+            return
+        }
+
+        mMap?.isMyLocationEnabled = true
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let {
+                val latLng = LatLng(it.latitude, it.longitude)
+
+                mMap?.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(latLng, 14f)
+                )
+            }
+        }
+    }
+
 }

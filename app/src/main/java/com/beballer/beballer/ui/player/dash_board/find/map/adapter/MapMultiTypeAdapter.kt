@@ -1,6 +1,7 @@
 package com.beballer.beballer.ui.player.dash_board.find.map.adapter
 
 import MapListItem
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +12,7 @@ import com.beballer.beballer.databinding.RvTicketMapBoundItemBinding
 import com.beballer.beballer.databinding.RvTournamentsMapBoundItemBinding
 
 class MapMultiTypeAdapter(
-    private val onItemClick: (MapListItem) -> Unit
+    private val onItemClick: (MapListItem) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     val items = mutableListOf<MapListItem>()
     companion object {
@@ -21,6 +22,7 @@ class MapMultiTypeAdapter(
         private const val TOURNAMENT = 4
         private const val CAMP = 5
     }
+    @SuppressLint("NotifyDataSetChanged")
     fun submitList(list: List<MapListItem>) {
         items.clear()
         items.addAll(list)

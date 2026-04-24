@@ -125,10 +125,10 @@ class GameAdapter(
 
             item?.let { game ->
 
-                // ✅ 1. Parse Date
+                //  Parse Date
                 val parsedDate = parseServerDate(game.date)
 
-                // ✅ 2. Calculate Invite Response
+                //  Calculate Invite Response
                 val team1 = game.team1Players ?: emptyList()
                 val team2 = game.team2Players ?: emptyList()
 
@@ -139,7 +139,7 @@ class GameAdapter(
 
 
 
-                // ✅ 3. Apply Status Display
+                // Apply Status Display
                 if (parsedDate != null) {
 
                     val display = gameStatusDisplay(
@@ -159,7 +159,7 @@ class GameAdapter(
 
                         drawable?.let {
 
-                            // 🔥 Set icon size in DP
+                            // Set icon size in DP
                             val sizeInDp = 16
                             val scale = binding.root.context.resources.displayMetrics.density
                             val sizeInPx = (sizeInDp * scale).toInt()

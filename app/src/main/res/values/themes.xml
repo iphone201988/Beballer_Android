@@ -282,4 +282,12 @@
     </style>
 
 
+    <style name="ClusterTextAppearance">
+        <item name="android:textColor">@color/courts_dark_color</item>
+        <item name="android:textSize">@dimen/_12ssp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
 </resources>

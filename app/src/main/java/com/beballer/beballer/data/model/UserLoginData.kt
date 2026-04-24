@@ -88,11 +88,11 @@ data class ProfileDataUser(
     val followingCount: Int?,
     val gender: String?,
     val height: Int?,
-    val profileDescription : String?,
+    val profileDescription: String?,
     val id: String?,
     val isOnboardAnalyticsDone: Boolean?,
     val isProfileCompleted: Boolean?,
-    val hasPlayerAccount : Boolean?,
+    val hasPlayerAccount: Boolean?,
     val lastName: String?,
     val lat: Double?,
     val long: Double?,
@@ -123,7 +123,7 @@ data class UserFavoriteProTeam(
     val _id: String?, val id: String?, val imageURL: String?, val name: String?
 )
 
-/** get player team team **/
+/** get player team **/
 data class GetPlayerTeamResponse(
     val `data`: List<PlayerTeamData?>, val message: String?, val success: Boolean?
 )
@@ -145,6 +145,8 @@ data class GetUserPostResponse(
     val message: String?,
     val pagination: Pagination?,
     val success: Boolean?
+
+
 )
 
 @Parcelize
@@ -178,6 +180,7 @@ data class GetUserPostData(
     val role: Int?,
     val proGame: String?,
     val stability: Int?
+
 ) : Parcelable
 
 @Parcelize
@@ -201,16 +204,18 @@ data class GetUserPostEvent(
     val name: String?,
     val organizersCode: String?,
     val paymentStatus: Int?,
-    val referees: List<String?>?,
+    val referees: List<EventReferee?>?,
     val refereesCode: String?,
     val region: String?,
     val shareLink: String?,
     val spectatorsCode: String?,
     val startDate: String?,
     val type: String?,
-    val eventPhotos: List<String?>?
+    val eventPhotos: List<String?>?,
+    val lat: Double?,
+    val long: Double?,
 
-) : Parcelable
+    ) : Parcelable
 
 @Parcelize
 data class PublisherData(
@@ -224,7 +229,6 @@ data class PublisherData(
     val profilePicture: String?,
     val username: String?,
     val verified: Boolean?
-
 
 ) : Parcelable
 
@@ -312,6 +316,11 @@ data class GameRef(
 ) : Parcelable
 
 
+@Parcelize
+
+data class EventReferee(
+    val collectionName: String?, val id: String?
+) : Parcelable
 
 
 /** post comment response **/
@@ -538,16 +547,11 @@ data class ProfileByUser(
     val verified: Boolean?
 
 
-
 )
 
 data class ProfileByFavoriteProTeam(
     val _id: String?, val id: String?, val imageURL: String?, val name: String?
 )
-
-
-
-
 
 
 /** Get Court Api response **/
@@ -605,7 +609,7 @@ data class CourtDataById(
     val distance: Double?,
     val floorType: String?,
     val grade: Double?,
-    val rating : Double?,
+    val rating: Double?,
     val hasWaterPoint: Boolean?,
     val hoopsCount: Int?,
     val id: String?,
@@ -631,9 +635,7 @@ data class AddCourtDataClass(
 )
 
 data class UpdateCourtData(
-    val `data`: UpdateCourt,
-    val message: String,
-    val success: Boolean
+    val `data`: UpdateCourt, val message: String, val success: Boolean
 )
 
 data class UpdateCourt(
@@ -691,6 +693,7 @@ data class SearchCourtApiData(
     val count: Int?, val courts: List<MapCourt?>?, val message: String?, val success: Boolean?
 )
 
+
 /**
  * Get game Map Bounds response
  */
@@ -707,10 +710,29 @@ data class GameData(
     val createdAt: String?,
     val date: String?,
     val `field`: GameField?,
+    val hasAcceptedInvitationReferee: Boolean?,
+    val hasAcceptedInvitationTeam1: List<Boolean>?,
+    val hasAcceptedInvitationTeam2: List<Boolean>?,
     val id: String?,
+    val isAutoRefereeing: Boolean?,
     val mode: Int?,
+    val organizer: Organizer?,
+    val scoreTeam1: Int?,
+    val scoreTeam2: Int?,
+    val startDate: String?,
+    val totalJoinedPlayers: String?,
     val status: String?,
-    val totalJoinedPlayers: String?
+    val team1Players: List<Team1Player>?,
+    val team1ScoreTeam1: Int?,
+    val team1ScoreTeam2: Int?,
+    val team2Players: List<Team1Player>?,
+    val team2ScoreTeam1: Int?,
+    val team2ScoreTeam2: Int?,
+    val teamToValidate: Int?,
+    val type: String?,
+    val visible: Boolean?
+
+
 )
 
 
@@ -724,6 +746,7 @@ data class GameField(
     val photos: List<String?>?
 )
 
+
 /**
  * Get Ticket Map Bounds response
  */
@@ -735,9 +758,150 @@ data class GetTicketMapBoundData(
  * Get Tournaments Map Bounds response
  */
 data class GetTournamentsMapBoundData(
-    val `data`: MapCourt?, val message: String?, val success: Boolean?
+    val `data`: TournamentsCourt?, val message: String?, val success: Boolean?
 
 )
+
+data class TournamentsCourt(
+    val bounds: Bounds?,
+    val count: Int?,
+    val events: List<TournamentsEvent>?
+)
+
+
+data class TournamentsEvent(
+    val _id: String?,
+    val address: String?,
+    val categories: List<TournamentsCategory?>?,
+    val city: String?,
+    val coordinates: List<Double?>?,
+    val country: String?,
+    val createdAt: String?,
+    val description: String?,
+    val endDate: String?,
+    val eventPhotos: List<String?>?,
+    val geohash: String?,
+    val hasCategories: Boolean?,
+    val hasSponsors: Boolean?,
+    val id: String?,
+    val isVisible: Boolean?,
+    val isVisibleTo: List<String?>?,
+    val lat: Double?,
+    val long: Double?,
+    val name: String?,
+    val organizers: List<TournamentsOrganizer?>?,
+    val organizersCode: String?,
+    val organizersInfo: List<OrganizersInfo?>?,
+    val paymentStatus: Int?,
+    val referees: List<TournamentReferee?>?,
+    val refereesCode: String?,
+    val refereesInfo: List<RefereesInfo?>?,
+    val region: String?,
+    val shareLink: Any?,
+    val spectators: List<SpectatorX?>?,
+    val spectatorsCode: String?,
+    val spectatorsInfo: List<SpectatorsInfo?>?,
+    val sponsors: List<Sponsor>?,
+    val startDate: String?,
+    val type: String?,
+    val updatedAt: String?
+
+)
+
+data class TournamentsOrganizer(
+    val collectionName: String?,
+    val id: String?
+)
+
+
+
+data class TournamentsCategory(
+    val _id: String?,
+    val ageRange: String?,
+    val courts: List<Court>?,
+    val courtsCount: Int?,
+    val description: String?,
+    val endDate: String?,
+    val eventId: String?,
+    val format: String?,
+    val hasSmallFinal: Boolean?,
+    val id: String?,
+    val isOrganised: Boolean?,
+    val level: String?,
+    val name: String?,
+    val players: List<TourPlayer>?,
+    val poolsCount: Int?,
+    val priceRange: String?,
+    val registeredPlayers: List<RegisteredPlayer>?,
+    val roundsCount: Int?,
+    val spectators: List<SpectatorX>?,
+    val startDate: String?,
+    val teamsCount: Int?,
+    val url: String?,
+    val usesBeballerForm: Boolean?
+)
+
+
+
+data class TournamentReferee(
+    val collectionName: String?,
+    val id: String?
+)
+
+data class RefereesInfo(
+    val _id: String?,
+    val city: String?,
+    val coordinates: List<Double?>?,
+    val country: String?,
+    val firstName: String?,
+    val id: String?,
+    val lastName: String?,
+    val profilePicture: String?,
+    val username: String?,
+    val verified: Boolean?
+)
+
+data class SpectatorX(
+    val collectionName: String?,
+    val id: String?
+)
+
+data class SpectatorsInfo(
+    val _id: String?,
+    val city: String?,
+    val coordinates: List<Double?>?,
+    val country: String?,
+    val firstName: String?,
+    val id: String?,
+    val lastName: String?,
+    val profilePicture: String?,
+    val username: String?,
+    val verified: Boolean?
+)
+
+data class Sponsor(
+    val eventId: String?,
+    val id: String?,
+    val imageURL: String?,
+    val name: String?,
+    val number: Int?,
+    val url: String?
+)
+
+
+data class TourPlayer(
+    val collectionName: String?,
+    val id: String?
+)
+
+data class RegisteredPlayer(
+    val collectionName: String?,
+    val id: String?
+)
+
+
+
+
 /**
  * Get Camps Map Bounds response
  */
@@ -783,9 +947,7 @@ data class Player(
 
 
 data class CreateGameApiResponse(
-    val `data`: CreateGameData?,
-    val message: String?,
-    val success: Boolean?
+    val `data`: CreateGameData?, val message: String?, val success: Boolean?
 )
 
 data class CreateGameData(
@@ -793,7 +955,7 @@ data class CreateGameData(
     val _id: String?,
     val createdAt: String?,
     val date: String?,
-    val `field`:  CreateField?,
+    val `field`: CreateField?,
     val hasAcceptedInvitationReferee: Boolean?,
     val hasAcceptedInvitationTeam1: List<Any?>?,
     val hasAcceptedInvitationTeam2: List<Any?>?,
@@ -831,31 +993,24 @@ data class Referee(
 )
 
 data class CreateTeam1Player(
-    val accepted: Boolean?,
-    val collectionName: String?,
-    val id: String?
+    val accepted: Boolean?, val collectionName: String?, val id: String?
 )
 
 data class CreateRef(
-    val collectionName: String?,
-    val id: String?
+    val collectionName: String?, val id: String?
 )
+
 /**
  * my games  api response
  */
 
 
-
-
 data class MyGamesApiResponse(
-    val `data`: MyGamesData?,
-    val message: String?,
-    val success: Boolean?
+    val `data`: MyGamesData?, val message: String?, val success: Boolean?
 )
 
 data class MyGamesData(
-    val games: List<MyGame>?,
-    val pagination: MyGamePagination?
+    val games: List<MyGame>?, val pagination: MyGamePagination?
 )
 
 data class MyGame(
@@ -869,13 +1024,12 @@ data class MyGame(
     val team1Players: List<GameTeam1Player>?,
     val team2Players: List<GameTeam1Player>?,
     val totalJoinedPlayers: String?,
-    val yourRating: Int?
+    val yourRating: Double?
+
 )
 
 data class MyGamePagination(
-    val currentPage: Int?,
-    val totalPages: Int?,
-    val totalRecords: Int?
+    val currentPage: Int?, val totalPages: Int?, val totalRecords: Int?
 )
 
 data class MyGameField(
@@ -889,21 +1043,17 @@ data class MyGameField(
 )
 
 data class GameTeam1Player(
-    val accepted: Boolean?,
-    val collectionName: String?,
-    val id: String?
+    val accepted: Boolean?, val collectionName: String?, val id: String?
 )
+
 
 /**
  * game details by id  api response
  */
 
 
-
 data class GetGameDetailsApiResponse(
-    val game: GameDetail?,
-    val message: String?,
-    val success: Boolean?
+    val game: GameDetail?, val message: String?, val success: Boolean?
 )
 
 data class GameDetail(
@@ -915,7 +1065,7 @@ data class GameDetail(
     val id: String?,
     val isAutoRefereeing: Boolean?,
     val mode: Int?,
-    val creationDate : String?,
+    val creationDate: String?,
     val scoreTeam1: Int,
     val scoreTeam2: Int,
     val team2ScoreTeam1: Int,
@@ -963,9 +1113,7 @@ data class GameDetailOrganizer(
 )
 
 data class GameDetailReferee(
-    val _id: String?,
-    val id: String?,
-    val username : String
+    val _id: String?, val id: String?, val username: String
 )
 
 data class GameDetailTeam1Player(
@@ -1002,26 +1150,19 @@ data class Contributor(
 )
 
 
-
-
-
 data class SimpleApiResponse(
-    val message: String?,
-    val success: Boolean?
+    val message: String?, val success: Boolean?
 )
 
 
 // get chat api response
 
 data class GetChatApiResponse(
-    val `data`: ChatData,
-    val message: String,
-    val success: Boolean
+    val `data`: ChatData, val message: String, val success: Boolean
 )
 
 data class ChatData(
-    val messages: List<Message>,
-    val pagination: ChatPagination
+    val messages: List<Message>, val pagination: ChatPagination
 )
 
 data class Message(
@@ -1039,25 +1180,17 @@ data class Message(
 )
 
 data class ChatPagination(
-    val hasNextPage: Boolean,
-    val limit: Int,
-    val page: Int,
-    val total: Int,
-    val totalPages: Int
+    val hasNextPage: Boolean, val limit: Int, val page: Int, val total: Int, val totalPages: Int
 )
 
 // player top ranking
 
 data class TopRankingApiResponse(
-    val `data`: RankingData,
-    val message: String,
-    val success: Boolean
+    val `data`: RankingData, val message: String, val success: Boolean
 )
 
 data class RankingData(
-    val `1st`: St,
-    val `2nd`: Nd,
-    val `3rd`: Rd
+    val `1st`: St, val `2nd`: Nd, val `3rd`: Rd
 )
 
 data class St(
@@ -1094,18 +1227,14 @@ data class Rd(
 )
 
 
-
 // player by bound api response
 
 data class PlayerByBoundApiResponse(
-    val `data`: PlayerBoundData,
-    val message: String,
-    val success: Boolean
+    val `data`: PlayerBoundData, val message: String, val success: Boolean
 )
 
 data class PlayerBoundData(
-    val pagination: PlayerPagination,
-    val players: List<BoundPlayer>
+    val pagination: PlayerPagination, val players: List<BoundPlayer>
 )
 
 data class PlayerPagination(
@@ -1122,7 +1251,7 @@ data class BoundPlayer(
     val city: String,
     val country: String,
     val firstName: String,
-    var isCurrentUser : Boolean = false,
+    var isCurrentUser: Boolean = false,
     val id: String,
     val lastname: String,
     val lastName: String,
@@ -1136,11 +1265,8 @@ data class BoundPlayer(
 )
 
 
-
 data class CreateTournamentApiResponse(
-    val event: Event,
-    val message: String,
-    val success: Boolean
+    val event: Event, val message: String, val success: Boolean
 )
 
 data class Event(
@@ -1180,32 +1306,33 @@ data class Event(
 )
 
 data class TournamentOrganizer(
-    val collectionName: String,
-    val id: String
+    val collectionName: String, val id: String
 )
 
 data class OrganizersInfo(
-    val _id: String,
-    val coordinates: List<Double>,
-    val id: String,
-    val profilePicture: String,
-    val username: String,
-    val verified: Boolean
+    val _id: String?,
+    val city: String?,
+    val coordinates: List<Double?>?,
+    val country: String?,
+    val firstName: String?,
+    val id: String?,
+    val lastName: String?,
+    val profilePicture: String?,
+    val username: String?,
+    val verified: Boolean?
 )
 
 /// create category api response
 
 @Parcelize
 data class CreateCategoryApiResponse(
-    val `data`: CategoryData,
-    val message: String,
-    val success: Boolean
-): Parcelable
+    val `data`: CategoryData, val message: String, val success: Boolean
+) : Parcelable
 
 @Parcelize
 data class CategoryData(
     val category: Category
-): Parcelable
+) : Parcelable
 
 @Parcelize
 data class Category(
@@ -1242,6 +1369,7 @@ data class Category(
     val updatedAt: String,
     val url: String,
     val usesBeballerForm: Boolean
+
 ) : Parcelable
 
 
@@ -1285,9 +1413,7 @@ data class Team(
 // update category api response
 
 data class UpdateCategoryApiResponse(
-    val `data`: UpdateCategoryData,
-    val message: String,
-    val success: Boolean
+    val `data`: UpdateCategoryData, val message: String, val success: Boolean
 )
 
 data class UpdateCategoryData(

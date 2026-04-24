@@ -223,5 +223,6 @@
     <string name="localisation_du_tereain">Localisation du tereain</string>
     <string name="courts">Courts</string>
     <string name="courts_nearby">Courts nearby :</string>
+    <string name="understood">Understood</string>
 
 </resources>

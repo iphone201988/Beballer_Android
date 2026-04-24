@@ -284,6 +284,7 @@ class CreateTournamentFourFragment : BaseFragment<FragmentCreateTournamentFourBi
                                 if (myDataModel != null){
                                     if (myDataModel.event != null){
                                         viewModel.tournamentData.eventId = myDataModel.event.id
+                                        viewModel.tournamentData.categoryId = myDataModel.Category_id
                                         BindingUtils.navigateWithSlide(
                                             findNavController(),
                                             R.id.tournamentFive,

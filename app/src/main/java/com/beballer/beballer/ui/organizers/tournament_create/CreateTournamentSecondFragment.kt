@@ -109,9 +109,10 @@ class CreateTournamentSecondFragment : BaseFragment<FragmentCreateTournamentSeco
     }
 
     private fun extractCurrencyCode(value: String): String {
-        return value.split(" ")
+        return value.trim()
+            .split(" ")
             .lastOrNull()
-            ?.lowercase() ?: ""
+            ?.uppercase() ?: ""
     }
     private fun openCalender() {
         val calendar = Calendar.getInstance()

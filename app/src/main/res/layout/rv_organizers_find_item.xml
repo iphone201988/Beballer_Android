@@ -13,7 +13,7 @@
 
         <variable
             name="bean"
-            type="com.beballer.beballer.data.model.FindModel" />
+            type="com.beballer.beballer.data.model.GetEventsDataEvent" />
 
         <import type="android.view.View" />
     </data>
@@ -45,8 +45,9 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/event_image" />
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/event_image"
+                setImageCourtUrl="@{bean.eventPhotos}"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:adjustViewBounds="true"
@@ -61,18 +62,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="8dp"
                 android:layout_marginTop="8dp"
+                android:paddingBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/event_image">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/event_name_tv"
+                    android:id="@+id/eventName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:ellipsize="end"
                     android:fontFamily="@font/inter_bold"
                     android:includeFontPadding="false"
-                    android:text="Sonicbasketball"
+                    android:text="@{bean.name}"
                     android:maxLines="2"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp"
@@ -80,21 +82,70 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/event_date_tv"
+                    android:id="@+id/eventAddress"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_25sdp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/inter_regular"
+                    android:includeFontPadding="false"
+                    android:text="@{bean.address}"
+                    android:maxLines="2"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/eventName" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/eventStartDate"
+                    android:layout_width="0dp"
+                    app:setEventDate="@{bean.startDate}"
+                    visibleIfNotEmpty = "@{bean.startDate}"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:fontFamily="@font/inter_regular"
                     android:includeFontPadding="false"
                     android:text="Saturday 07/06-00:37"
                     android:layout_marginBottom="@dimen/_8sdp"
                     android:textColor="#989898"
                     android:textSize="@dimen/_10ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/event_game_modes_tv"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/event_name_tv" />
+                    app:layout_constraintTop_toBottomOf="@+id/eventAddress" />
+
+
+                <TextView
+                    android:id="@+id/line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-"
+                    visibleIfNotEmpty = "@{bean.startDate}"
+
+                    android:layout_marginStart="@dimen/_5sdp"
+                    app:layout_constraintStart_toEndOf="@id/eventStartDate"
+                    app:layout_constraintTop_toTopOf="@id/eventStartDate"
+                    app:layout_constraintBottom_toBottomOf="@id/eventStartDate"/>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/eventEndDate"
+                    android:layout_width="0dp"
+                    app:setEventDate="@{bean.endDate}"
+                    visibleIfNotEmpty = "@{bean.endDate}"
+
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/inter_regular"
+                    android:includeFontPadding="false"
+                    android:text="Saturday 07/06-00:37"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    android:textColor="#989898"
+                    android:textSize="@dimen/_10ssp"
+                    app:layout_constraintStart_toEndOf="@id/line"
+                    app:layout_constraintTop_toBottomOf="@+id/eventAddress" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/event_distance_tv"

@@ -16,6 +16,10 @@
             name="posSub"
             type="Integer" />
 
+        <variable
+            name="bean"
+            type="com.beballer.beballer.data.model.GetEventDetailsEvent" />
+
         <import type="android.view.View" />
     </data>
 
@@ -124,7 +128,7 @@
                 android:layout_marginStart="@dimen/_3sdp"
                 android:layout_marginEnd="@dimen/_3sdp"
                 android:background="@{pos==1?@drawable/round_corner_bg:@drawable/unselected_tab_bg}"
-                android:backgroundTint="@{pos==1?@color/tournaments_light_color:@color/transparent}"
+                android:backgroundTint="@{pos==1?@color/tournaments_dark_color:@color/transparent}"
                 android:gravity="center"
                 android:onClick="@{v->vm.onClick(v)}"
                 android:text="About"
@@ -143,7 +147,7 @@
                 android:layout_marginStart="@dimen/_3sdp"
                 android:layout_marginEnd="@dimen/_3sdp"
                 android:background="@{pos==2?@drawable/round_corner_bg:@drawable/unselected_tab_bg}"
-                android:backgroundTint="@{pos==2?@color/tournaments_light_color:@color/transparent}"
+                android:backgroundTint="@{pos==2?@color/tournaments_dark_color:@color/transparent}"
                 android:gravity="center"
                 android:onClick="@{v->vm.onClick(v)}"
                 android:text="Participants"
@@ -326,7 +330,7 @@
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/inter_bold"
                     android:gravity="center_vertical"
-                    android:text="Sonicbasketball"
+                    android:text="@{bean.name}"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -393,45 +397,17 @@
 
 
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvTournamentsPrice"
-                    android:layout_width="wrap_content"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvCategories"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_8sdp"
-                    android:background="@drawable/tournaments_bg"
-                    android:elevation="@dimen/_2sdp"
-                    android:fontFamily="@font/inter_bold"
-                    android:foreground="@drawable/ripple_effect"
-                    android:gravity="center"
-                    android:paddingVertical="@dimen/_14sdp"
-                    android:paddingHorizontal="@dimen/_16sdp"
-                    android:text="U15 &amp; U18"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_8ssp"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="@+id/tvTournaments"
-                    app:layout_constraintTop_toBottomOf="@id/tvTournaments" />
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintTop_toBottomOf="@id/tvTournaments"
+                    app:layout_constraintStart_toStartOf="@id/tvGame"
+                    app:layout_constraintEnd_toEndOf="@id/tvGame"/>
 
-
-
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvTournamentsGender"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/_37sdp"
-                    android:layout_marginStart="@dimen/_8sdp"
-                    android:background="@drawable/player_bg"
-                    android:elevation="@dimen/_2sdp"
-                    android:paddingHorizontal="@dimen/_16sdp"
-                    android:fontFamily="@font/inter_bold"
-                    android:foreground="@drawable/ripple_effect"
-                    android:gravity="center"
-                    android:text="U21 girls\n&amp; boys"
-                    android:textColor="@color/tournaments_dark_color"
-                    android:textSize="@dimen/_8ssp"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvTournamentsPrice"
-                    app:layout_constraintStart_toEndOf="@id/tvTournamentsPrice"
-                    app:layout_constraintTop_toTopOf="@id/tvTournamentsPrice" />
 
 
 
@@ -449,7 +425,7 @@
                     android:textSize="@dimen/_12ssp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvTournamentsPrice" />
+                    app:layout_constraintTop_toBottomOf="@id/rvCategories" />
 
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -570,12 +546,13 @@
                     android:fontFamily="@font/inter_bold"
                     android:foreground="@drawable/ripple_effect"
                     android:gravity="center"
+                    app:formattedGameDate="@{bean.categories.get(0).endDate}"
                     android:paddingVertical="@dimen/_12sdp"
                     android:paddingStart="@dimen/_32sdp"
                     android:paddingEnd="@dimen/_10sdp"
                     android:text="wednesday 04 june 2025"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_8ssp"
+                    android:textSize="@dimen/_12ssp"
                     app:layout_constraintEnd_toStartOf="@+id/tvGameStartTime"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
@@ -609,6 +586,7 @@
                     android:id="@+id/tvGameStartTime"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
+                    setFormattedTEventTime="@{bean.categories.get(0).endDate}"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="16dp"
                     android:background="@drawable/player_bg"
@@ -619,7 +597,7 @@
                     android:paddingStart="@dimen/_5sdp"
                     android:text="20:20"
                     android:textColor="@color/black"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/_12ssp"
                     app:layout_constraintBottom_toBottomOf="@+id/tvGameStartDate"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tvGameStartDate"
@@ -669,7 +647,7 @@
                         android:maxLines="2"
                         android:paddingHorizontal="4dp"
                         android:paddingVertical="10dp"
-                        android:text="32 €"
+                        android:text="@{bean.categories.get(0).priceRange}"
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         app:drawableTint="@color/transparent"
@@ -709,7 +687,7 @@
                         android:maxLines="2"
                         android:paddingHorizontal="4dp"
                         android:paddingVertical="10dp"
-                        android:text="From 6 to 13 years old"
+                        android:text="@{bean.categories.get(0).ageRange}"
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         app:drawableTint="@color/tournaments_dark_color"
@@ -736,8 +714,7 @@
                         android:maxLines="2"
                         android:paddingHorizontal="4dp"
                         android:paddingVertical="10dp"
-                        android:text="Intermediate"
-                        android:textColor="@color/black"
+                        app:capitalizeText="@{bean.categories.get(0).level}"                        android:textColor="@color/black"
                         android:textSize="12sp"
                         app:drawableTint="@color/tournaments_dark_color"
                         app:drawableTopCompat="@drawable/ic_round_local_fire_department_40"
@@ -778,6 +755,8 @@
                         android:gravity="start|center"
                         android:maxLines="2"
                         android:padding="10dp"
+                        android:drawablePadding="@dimen/_10sdp"
+                        android:layout_marginStart="@dimen/_10sdp"
                         android:paddingStart="@dimen/_28sdp"
                         android:text="@string/i_m_looking_for_a_team"
                         android:textColor="@color/blue"
@@ -830,7 +809,7 @@
                         android:gravity="center"
                         android:maxLines="2"
                         android:padding="10dp"
-                        android:text="13 Rue des gibiers perdus, 75002 Paris"
+                        android:text="@{bean.address}"
                         android:textColor="@color/black"
                         android:textSize="12sp"
                         app:drawableEndCompat="@drawable/ic_round_arrow_outward_24"
@@ -901,8 +880,8 @@
                         android:paddingVertical="@dimen/_8sdp"
                         android:paddingStart="@dimen/_10sdp"
                         android:paddingEnd="@dimen/_10sdp"
-                        android:text="gfdfdgsdajgjghjghghjhjhgjhjghjghjghjghjghdd"
-                        android:textColor="@color/grey"
+                        android:text="@{bean.description}"
+                        android:textColor="@color/black"
                         android:textColorHint="@color/beballer_purple_grey"
                         android:textSize="@dimen/_12ssp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -1010,7 +989,7 @@
 
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/shareCourtFab"
+                android:id="@+id/editTab"
                 android:layout_width="@dimen/_33sdp"
                 android:layout_height="@dimen/_33sdp"
                 android:layout_marginTop="@dimen/_6sdp"
@@ -1031,6 +1010,51 @@
 
             </androidx.cardview.widget.CardView>
 
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/shareCourtFab"
+                android:layout_width="@dimen/_33sdp"
+                android:layout_height="@dimen/_33sdp"
+                android:layout_marginTop="@dimen/_6sdp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="@dimen/_10sdp"
+                app:cardElevation="@dimen/_2sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/editTab"
+                app:shapeAppearanceOverlay="@style/SquareActionButton">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="@dimen/_18sdp"
+                    android:layout_height="@dimen/_18sdp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/baseline_share_24"
+                    android:tint="@color/black_000000" />
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/removeCourtFab"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_marginTop="@dimen/_6sdp"
+                app:cardBackgroundColor="@color/tournaments_light_color"
+                app:cardCornerRadius="@dimen/_10sdp"
+                app:cardElevation="@dimen/_2sdp"
+                android:onClick="@{v->vm.onClick(v)}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/shareCourtFab"
+                app:shapeAppearanceOverlay="@style/SquareActionButton">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="@dimen/_22sdp"
+                    android:layout_height="@dimen/_22sdp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/outline_delete_24"
+                    android:tint="@color/grey" />
+
+            </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

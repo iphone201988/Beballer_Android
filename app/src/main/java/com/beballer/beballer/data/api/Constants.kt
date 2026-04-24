@@ -86,4 +86,11 @@ object Constants {
     const val CREATE_EVENT_TOURNAMENT = "event/create-event-tournament"
     const val ADD_ORGANIZER_CATEGORY = "event/add-or-organize-tournament-category"
     const val UPDATE__EVENT_COURT = "event/update-event-categories-courts/"
+
+    const val GET_EVENT = "event/get-events"
+
+    const val EVENT_DETAILS = "event/get-event/"
+
+    const val REGISTER_PLAYER  = "event/register-player-to-tournament-categories"
+
 }

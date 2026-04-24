@@ -103,6 +103,17 @@
         android:name="com.beballer.beballer.ui.organizers.tournament_create.AddTournamentDetialsFragment"
         tools:layout="@layout/fragment_add_tournament_detials" />
 
+
+    <fragment android:id="@+id/playerRegistrationFragment"
+        android:name="com.beballer.beballer.ui.organizers.player_registration.PlayerRegistrationFragment"
+        tools:layout="@layout/player_registration_fragment"/>
+
+    <fragment
+        android:id="@+id/registrationSuccessfullyFragment"
+        android:name="com.beballer.beballer.ui.organizers.player_registration.RegistrationSuccessfullyFragment"
+        tools:layout="@layout/fragment_registration_successfully" />
+
+
     <!-- - - -  - -  - -  - - -  Details - - - - - - - - - - - -->
     <fragment
         android:id="@+id/OrgTournamentDetailsFragment"

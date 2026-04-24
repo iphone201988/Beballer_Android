@@ -808,15 +808,16 @@ object BindingUtils {
             val date = inputFormat.parse(dateString)
 
             date?.let {
-                // Convert to device local time
                 val calendar = Calendar.getInstance()
                 calendar.time = it
 
+                // ✅ Updated format
                 val outputFormat = SimpleDateFormat(
-                    "EEEE dd MMMM\nyyyy", Locale.getDefault()
+                    "yyyy MMMM dd, EEEE",
+                    Locale.getDefault()
                 )
 
-                textView.text = outputFormat.format(calendar.time).lowercase()
+                textView.text = outputFormat.format(calendar.time)
             }
 
         } catch (_: Exception) {
@@ -824,7 +825,77 @@ object BindingUtils {
         }
     }
 
+    @BindingAdapter("setFormattedTEventTime")
+    @JvmStatic
+    fun TextView.setFormattedTEventTime(dateString: String?) {
+        text = getFormattedTime(dateString)
+    }
 
+    fun getFormattedTime(dateString: String?): String {
+
+        if (dateString.isNullOrEmpty()) return ""
+
+        return try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+            val date = inputFormat.parse(dateString)
+
+            val outputFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+            outputFormat.timeZone = TimeZone.getDefault()
+
+            date?.let { outputFormat.format(it) } ?: ""
+
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
+    @BindingAdapter("capitalizeText")
+    @JvmStatic
+    fun setCapitalizeText(textView: AppCompatTextView, value: String?) {
+        textView.text = value
+            ?.lowercase()
+            ?.replaceFirstChar { it.uppercase() }
+            ?: ""
+    }
+
+    @BindingAdapter("setEventDate")
+    @JvmStatic
+    fun setEventDate(textView: AppCompatTextView, dateString: String?) {
+
+        if (dateString.isNullOrEmpty()) {
+            textView.text = ""
+            return
+        }
+
+        try {
+            // Input format (ISO from API)
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+            val date = inputFormat.parse(dateString)
+
+            date?.let {
+                val calendar = Calendar.getInstance()
+                calendar.time = it
+
+                // ✅ Desired format
+                val outputFormat = SimpleDateFormat("EEEE dd/MM", Locale.getDefault())
+
+                textView.text = outputFormat.format(calendar.time)
+            }
+
+        } catch (_: Exception) {
+            textView.text = dateString
+        }
+    }
+
+    @BindingAdapter("visibleIfNotEmpty")
+    @JvmStatic
+    fun visibleIfNotEmpty(view: View, value: String?) {
+        view.visibility = if (value.isNullOrEmpty()) View.GONE else View.VISIBLE
+    }
     @BindingAdapter("waterPointStatus")
     @JvmStatic
     fun setWaterPointStatus(textView: AppCompatTextView, hasWaterPoint: Boolean?) {

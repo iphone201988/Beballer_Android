@@ -106,7 +106,7 @@
 
     <fragment android:id="@+id/playerRegistrationFragment"
         android:name="com.beballer.beballer.ui.organizers.player_registration.PlayerRegistrationFragment"
-        tools:layout="@layout/player_registration_fragment"/>
+        tools:layout="@layout/fragment_player_registration"/>
 
     <fragment
         android:id="@+id/registrationSuccessfullyFragment"

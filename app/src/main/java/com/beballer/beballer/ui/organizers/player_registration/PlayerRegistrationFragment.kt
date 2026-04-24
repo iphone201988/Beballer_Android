@@ -69,11 +69,14 @@ class PlayerRegistrationFragment : BaseFragment<FragmentPlayerRegistrationBindin
                     requireActivity().onBackPressedDispatcher.onBackPressed()
                 }
                 R.id.btnNext ->{
-                    if (validate()){
+                    val firstName = binding.etFirstName.text.toString().trim()
+                    val lastName = binding.etLastName.text.toString().trim()
+                    val playerNumber = binding.etPhoneNo.text.toString().trim()
+                    if (validate(firstName,lastName,playerNumber)){
                         val data = HashMap<String , Any>()
-                        data["firstName"] = binding.etFirstName.text.toString()
-                        data["lastName"] = binding.etLastName.text.toString()
-                        data["phoneNumber"] = binding.etPhoneNo.text.toString()
+                        data["firstName"] = firstName
+                        data["lastName"] = lastName
+                        data["phoneNumber"] = playerNumber
                         viewModel.registerPlayer(com.beballer.beballer.data.api.Constants.REGISTER_PLAYER,data)
                     }
                 }
@@ -84,10 +87,7 @@ class PlayerRegistrationFragment : BaseFragment<FragmentPlayerRegistrationBindin
 
 
     /*** add validation ***/
-    private fun validate(): Boolean {
-        val firstName = binding.etFirstName.text.toString().trim()
-        val lastName = binding.etLastName.text.toString().trim()
-        val playerNumber = binding.etPhoneNo.text.toString().trim()
+    private fun validate(firstName: String,lastName: String,playerNumber: String): Boolean {
         if (firstName.isEmpty()) {
             showInfoToast("Please enter first name")
             return false

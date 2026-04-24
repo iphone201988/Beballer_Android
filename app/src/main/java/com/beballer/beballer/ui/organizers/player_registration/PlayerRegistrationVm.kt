@@ -1,4 +1,4 @@
-package com.beballer.beballer.ui.organizers.dash_board.find.details
+package com.beballer.beballer.ui.organizers.player_registration
 
 import android.util.Log
 import com.beballer.beballer.base.BaseViewModel
@@ -12,26 +12,27 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
-class OrganizersFindDetailsVM @Inject constructor(private val apiHelper: ApiHelper):BaseViewModel(){
+class PlayerRegistrationVm @Inject constructor(private val apiHelper: ApiHelper) : BaseViewModel() {
 
     val commonObserver = SingleRequestEvent<JsonObject>()
 
-
-    fun getEventDetails(url: String) {
+    fun registerPlayer(url: String, data: HashMap<String, Any>) {
         CoroutineScope(Dispatchers.IO).launch {
             commonObserver.postValue(Resource.loading(null))
             try {
-                apiHelper.apiGetWithoutQuery(url).let {
+                apiHelper.apiPostForRawBody(url , data).let {
                     if (it.isSuccessful) {
-                        commonObserver.postValue(Resource.success("getEventDetails", it.body()))
+                        commonObserver.postValue(Resource.success("registerPlayer", it.body()))
                     } else commonObserver.postValue(
                         Resource.error(handleErrorResponse(it.errorBody(), it.code()), null)
                     )
                 }
             } catch (e: Exception) {
-                Log.d("error", "getPostComment: $e")
+                Log.d("error", "getPostApi: $e")
             }
         }
     }
+
 }

@@ -1267,6 +1267,10 @@ data class BoundPlayer(
 
 data class CreateTournamentApiResponse(
     val event: Event, val message: String, val success: Boolean
+
+
+    val categoryId : String?,
+    val Category_id : String?
 )
 
 data class Event(

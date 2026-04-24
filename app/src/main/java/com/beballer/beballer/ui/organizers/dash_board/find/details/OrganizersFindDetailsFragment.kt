@@ -1,32 +1,51 @@
 package com.beballer.beballer.ui.organizers.dash_board.find.details
 
+import CategoryAdapter
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.annotation.SuppressLint
+import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.animation.OvershootInterpolator
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.beballer.beballer.BR
 import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.base.SimpleRecyclerViewAdapter
+import com.beballer.beballer.data.api.Constants
+import com.beballer.beballer.data.model.Category
 import com.beballer.beballer.utils.BaseCustomBottomSheet
 import com.beballer.beballer.utils.BaseCustomDialog
 import com.beballer.beballer.utils.BindingUtils
 import com.beballer.beballer.data.model.GameModeModel
+import com.beballer.beballer.data.model.GetEventDetailsApiResponse
+import com.beballer.beballer.data.model.GetEventDetailsCategory
+import com.beballer.beballer.data.model.GetEventDetailsCourt
+import com.beballer.beballer.data.model.GetGameDetailsApiResponse
 import com.beballer.beballer.databinding.FragmentOrganizersFindDetailsBinding
 import com.beballer.beballer.databinding.IHaveCodeDialogItemBinding
 import com.beballer.beballer.databinding.PlayFormateBottomLayoutBinding
 import com.beballer.beballer.databinding.RvGameModeItemBinding
 import com.beballer.beballer.ui.organizers.dash_board.OrganizersPagerAdapter
 import com.beballer.beballer.ui.player.dash_board.find.details.ImagesPagerAdapter
+import com.beballer.beballer.utils.BindingUtils.vectorToBitmapDescriptor
+import com.beballer.beballer.utils.Status
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.zhpan.indicator.enums.IndicatorSlideMode
 import com.zhpan.indicator.enums.IndicatorStyle
@@ -39,8 +58,18 @@ class OrganizersFindDetailsFragment : BaseFragment<FragmentOrganizersFindDetails
     private lateinit var playFormatSheet: BaseCustomBottomSheet<PlayFormateBottomLayoutBinding>
     private lateinit var gameModeAdapter: SimpleRecyclerViewAdapter<GameModeModel, RvGameModeItemBinding>
     private lateinit var iHaveCodeDialogItem: BaseCustomDialog<IHaveCodeDialogItemBinding>
+
+    private lateinit var categoryAdapter: CategoryAdapter
+    private val categoryList = mutableListOf<GetEventDetailsCategory>()
     private val translationYaxis = -100F
+    private lateinit var imagesPagerAdapter: ImagesPagerAdapter
+    private var gameMarker: Marker? = null
     private var isFabMenuVisible = false
+
+
+    private var googleMap: GoogleMap? = null
+
+
     private val interpolator = OvershootInterpolator()
 
     override fun getLayoutResource(): Int {
@@ -71,14 +100,51 @@ class OrganizersFindDetailsFragment : BaseFragment<FragmentOrganizersFindDetails
         // fab button click
         initFabMenu()
         // view pager
-        initViewPager()
         // observer
         initObserver()
+
         // click
         initOnClick()
         // adapter
+
+        setupRecyclerView()
         val adapter = OrganizersPagerAdapter(requireActivity().supportFragmentManager, lifecycle)
         binding.viewPagerProfile.adapter = adapter
+
+
+
+    }
+
+    private fun setupRecyclerView() {
+
+        categoryAdapter = CategoryAdapter(
+            list = categoryList,
+
+            onAddClick = {
+
+//                val bundle = Bundle().apply {
+//                    putParcelable("data", tournamentData)
+//                }
+                BindingUtils.navigateWithSlide(
+                    findNavController(), R.id.addTournamentDetail,null
+                )
+                Toast.makeText(requireContext(), "Add Category Clicked", Toast.LENGTH_SHORT).show()
+
+            },
+
+            onCategoryClick = { category ->
+
+                BindingUtils.setFormattedGameDate(binding.tvGameStartDate, category.endDate)
+                binding.tvGameStartTime.text = BindingUtils.getFormattedTime(category.endDate)
+                binding.tvTournamentPrice.text = category.priceRange
+                binding.etDescription.setText( category.description)
+                binding.tvTournamentAgeRange.text =category.ageRange
+                binding.tvTournamentLevel.text = category.level
+
+            }
+        )
+
+        binding.rvCategories.adapter = categoryAdapter
     }
 
 
@@ -180,6 +246,10 @@ class OrganizersFindDetailsFragment : BaseFragment<FragmentOrganizersFindDetails
                     playFormatBottomSheet()
                 }
 
+                R.id.removeCourtFab ->{
+
+                }
+
             }
         }
     }
@@ -261,33 +331,34 @@ class OrganizersFindDetailsFragment : BaseFragment<FragmentOrganizersFindDetails
 
 
     /*** view pager handel **/
-    private fun initViewPager() {
-//        val uriList = ArrayList<Int>().apply {
-//            add(R.drawable.iv_event)
-//            add(R.drawable.iv_event)
-//        }
-//
-//        val imagesPagerAdapter = ImagesPagerAdapter(requireContext(), uriList)
-//        binding.viewPager.adapter = imagesPagerAdapter
-//        binding.dotsIndicator.apply {
-//            setSliderColor(
-//                ContextCompat.getColor(requireContext(), R.color.beballer_grey),
-//                ContextCompat.getColor(requireContext(), R.color.beballer_orange)
-//            )
-//            setSliderWidth(
-//                resources.getDimension(com.intuit.sdp.R.dimen._8sdp),
-//                resources.getDimension(com.intuit.sdp.R.dimen._8sdp)
-//            )
-//            setSliderHeight(resources.getDimension(com.intuit.sdp.R.dimen._8sdp))
-//            setSlideMode(IndicatorSlideMode.NORMAL)
-//            setIndicatorStyle(IndicatorStyle.CIRCLE)
-//
-//            binding.dotsIndicator.setupWithViewPager(binding.viewPager)
-//            setPageSize(imagesPagerAdapter.itemCount)
-//            notifyDataChanged()
-//
-//            binding.noCourtPicture.isVisible = imagesPagerAdapter.itemCount == 0
-//        }
+    private fun initViewPager(imageList: List<String> = emptyList()) {
+        val uriList = ArrayList<String>()
+        for (i in imageList) {
+            uriList.add(i)
+        }
+
+
+        val imagesPagerAdapter = ImagesPagerAdapter(requireContext(), uriList)
+        binding.viewPager.adapter = imagesPagerAdapter
+        binding.dotsIndicator.apply {
+            setSliderColor(
+                ContextCompat.getColor(requireContext(), R.color.beballer_grey),
+                ContextCompat.getColor(requireContext(), R.color.beballer_orange)
+            )
+            setSliderWidth(
+                resources.getDimension(com.intuit.sdp.R.dimen._8sdp),
+                resources.getDimension(com.intuit.sdp.R.dimen._8sdp)
+            )
+            setSliderHeight(resources.getDimension(com.intuit.sdp.R.dimen._8sdp))
+            setSlideMode(IndicatorSlideMode.NORMAL)
+            setIndicatorStyle(IndicatorStyle.CIRCLE)
+
+            binding.dotsIndicator.setupWithViewPager(binding.viewPager)
+            setPageSize(imagesPagerAdapter.itemCount)
+            notifyDataChanged()
+
+            binding.noCourtPicture.isVisible = imagesPagerAdapter.itemCount == 0
+        }
     }
 
     /*** fab button click handel  **/
@@ -313,7 +384,6 @@ class OrganizersFindDetailsFragment : BaseFragment<FragmentOrganizersFindDetails
 
                 false -> {
                     binding.courtMenusLayout.isVisible = true
-
                     binding.courtMenuFab.animate().rotation(-90F).setInterpolator(interpolator)
                         .setDuration(150).start()
 
@@ -326,29 +396,124 @@ class OrganizersFindDetailsFragment : BaseFragment<FragmentOrganizersFindDetails
     }
 
 
-    /*** map ready ***/
-    private var mMap: GoogleMap? = null
-    override fun onMapReady(p0: GoogleMap) {
-        mMap = p0
+    /**
+     * Method to initialize map
+     */
 
-        try {
-            mMap?.setMapStyle(
-                MapStyleOptions.loadRawResourceStyle(
-                    requireContext(), R.raw.map_style
-                )
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
+        updateMapLocation()
+    }
+
+    @SuppressLint("PotentialBehaviorOverride")
+    private fun updateMapLocation() {
+        val map = googleMap ?: return
+        val latitude = binding.bean?.lat
+        val longitude = binding.bean?.long
+
+        Log.i("fdsfds", "updateMapLocation: $latitude , $longitude")
+
+        if (latitude != null && longitude != null) {
+            val latLng = LatLng(latitude , longitude )
+
+            map.clear()
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+
+            val markerIcon = vectorToBitmapDescriptor(
+                requireContext(), R.drawable.findcourticon, 72, 72
             )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
 
+            gameMarker = map.addMarker(
+                MarkerOptions().position(latLng).icon(markerIcon)
+            )
+
+
+
+            map.uiSettings.apply {
+                isScrollGesturesEnabled = false
+                isZoomGesturesEnabled = false
+                isTiltGesturesEnabled = false
+                isRotateGesturesEnabled = false
+                isMapToolbarEnabled = false
+                isZoomControlsEnabled = false
+                isCompassEnabled = false
+            }
+            map.setOnMarkerClickListener { marker ->
+                if (marker == gameMarker) {
+                    binding.bean?.let { court ->
+                        //    openNextFragment(court)
+                    }
+                    true
+                } else {
+                    false
+                }
+            }
+            map.isTrafficEnabled = false
+            map.isBuildingsEnabled = false
+        }
+    }
+
+    /** handle api response **/
+    private fun initObserver() {
+        viewModel.commonObserver.observe(viewLifecycleOwner, Observer{
+            when(it?.status){
+                Status.LOADING -> {
+                    hideLoading()
+                }
+                Status.SUCCESS -> {
+                    hideLoading()
+
+                    val myDataModel: GetEventDetailsApiResponse? =
+                        BindingUtils.parseJson(it.data.toString())
+
+                    if (myDataModel?.data?.event != null) {
+
+                        val event = myDataModel.data.event
+                        binding.bean = event
+
+                        // ViewPager
+                        initViewPager(event.eventPhotos ?: emptyList())
+
+                        val apiList = event.categories ?: emptyList()
+
+                        categoryList.clear()
+                        categoryList.addAll(apiList.take(6))   // limit to 6
+
+                        categoryAdapter.notifyDataSetChanged()
+
+                        val currentUserId = sharedPrefManager.getLoginData()?.data?.user?.id
+                        val currentUserMongoId = sharedPrefManager.getLoginData()?.data?.user?._id
+
+                        val isCurrentUserOrganizer = event.organizersInfo?.any {
+                            it.id == currentUserId && it._id == currentUserMongoId
+                        } ?: false
+
+                        binding.removeCourtFab.visibility =
+                            if (isCurrentUserOrganizer) View.VISIBLE else View.GONE
+                    }
+                }
+                Status.ERROR ->  {
+                    hideLoading()
+                    showErrorToast(it.message.toString())
+                }
+                else ->  {
+
+                }
+            }
+        })
 
     }
 
 
-    /** handle api response **/
-    private fun initObserver() {
+    override fun onResume() {
+        super.onResume()
 
+        val id = requireActivity().intent?.getStringExtra("id")
+        Log.i("fsdfd", "onResume: $id")
 
+        if (id != null) {
+            viewModel.getEventDetails(Constants.EVENT_DETAILS + id)
+        }
     }
 
 }

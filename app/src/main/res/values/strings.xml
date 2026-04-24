@@ -238,5 +238,6 @@
     <string name="public_game_data_empty">Public game data empty</string>
     <string name="done_games">Done Games</string>
     <string name="public_games">Public games</string>
+    <string name="understood">Understood</string>
 
 </resources>

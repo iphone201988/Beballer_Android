@@ -99,6 +99,7 @@ class CommonTournamentVM @Inject constructor(
             putWithLog("courtsCount", data.courtsCount)
             putWithLog("teamsCount", data.teamsCount)
             putWithLog("poolsCount", data.poolsCount)
+            putWithLog("categoryId", data.categoryId)
         }
     }
 

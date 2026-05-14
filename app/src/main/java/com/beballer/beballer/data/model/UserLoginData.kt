@@ -1230,38 +1230,38 @@ data class Rd(
 // player by bound api response
 
 data class PlayerByBoundApiResponse(
-    val `data`: PlayerBoundData, val message: String, val success: Boolean
+    val `data`: PlayerBoundData?, val message: String?, val success: Boolean?
 )
 
 data class PlayerBoundData(
-    val pagination: PlayerPagination, val players: List<BoundPlayer>
+    val pagination: PlayerPagination?, val players: List<BoundPlayer?>
 )
 
 data class PlayerPagination(
-    val currentPage: Int,
-    val hasNextPage: Boolean,
-    val hasPrevPage: Boolean,
-    val limit: Int,
-    val totalCount: Int,
-    val totalPages: Int
+    val currentPage: Int?,
+    val hasNextPage: Boolean?,
+    val hasPrevPage: Boolean?,
+    val limit: Int?,
+    val totalCount: Int?,
+    val totalPages: Int?
 )
 
 data class BoundPlayer(
-    val _id: String,
-    val city: String,
-    val country: String,
-    val firstName: String,
+    val _id: String?,
+    val city: String?,
+    val country: String?,
+    val firstName: String?,
     var isCurrentUser: Boolean = false,
-    val id: String,
-    val lastname: String,
-    val lastName: String,
-    val lat: Double,
-    val long: Double,
-    val profilePicture: String,
-    val rank: Int,
-    val score: Int,
-    val totalProgression: Int,
-    val username: String
+    val id: String?,
+    val lastname: String?,
+    val lastName: String?,
+    val lat: Double?,
+    val long: Double?,
+    val profilePicture: String?,
+    val rank: Int?,
+    val score: Int?,
+    val totalProgression: Int?,
+    val username: String?
 )
 
 

@@ -11,7 +11,7 @@
         android:layout_margin="@dimen/_5sdp"
         android:paddingVertical="@dimen/_14sdp"
         android:paddingHorizontal="@dimen/_6sdp"
-        android:background="@drawable/blue_strock_color_bg"
+        android:background="@drawable/rgame_strock_color_bg"
         android:layout_height="wrap_content">
 
 

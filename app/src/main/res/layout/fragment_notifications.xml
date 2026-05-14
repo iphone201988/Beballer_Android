@@ -48,7 +48,7 @@
                 style="@style/TextView.InterMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="-5dp"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginBottom="@dimen/_2sdp"
                 android:gravity="center"
                 android:textColor="@color/black_000000"

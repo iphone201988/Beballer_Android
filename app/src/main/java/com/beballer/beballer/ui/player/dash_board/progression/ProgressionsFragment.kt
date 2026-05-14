@@ -276,7 +276,7 @@ class ProgressionsFragment : BaseFragment<FragmentProgressionsBinding>() {
                                 val currentUserId = sharedPrefManager.getLoginData()?.data?.user?.id
 
                                 myDataModel.data.players.forEach { player ->
-                                    player.isCurrentUser = player.id == currentUserId
+                                    player?.isCurrentUser = player.id == currentUserId
                                 }
 
                                 progressionAdapter.list = myDataModel.data.players

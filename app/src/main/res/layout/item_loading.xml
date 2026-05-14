@@ -8,12 +8,12 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:padding="@dimen/_13sdp"
         android:gravity="center">
 
         <ProgressBar
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/_31sdp"
+            android:layout_height="@dimen/_31sdp"
             android:indeterminate="true"
             android:indeterminateTint="@color/organize_color"
             android:layout_gravity="center" />

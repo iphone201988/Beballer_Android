@@ -191,7 +191,7 @@ class CourtClusterRenderer(
         return when (currentMapType) {
             MapType.COURT -> if (selected) R.drawable.pinfilledcourt else R.drawable.findcourticon
             MapType.GAME -> if (selected) R.drawable.pin_filled_game else R.drawable.pin_game
-            MapType.TICKET -> if (selected) R.drawable.ic_round_polyline_40 else R.drawable.ic_pro_game_24
+            MapType.TICKET -> if (selected) R.drawable.skew else R.drawable.ic_pro_game_24
             MapType.TOURNAMENT -> if (selected) R.drawable.pin_filled_tournament else R.drawable.pin_tournament
             MapType.CAMP -> if (selected) R.drawable.pin_filled_camp else R.drawable.pin_camp
             else -> if (selected) R.drawable.pinfilledcourt else R.drawable.findcourticon

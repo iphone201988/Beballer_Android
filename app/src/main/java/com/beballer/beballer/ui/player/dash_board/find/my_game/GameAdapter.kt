@@ -1,22 +1,17 @@
 package com.beballer.beballer.ui.player.dash_board.find.my_game
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.beballer.beballer.R
 import com.beballer.beballer.data.model.MyGame
 import com.beballer.beballer.databinding.ItemLoadingBinding
 import com.beballer.beballer.databinding.MyGameRvItemBinding
-import com.beballer.beballer.utils.BindingUtils.gameStatusDisplay
-import com.beballer.beballer.utils.BindingUtils.parseServerDate
 
 
 class GameAdapter(
-    private val userId: String,
-    private val listener: OnItemClickListener
+    private val userId: String, private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val listItem: MutableList<GameViewItem> = mutableListOf()
@@ -42,20 +37,14 @@ class GameAdapter(
 
             TYPE_TEXT -> {
                 val binding: MyGameRvItemBinding = DataBindingUtil.inflate(
-                    inflater,
-                    R.layout.my_game_rv_item,
-                    parent,
-                    false
+                    inflater, R.layout.my_game_rv_item, parent, false
                 )
                 TextPostViewHolder(binding)
             }
 
             TYPE_LOADER -> {
                 val binding: ItemLoadingBinding = DataBindingUtil.inflate(
-                    inflater,
-                    R.layout.item_loading,
-                    parent,
-                    false
+                    inflater, R.layout.item_loading, parent, false
                 )
                 LoaderViewHolder(binding)
             }
@@ -107,78 +96,19 @@ class GameAdapter(
 
     fun getList(): MutableList<GameViewItem> = listItem
 
-    class LoaderViewHolder(val binding: ItemLoadingBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    class LoaderViewHolder(val binding: ItemLoadingBinding) : RecyclerView.ViewHolder(binding.root)
 
     inner class TextPostViewHolder(
         private val binding: MyGameRvItemBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(
-            item: MyGame?,
-            listener: OnItemClickListener,
-            position: Int
+            item: MyGame?, listener: OnItemClickListener, position: Int
         ) {
 
             binding.bean = item
+            binding.userId = userId
             binding.pos = position
-
-            item?.let { game ->
-
-                //  Parse Date
-                val parsedDate = parseServerDate(game.date)
-
-                //  Calculate Invite Response
-                val team1 = game.team1Players ?: emptyList()
-                val team2 = game.team2Players ?: emptyList()
-
-
-                val needsInviteResponse =
-                    team1.any { it.id == userId && it.accepted == false } ||
-                            team2.any { it.id == userId && it.accepted == false }
-
-
-
-                // Apply Status Display
-                if (parsedDate != null) {
-
-                    val display = gameStatusDisplay(
-                        parsedDate,
-                        game.status,
-                        needsInviteResponse
-                    )
-
-                    binding.gameStatusTv.text = display.text
-
-                    if (display.iconRes != 0) {
-
-                        val drawable = ContextCompat.getDrawable(
-                            binding.root.context,
-                            display.iconRes
-                        )
-
-                        drawable?.let {
-
-                            // Set icon size in DP
-                            val sizeInDp = 16
-                            val scale = binding.root.context.resources.displayMetrics.density
-                            val sizeInPx = (sizeInDp * scale).toInt()
-
-                            it.setBounds(0, 0, sizeInPx, sizeInPx)
-
-                            binding.gameStatusTv.setCompoundDrawables(
-                                null,
-                                it,
-                                null,
-                                null
-                            )
-                        }
-
-                    } else {
-                        binding.gameStatusTv.setCompoundDrawables(null, null, null, null)
-                    }
-                }
-            }
 
             binding.clMain.setOnClickListener {
                 listener.onItemClick(item, binding.clMain.id, position)

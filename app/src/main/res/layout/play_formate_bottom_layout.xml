@@ -31,7 +31,7 @@
                 style="@style/TextView.InterMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/_13sdp"
                 android:gravity="center"
                 android:text="Choose an option"
                 android:textColor="@color/text_light"

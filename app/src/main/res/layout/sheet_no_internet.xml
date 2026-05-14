@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
-        android:padding="16dp">
+        android:padding="@dimen/_13sdp">
 
         <LinearLayout
             android:id="@+id/line1"
@@ -34,7 +34,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="35dp"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:text="No Internet Connection"
                 android:textStyle="bold"
                 android:textSize="20sp" />

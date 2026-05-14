@@ -7,12 +7,9 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.beballer.beballer.R
-import com.beballer.beballer.data.model.GetCourtData
 import com.beballer.beballer.data.model.Player
-import com.beballer.beballer.databinding.FindGameRvItemBinding
 import com.beballer.beballer.databinding.ItemLayoutPlayersBinding
 import com.beballer.beballer.databinding.ItemLoadingBinding
-import com.beballer.beballer.ui.player.dash_board.find.courts.ViewItem
 
 
 class InvitePlayerAdapter(
@@ -22,6 +19,7 @@ class InvitePlayerAdapter(
     private val listItem: MutableList<PlayerItem> = mutableListOf()
 
     private val selectedPlayers = mutableListOf<Player>()
+    private val preSelectedIds = mutableSetOf<String>()
     private var side: String? = null   // "referee" or "players"
     private var maxSelectionCount: Int = 1
 
@@ -34,6 +32,12 @@ class InvitePlayerAdapter(
     // Selection Configuration
     // ---------------------------------
 
+    fun setPreSelectedIds(ids: List<String>?) {
+        preSelectedIds.clear()
+        ids?.let { preSelectedIds.addAll(it) }
+        notifyDataSetChanged()
+    }
+
     fun setSelectionType(type: String?) {
         side = type
     }
@@ -44,10 +48,6 @@ class InvitePlayerAdapter(
 
     fun getSelectedPlayers(): List<Player> = selectedPlayers
 
-    fun clearSelection() {
-        selectedPlayers.clear()
-        notifyDataSetChanged()
-    }
 
     // ---------------------------------
     // Adapter Basics
@@ -68,24 +68,16 @@ class InvitePlayerAdapter(
         return when (viewType) {
 
             TYPE_TEXT -> {
-                val binding: ItemLayoutPlayersBinding =
-                    DataBindingUtil.inflate(
-                        inflater,
-                        R.layout.item_layout_players,
-                        parent,
-                        false
-                    )
+                val binding: ItemLayoutPlayersBinding = DataBindingUtil.inflate(
+                    inflater, R.layout.item_layout_players, parent, false
+                )
                 TextPostViewHolder(binding)
             }
 
             TYPE_LOADER -> {
-                val binding: ItemLoadingBinding =
-                    DataBindingUtil.inflate(
-                        inflater,
-                        R.layout.item_loading,
-                        parent,
-                        false
-                    )
+                val binding: ItemLoadingBinding = DataBindingUtil.inflate(
+                    inflater, R.layout.item_loading, parent, false
+                )
                 LoaderViewHolder(binding)
             }
 
@@ -144,8 +136,7 @@ class InvitePlayerAdapter(
     // ViewHolders
     // ---------------------------------
 
-    class LoaderViewHolder(val binding: ItemLoadingBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    class LoaderViewHolder(val binding: ItemLoadingBinding) : RecyclerView.ViewHolder(binding.root)
 
     inner class TextPostViewHolder(
         private val binding: ItemLayoutPlayersBinding
@@ -157,16 +148,20 @@ class InvitePlayerAdapter(
             binding.pos = position
 
             val isSelected = selectedPlayers.any {
-                it._id == item?._id
-            }
+                val playerId = it._id ?: it.id
+                val itemPlayerId = item?._id ?: item?.id
+                playerId == itemPlayerId
+            } || preSelectedIds.contains(item?._id) || preSelectedIds.contains(item?.id)
 
-            // ✅ Highlight Selection
+            // Highlight Selection
             if (isSelected) {
+                binding.clMain.text = "Invited"
                 binding.clMain.setBackgroundResource(R.drawable.blue_strock_color_bg)
                 binding.clMain.setTextColor(
                     ContextCompat.getColor(binding.root.context, R.color.black)
                 )
             } else {
+                binding.clMain.text = "Invite"
                 binding.clMain.setBackgroundResource(R.drawable.bg_blue_btn)
                 binding.clMain.setTextColor(
                     ContextCompat.getColor(binding.root.context, R.color.white)
@@ -177,19 +172,25 @@ class InvitePlayerAdapter(
 
                 item ?: return@setOnClickListener
 
+                // If already pre-selected, don't allow toggle
+                if (preSelectedIds.contains(item._id) || preSelectedIds.contains(item.id)) {
+                    return@setOnClickListener
+                }
+
                 when (side) {
 
-                    // ✅ SINGLE SELECTION (Referee)
+                    // SINGLE SELECTION (Referee)
                     "referee" -> {
                         selectedPlayers.clear()
                         selectedPlayers.add(item)
                     }
 
-                    // ✅ MULTIPLE SELECTION (Dynamic)
-                    "players" -> {
-
+                    // MULTIPLE SELECTION (Dynamic)
+                    "players", "gameDetail" -> {
                         val alreadySelected = selectedPlayers.any {
-                            it._id == item._id
+                            val playerId = it.id ?: it._id
+                            val itemPlayerId = item.id ?: item._id
+                            playerId == itemPlayerId
                         }
 
                         if (alreadySelected) {
@@ -209,7 +210,7 @@ class InvitePlayerAdapter(
 
                                 Toast.makeText(
                                     binding.root.context,
-                                    "You can select only $maxSelectionCount players",
+                                    "You have reached maximum number of invite",
                                     Toast.LENGTH_SHORT
                                 ).show()
 
@@ -220,10 +221,11 @@ class InvitePlayerAdapter(
 
                     }
 
-                    "gameDetail" ->{
+                    "gameDetail" -> {
                         selectedPlayers.clear()
                         selectedPlayers.add(item)
                     }
+
                     "changeReferee" -> {
                         selectedPlayers.clear()
                         selectedPlayers.add(item)

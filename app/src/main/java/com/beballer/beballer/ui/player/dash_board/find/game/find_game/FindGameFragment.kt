@@ -3,7 +3,6 @@ package com.beballer.beballer.ui.player.dash_board.find.game.find_game
 import android.app.Activity
 import android.content.Intent
 import android.os.Handler
-import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -12,31 +11,24 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.beballer.beballer.BR
 import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseFragment
 import com.beballer.beballer.base.BaseViewModel
-import com.beballer.beballer.base.SimpleRecyclerViewAdapter
 import com.beballer.beballer.data.api.Constants
-import com.beballer.beballer.utils.BindingUtils
-import com.beballer.beballer.data.model.FindModel
 import com.beballer.beballer.data.model.GetCourtApiResponse
 import com.beballer.beballer.data.model.GetCourtData
-import com.beballer.beballer.data.model.GetPlayersApiResponse
-import com.beballer.beballer.databinding.FindGameRvItemBinding
 import com.beballer.beballer.databinding.FragmentFindGameBinding
-import com.beballer.beballer.ui.player.dash_board.find.courts.CourtAdapter
+import com.beballer.beballer.ui.player.dash_board.find.courts.AddCourtActivity
 import com.beballer.beballer.ui.player.dash_board.find.courts.ViewItem
-import com.beballer.beballer.ui.player.dash_board.profile.user.UserProfileActivity
+import com.beballer.beballer.utils.BindingUtils
 import com.beballer.beballer.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
+@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class FindGameFragment : BaseFragment<FragmentFindGameBinding>() {
     private val viewModel: FindGameFragmentVM by viewModels()
     private var fullList = ArrayList<GetCourtData?>()
-
-    private var query : String ? = null
     private var currentPage = 1
     private var isLoading = false
     private var isLastPage = false
@@ -68,7 +60,8 @@ class FindGameFragment : BaseFragment<FragmentFindGameBinding>() {
         pagination()
         /** Refresh **/
         binding.ssPullRefresh.setColorSchemeResources(
-            ContextCompat.getColor(requireContext(), R.color.organize_color))
+            ContextCompat.getColor(requireContext(), R.color.organize_color)
+        )
         binding.ssPullRefresh.setOnRefreshListener {
             Handler().postDelayed({
                 binding.ssPullRefresh.isRefreshing = false
@@ -81,17 +74,18 @@ class FindGameFragment : BaseFragment<FragmentFindGameBinding>() {
     }
 
     private fun initObserver() {
-        viewModel.commonObserver.observe(viewLifecycleOwner, Observer{
-            when(it?.status){
-                Status.LOADING ->  {
+        viewModel.commonObserver.observe(viewLifecycleOwner, Observer {
+            when (it?.status) {
+                Status.LOADING -> {
                     if (!isProgress) {
                         showLoading()
                     }
                 }
-                Status.SUCCESS ->  {
+
+                Status.SUCCESS -> {
                     hideLoading()
-                    when(it.message){
-                        "getCourts" ->{
+                    when (it.message) {
+                        "getCourts" -> {
                             try {
                                 val myDataModel: GetCourtApiResponse? =
                                     BindingUtils.parseJson(it.data.toString())
@@ -100,18 +94,17 @@ class FindGameFragment : BaseFragment<FragmentFindGameBinding>() {
                                         val pastSessionData = myDataModel.courts
                                         val feedItems: List<ViewItem> =
                                             pastSessionData.filterNotNull()
-                                                .map { ViewItem.Post(it) } ?: emptyList()
+                                                .map { list -> ViewItem.Post(list) }
                                         isLoading = false
                                         isLastPage = false
                                         isProgress = true
 
                                         if (currentPage == 1) {
-                                            myDataModel.courts.let {
-                                                fullList = it as ArrayList<GetCourtData?>
+                                            myDataModel.courts.let { list ->
+                                                fullList = list as ArrayList<GetCourtData?>
                                                 findGameAdapter.setList(feedItems)
 
                                             }
-                                            Log.i("fdsfsd", "initObserver: $fullList")
                                         } else {
                                             findGameAdapter.addToList(feedItems)
                                         }
@@ -129,10 +122,12 @@ class FindGameFragment : BaseFragment<FragmentFindGameBinding>() {
                         }
                     }
                 }
-                Status.ERROR ->  {
+
+                Status.ERROR -> {
                     hideLoading()
                     showErrorToast(it.message.toString())
                 }
+
                 else -> {
 
                 }
@@ -151,17 +146,17 @@ class FindGameFragment : BaseFragment<FragmentFindGameBinding>() {
     /** handle click **/
     private fun initOnClick() {
         viewModel.onClick.observe(viewLifecycleOwner) {
-            when(it?.id){
-                R.id.cancelImage->{
+            when (it?.id) {
+                R.id.cancelImage -> {
                     findNavController().popBackStack()
                 }
 
-                R.id.tvAddCourt->{
-                    val intent = Intent(requireContext(), UserProfileActivity::class.java)
-                    intent.putExtra("userType", "addCourt")
+                R.id.tvAddCourt -> {
+                    val intent = Intent(requireContext(), AddCourtActivity::class.java)
                     startActivity(intent)
                     requireActivity().overridePendingTransition(
-                        R.anim.slide_in_right, R.anim.slide_out_left
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left
                     )
                 }
             }
@@ -186,29 +181,21 @@ class FindGameFragment : BaseFragment<FragmentFindGameBinding>() {
 //                        )
 
                         if (item != null) {
-
                             val resultIntent = Intent().apply {
                                 putExtra("courtData", item)
                             }
-
                             requireActivity().setResult(Activity.RESULT_OK, resultIntent)
                             requireActivity().finish()
-
                         } else {
                             showErrorToast("Please select court ")
                         }
                     }
-
                 }
             }
         })
         binding.rvFindGame.adapter = findGameAdapter
 
     }
-
-
-
-
 
 
     /**
@@ -296,9 +283,6 @@ class FindGameFragment : BaseFragment<FragmentFindGameBinding>() {
         binding.courtsSearchView.clearFocus()
         viewModel.getCourts(Constants.GET_COURTS, params)
     }
-
-
-
 
 
 }

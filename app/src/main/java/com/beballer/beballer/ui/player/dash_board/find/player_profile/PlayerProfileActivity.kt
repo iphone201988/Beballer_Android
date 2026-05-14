@@ -42,7 +42,7 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
     }
 
     override fun onCreateView() {
-        enableEdgeToEdgePaddingTobBottom(binding.root)
+        enableEdgeToEdgePaddingTobBottom(binding.main)
         // Status bar setup
         BindingUtils.statusBarStyle(this)
         BindingUtils.statusBarTextColor(this, true)
@@ -61,7 +61,7 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
                 sharedPrefManager.getLoginData()?.data?.user?._id.takeIf { id -> !id.isNullOrEmpty() }
                     ?: ""
             if (useId == it) {
-                binding.tvSubscribe.visibility = View.GONE
+                binding.tvSubscribe.visibility = View.INVISIBLE
             } else {
                 binding.tvSubscribe.visibility = View.VISIBLE
             }
@@ -132,8 +132,7 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
 
                 R.id.tvTotalFollowing, R.id.tvNbTotalFollowing -> {
                     val intent = Intent(
-                        this@PlayerProfileActivity,
-                        FollowersAndFollowingActivity::class.java
+                        this@PlayerProfileActivity, FollowersAndFollowingActivity::class.java
                     )
                     intent.putExtra("FollowersType", "Following")
                     intent.putExtra("profileId", profileId)
@@ -288,7 +287,7 @@ class PlayerProfileActivity : BaseActivity<ActivityPlayerProfileBinding>() {
         enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(0,systemBars.top, 0, systemBars.bottom)
+            view.setPadding(0, systemBars.top, 0, systemBars.bottom)
             WindowInsetsCompat.CONSUMED
         }
     }

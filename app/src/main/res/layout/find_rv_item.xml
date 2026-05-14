@@ -22,7 +22,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clFind"
         android:layout_width="match_parent"
-        android:layout_height="85dp"
+        android:layout_height="@dimen/_65sdp"
         android:layout_margin="@dimen/_8sdp"
         android:background="@drawable/tab_bg"
         android:elevation="@dimen/_4sdp"
@@ -32,10 +32,10 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/courts_image_card"
             setCardViewColor="@{bean.id}"
-            android:layout_width="85dp"
+            android:layout_width="@dimen/_85sdp"
             android:layout_height="match_parent"
             app:cardBackgroundColor="@color/courts_light_color"
-            app:cardCornerRadius="10dp"
+            app:cardCornerRadius="@dimen/_8sdp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -51,7 +51,7 @@
             android:id="@+id/courts_tv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="85dp"
+            android:layout_marginStart="@dimen/_85sdp"
             android:fontFamily="@font/inter_bold"
             android:gravity="center"
             android:text="@{bean.title}"

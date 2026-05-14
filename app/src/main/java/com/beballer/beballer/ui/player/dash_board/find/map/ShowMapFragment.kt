@@ -635,7 +635,12 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
 
                 }
 
-                is MapListItem.Game -> {}
+                is MapListItem.Game -> {
+                    val intent = Intent(requireContext(), UserProfileActivity::class.java)
+                    intent.putExtra("userType", "gameDetails")
+                    intent.putExtra("gameId", item.data.id)
+                    startActivity(intent)
+                }
                 is MapListItem.Ticket -> {}
                 is MapListItem.Tournament -> {}
                 is MapListItem.Camp -> {}
@@ -883,6 +888,15 @@ class ShowMapFragment : BaseFragment<FragmentShowMapBinding>(), OnMapReadyCallba
         clusterManager.renderer = clusterRenderer
 
         mMap?.setOnMarkerClickListener(clusterManager)
+
+        clusterRenderer.currentMapType = when (apiType) {
+            1 -> MapType.COURT
+            2 -> MapType.GAME
+            3 -> MapType.TICKET
+            4 -> MapType.TOURNAMENT
+            5 -> MapType.CAMP
+            else -> MapType.COURT
+        }
 
         mMap?.setOnCameraMoveStartedListener { reason ->
             if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {

@@ -6,12 +6,11 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
-import android.os.Bundle
 import android.provider.CalendarContract
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Log
+import android.text.style.UnderlineSpan
 import android.view.View
 import android.view.animation.OvershootInterpolator
 import android.widget.Toast
@@ -20,7 +19,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
 import com.beballer.beballer.BR
 import com.beballer.beballer.R
 import com.beballer.beballer.base.BaseFragment
@@ -28,12 +26,11 @@ import com.beballer.beballer.base.BaseViewModel
 import com.beballer.beballer.base.SimpleRecyclerViewAdapter
 import com.beballer.beballer.data.api.Constants
 import com.beballer.beballer.data.model.ChatModel
-import com.beballer.beballer.data.model.CourtDataById
 import com.beballer.beballer.data.model.GameDetail
 import com.beballer.beballer.data.model.GameDetailTeam1Player
 import com.beballer.beballer.data.model.GameState
+import com.beballer.beballer.data.model.GetCourtData
 import com.beballer.beballer.data.model.GetGameDetailsApiResponse
-import com.beballer.beballer.data.model.MpvModel
 import com.beballer.beballer.data.model.Player
 import com.beballer.beballer.data.model.SimpleApiResponse
 import com.beballer.beballer.data.model.Team2Player
@@ -57,16 +54,13 @@ import com.beballer.beballer.utils.BaseCustomDialog
 import com.beballer.beballer.utils.BindingUtils
 import com.beballer.beballer.utils.BindingUtils.vectorToBitmapDescriptor
 import com.beballer.beballer.utils.Status
-import com.google.android.gms.auth.api.signin.internal.HashAccumulator
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.zhpan.indicator.enums.IndicatorSlideMode
 import com.zhpan.indicator.enums.IndicatorStyle
 import dagger.hilt.android.AndroidEntryPoint
@@ -74,13 +68,12 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
+@Suppress("DEPRECATION")
+@SuppressLint("UseKtx", "SetTextI18n", "DefaultLocale")
 @AndroidEntryPoint
 class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapReadyCallback,
     TeamAdapter.OnInviteClickListener {
     private val viewModel: GameDetailsFragmentVM by viewModels()
-
-    //    private lateinit var homeTeamAdapter: SimpleRecyclerViewAdapter<MpvModel, RvTeamItemBinding>
-//    private lateinit var outSideTeamAdapter: SimpleRecyclerViewAdapter<MpvModel, RvOutSideItemBinding>
     private lateinit var chatAdapter: SimpleRecyclerViewAdapter<ChatModel, RecyclerGameMessageItemBinding>
 
     private var googleMap: GoogleMap? = null
@@ -91,8 +84,9 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
     private lateinit var team1Adapter: TeamAdapter
     private lateinit var team2Adapter: TeamAdapter
 
-    private var gameChatId : String ? = null
-    private var playerId : String  ? = null
+
+    private var gameChatId: String? = null
+    private var playerId: String? = null
     private lateinit var ratingPopup: BaseCustomDialog<RatingDialogBinding>
 
     private lateinit var addCalendarPopup: BaseCustomDialog<AddToCalendarDialogLayoutBinding>
@@ -100,7 +94,6 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
     private lateinit var removeReferee: BaseCustomDialog<DialogRemoveRefereeBinding>
 
     private lateinit var openMapApp: BaseCustomDialog<OpenMapDialogBinding>
-
 
 
     private var gameMarker: Marker? = null
@@ -139,6 +132,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
         return viewModel
     }
 
+    @SuppressLint("UseKtx")
     override fun onCreateView(view: View) {
         // set block pos
         binding.pos = 1
@@ -167,23 +161,34 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
         setupAdapters()
 
         initChatAdapter()
-        val fullText = "Created by\n@Junior78"
+
+
+        val fullText = "@Junior78"
         val spannable = SpannableString(fullText)
+
         val start = fullText.indexOf("@Junior78")
         val end = start + "@Junior78".length
+
+        // Color
         spannable.setSpan(
             ForegroundColorSpan(Color.parseColor("#1877F2")),
             start,
             end,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
+
+        // Underline
+        spannable.setSpan(
+            UnderlineSpan(), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
         binding.tvGameOrganizer.text = spannable
 
         setupRating()
 
 
-
     }
+
 
     private fun initPopup() {
         ratingPopup = BaseCustomDialog(requireContext(), R.layout.rating_dialog) {
@@ -206,10 +211,66 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
 
         }
         levelPopup = BaseCustomDialog(requireContext(), R.layout.level_practiced_dialog) {
-
+            when (it.id) {
+                R.id.btnCreateGame -> {
+                    val field = binding.bean?.field
+                    if (field != null) {
+                        val courtData = GetCourtData(
+                            _id = field._id,
+                            address = field.address,
+                            createdAt = null,
+                            distance = null,
+                            grade = field.grade?.toDouble(),
+                            hoopsCount = field.hoopsCount,
+                            id = field.id,
+                            rating = field.rating,
+                            lat = field.latitude,
+                            long = field.longitude,
+                            name = field.name,
+                            photos = field.photos
+                        )
+                        val intent = Intent(requireContext(), UserProfileActivity::class.java)
+                        intent.putExtra("userType", "createGame")
+                        intent.putExtra("courtData", courtData)
+                        startActivity(intent)
+                        requireActivity().overridePendingTransition(
+                            R.anim.slide_in_right, R.anim.slide_out_left
+                        )
+                    }
+                    kingCourtPopup.dismiss()
+                }
+            }
         }
         kingCourtPopup = BaseCustomDialog(requireContext(), R.layout.create_game_dialog) {
-
+            when (it.id) {
+                R.id.btnCreateGame -> {
+                    val field = binding.bean?.field
+                    if (field != null) {
+                        val courtData = GetCourtData(
+                            _id = field._id,
+                            address = field.address,
+                            createdAt = null,
+                            distance = null,
+                            grade = field.grade?.toDouble(),
+                            hoopsCount = field.hoopsCount,
+                            id = field.id,
+                            rating = field.rating,
+                            lat = field.latitude,
+                            long = field.longitude,
+                            name = field.name,
+                            photos = field.photos
+                        )
+                        val intent = Intent(requireContext(), UserProfileActivity::class.java)
+                        intent.putExtra("userType", "createGame")
+                        intent.putExtra("courtData", courtData)
+                        startActivity(intent)
+                        requireActivity().overridePendingTransition(
+                            R.anim.slide_in_right, R.anim.slide_out_left
+                        )
+                    }
+                    kingCourtPopup.dismiss()
+                }
+            }
         }
         openMapApp = BaseCustomDialog(requireContext(), R.layout.open_map_dialog) {
             when (it.id) {
@@ -225,9 +286,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                         startActivity(intent)
                     } else {
                         Toast.makeText(
-                            requireContext(),
-                            "Location not available",
-                            Toast.LENGTH_SHORT
+                            requireContext(), "Location not available", Toast.LENGTH_SHORT
                         ).show()
                     }
 
@@ -272,8 +331,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                                 putExtra(CalendarContract.Events.TITLE, "Match Event")
                                 putExtra(CalendarContract.Events.DESCRIPTION, "Game Scheduled")
                                 putExtra(
-                                    CalendarContract.Events.EVENT_LOCATION,
-                                    "Your Ground Location"
+                                    CalendarContract.Events.EVENT_LOCATION, "Your Ground Location"
                                 )
                                 putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startMillis)
                                 putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endMillis)
@@ -293,10 +351,10 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                 }
             }
 
-        removePlayerDialog = BaseCustomDialog(requireContext(), R.layout.remove_player_dialog){
-            when(it.id){
-                R.id.btnConfirm ->{
-                    if (playerId != null && gameId != null){
+        removePlayerDialog = BaseCustomDialog(requireContext(), R.layout.remove_player_dialog) {
+            when (it.id) {
+                R.id.btnConfirm -> {
+                    if (playerId != null && gameId != null) {
                         val data = HashMap<String, Any>()
                         data["playerId"] = playerId.toString()
                         data["gameId"] = gameId.toString()
@@ -305,6 +363,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                         removePlayerDialog.dismiss()
                     }
                 }
+
                 R.id.btnCancel -> {
                     removePlayerDialog.dismiss()
                 }
@@ -312,9 +371,9 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
         }
 
 
-        refereeOption = BaseCustomDialog(requireContext(), R.layout.referee_option_dailog){
-            when(it.id){
-                R.id.btnViewProfile ->{
+        refereeOption = BaseCustomDialog(requireContext(), R.layout.referee_option_dailog) {
+            when (it.id) {
+                R.id.btnViewProfile -> {
                     if (refereeId != null) {
                         val intent = Intent(requireContext(), PlayerProfileActivity::class.java)
                         intent.putExtra("playerProfile", refereeId)
@@ -325,42 +384,57 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                     }
                     refereeOption.dismiss()
                 }
-                R.id.btnChangeReferee ->{
+
+                R.id.btnChangeReferee -> {
+
+                    val invitedIds = ArrayList<String>()
+                    binding.bean?.team1Players?.forEach { player ->
+                        player?._id?.let { id -> invitedIds.add(id) }
+                        player?.id?.let { id -> invitedIds.add(id) }
+                    }
+                    binding.bean?.team2Players?.forEach { player ->
+                        player?._id?.let { id -> invitedIds.add(id) }
+                        player?.id?.let { id -> invitedIds.add(id) }
+                    }
+                    refereeId?.let { id -> invitedIds.add(id) }
 
                     val intent = Intent(requireContext(), UserProfileActivity::class.java)
                     intent.putExtra("userType", "invitePlayer")
                     intent.putExtra("from", "changeReferee")
-                    intent.putExtra("gameId" ,gameChatId)
+                    intent.putExtra("gameId", gameChatId)
+                    intent.putStringArrayListExtra("invitedPlayerIds", invitedIds)
                     startActivity(intent)
                     requireActivity().overridePendingTransition(
-                        R.anim.slide_in_right,
-                        R.anim.slide_out_left
+                        R.anim.slide_in_right, R.anim.slide_out_left
                     )
 
                     refereeOption.dismiss()
                 }
-                R.id.btnRemoveReferee ->{
+
+                R.id.btnRemoveReferee -> {
                     removeReferee.show()
 
                     refereeOption.dismiss()
                 }
-                R.id.btnCancel ->{
+
+                R.id.btnCancel -> {
                     refereeOption.dismiss()
                 }
             }
         }
 
 
-        removeReferee = BaseCustomDialog(requireContext(), R.layout.dialog_remove_referee){
-            when(it.id){
-                R.id.btnConfirm ->{
+        removeReferee = BaseCustomDialog(requireContext(), R.layout.dialog_remove_referee) {
+            when (it.id) {
+                R.id.btnConfirm -> {
                     val data = HashMap<String, Any>()
                     data["gameId"] = gameChatId.toString()
 
                     viewModel.removeReferee(data, Constants.REMOVE_REFEREE)
                     removeReferee.dismiss()
                 }
-                R.id.btnCancel ->{
+
+                R.id.btnCancel -> {
                     removeReferee.dismiss()
                 }
             }
@@ -377,7 +451,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
         val date = sdf.parse(apiDate)
         val startTimeMillis = date?.time ?: 0L
 
-        // Example: 1 hour event
+        // hour event
         val endTimeMillis = startTimeMillis + (60 * 60 * 1000)
 
         return Pair(startTimeMillis, endTimeMillis)
@@ -398,8 +472,6 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
 
             if (fromUser) {
                 formattedRating = String.format("%.1f", rating)
-
-                Log.i("fdsfsdf", "setupRating: $formattedRating")
 
                 popupBinding.tvYourRating.text = "Your rating : $formattedRating"
 
@@ -427,12 +499,13 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                                 BindingUtils.parseJson(it.data.toString())
 
                             val game = myDataModel?.game ?: return@Observer
+                            binding.bean = game
                             updateMapLocation()
 
 
-                            if (game?.field?.latitude != null && game?.field?.longitude  != null) {
-                                val lat1 = game?.field?.latitude
-                                val lon1 = game?.field?.longitude
+                            if (game.field?.latitude != null && game.field.longitude != null) {
+                                val lat1 = game.field.latitude
+                                val lon1 = game.field.longitude
                                 val lat2 = BindingUtils.lat
                                 val lon2 = BindingUtils.long
                                 val distance = BindingUtils.formattedDistance(
@@ -441,7 +514,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                                 binding.tvCourtDistance.text = distance
                             }
 
-                            // 1️⃣ Map state
+                            // Map state
                             val gameState = mapGameState(game)
 
                             gameState?.let { state ->
@@ -459,11 +532,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
 //                                team2Adapter.updateEditPermission(state.isOrganizer)
 //                            }
 
-                            // 2️⃣ Basic binding
-                            binding.bean = game
-
-
-
+                            // Basic binding
                             gameChatId = game._id
                             courtId = game.field?.id
                             organizerId = game.organizer?._id
@@ -472,16 +541,14 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                             gameLat = game.field?.latitude
                             gameLong = game.field?.longitude
 
-                            // 3️⃣ Players
-                            val team1Players = game.team1Players
-                                ?.filterNotNull()
-                                ?.map { it.toPlayer() }
-                                ?: emptyList()
+                            // Players
+                            val team1Players = game.team1Players?.filterNotNull()?.map { data ->
+                                data.toPlayer()
+                            } ?: emptyList()
 
-                            val team2Players = game.team2Players
-                                ?.filterNotNull()
-                                ?.map { it.toPlayer() }
-                                ?: emptyList()
+                            val team2Players = game.team2Players?.filterNotNull()?.map { data ->
+                                data.toPlayer()
+                            } ?: emptyList()
 
                             gameState?.let { state ->
 
@@ -502,15 +569,34 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                                 )
                             }
 
-                            // 4️⃣ Referee
+                            //  Referee
                             if (game.isAutoRefereeing == true) {
-                                binding.tvGameReferee.text = "Self Refereeing"
+                                binding.tvGameReferee.text = getString(R.string.self_refereeing)
                             } else {
-                                binding.tvGameReferee.text = game.referee?.username
+                                val username = game.referee?.username ?: ""
+                                val prefix = "Refereeing\n"
+                                val fullText = "$prefix@$username"
+                                val spannable = SpannableString(fullText)
+                                val start = fullText.indexOf("@$username")
+                                if (start != -1) {
+                                    spannable.setSpan(
+                                        ForegroundColorSpan(Color.parseColor("#1877F2")),
+                                        start,
+                                        fullText.length,
+                                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                    )
+                                    spannable.setSpan(
+                                        UnderlineSpan(),
+                                        start,
+                                        fullText.length,
+                                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                    )
+                                }
+                                binding.tvGameReferee.text = spannable
                                 refereeId = game.referee?._id
                             }
 
-                            // 5️⃣ Images
+                            // 5️ Images
                             val photos = game.field?.photos ?: emptyList()
                             imagesPagerAdapter.updateImages(photos as List<String>)
                             binding.dotsIndicator.setPageSize(photos.size)
@@ -572,7 +658,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                             }
                         }
 
-                        "removePlayer" ->{
+                        "removePlayer" -> {
                             val myDataModel: SimpleApiResponse? =
                                 BindingUtils.parseJson(it.data.toString())
                             if (myDataModel != null) {
@@ -580,7 +666,8 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                                 initData()
                             }
                         }
-                        "removeReferee" ->{
+
+                        "removeReferee" -> {
                             val myDataModel: SimpleApiResponse? =
                                 BindingUtils.parseJson(it.data.toString())
                             if (myDataModel != null) {
@@ -605,8 +692,6 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
     }
 
 
-
-
     /**
      * Method to initialize map
      */
@@ -622,16 +707,14 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
         val latitude = binding.bean?.field?.latitude
         val longitude = binding.bean?.field?.longitude
 
-        Log.i("fdsfds", "updateMapLocation: $latitude , $longitude")
-
         if (latitude != null && longitude != null) {
-            val latLng = LatLng(latitude , longitude )
+            val latLng = LatLng(latitude, longitude)
 
             map.clear()
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
 
             val markerIcon = vectorToBitmapDescriptor(
-                requireContext(), R.drawable.findcourticon, 72, 72
+                requireContext(), R.drawable.pin_game, 30, 30
             )
 
             gameMarker = map.addMarker(
@@ -652,7 +735,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
             map.setOnMarkerClickListener { marker ->
                 if (marker == gameMarker) {
                     binding.bean?.let { court ->
-                    //    openNextFragment(court)
+                        //  openNextFragment(court)
                     }
                     true
                 } else {
@@ -665,21 +748,6 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
     }
 
 
-    private fun openNextFragment(court: CourtDataById) {
-        val bundle = Bundle().apply {
-            putParcelable("courtData", court)
-        }
-        val intent = Intent(requireContext(), UserProfileActivity::class.java).apply {
-            putExtra("userType", "singleDataFragment")
-            putExtras(bundle)
-        }
-        startActivity(intent)
-        requireActivity().overridePendingTransition(
-            R.anim.slide_in_right, R.anim.slide_out_left
-        )
-
-
-    }
     private fun initData() {
         gameId = arguments?.getString("gameId")
         if (gameId != null) {
@@ -745,26 +813,30 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                 }
 
                 R.id.tvGameReferee -> {
+                    if (binding.bean?.isAutoRefereeing == false) {
+                        val currentUserId = sharedPrefManager.getLoginData()?.data?.user?.id
+                            ?: sharedPrefManager.getLoginData()?.data?.user?._id
+                        val isOrganizer = organizerId == currentUserId
 
-                    refereeOption.show()
-//                    if (refereeId != null) {
-//                        val intent = Intent(requireContext(), PlayerProfileActivity::class.java)
-//                        intent.putExtra("playerProfile", refereeId)
-//                        startActivity(intent)
-//                        requireActivity().overridePendingTransition(
-//                            R.anim.slide_in_right, R.anim.slide_out_left
-//                        )
-//                    }
+                        refereeOption.binding.btnChangeReferee.visibility =
+                            if (isOrganizer) View.VISIBLE else View.GONE
+                        refereeOption.binding.btnRemoveReferee.visibility =
+                            if (isOrganizer) View.VISIBLE else View.GONE
+
+                        refereeOption.show()
+                    }
                 }
-                R.id.tvChat ->{
+
+                R.id.tvChat -> {
                     val intent = Intent(requireContext(), UserProfileActivity::class.java)
                     intent.putExtra("userType", "gameChat")
-                    intent.putExtra("gameChatId",gameChatId)
+                    intent.putExtra("gameChatId", gameChatId)
                     startActivity(intent)
                     requireActivity().overridePendingTransition(
                         R.anim.slide_in_right, R.anim.slide_out_left
                     )
                 }
+
                 R.id.tvGameOrganizer -> {
                     val intent = Intent(requireContext(), PlayerProfileActivity::class.java)
                     intent.putExtra("playerProfile", organizerId)
@@ -809,7 +881,8 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                         "Join" -> {
 
                         }
-                        "Game Score" ->{
+
+                        "Game Score" -> {
                             val intent = Intent(requireContext(), UserProfileActivity::class.java)
                             intent.putExtra("userType", "gameScore")
                             intent.putExtra("gameId", gameId)
@@ -818,6 +891,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
                                 R.anim.slide_in_right, R.anim.slide_out_left
                             )
                         }
+
 
                     }
                 }
@@ -917,9 +991,6 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
     }
 
 
-
-
-
     private fun setupAdapters() {
 
         team1Adapter = TeamAdapter(true, this)
@@ -930,14 +1001,12 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
     }
 
 
-    /** handle out side adapter **/
+    /** handle outside adapter **/
     private var chatList = ArrayList<ChatModel>()
     private fun initChatAdapter() {
         chatAdapter =
-            SimpleRecyclerViewAdapter(R.layout.recycler_game_message_item, BR.bean) { v, m, pos ->
-                when (v.id) {
+            SimpleRecyclerViewAdapter(R.layout.recycler_game_message_item, BR.bean) { _, _, _ ->
 
-                }
             }
         chatList = getChatList()
         chatAdapter.list = chatList
@@ -961,34 +1030,66 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
 
     override fun onInviteClick(isHomeTeam: Boolean) {
 
+        val invitedIds = ArrayList<String>()
+
+        binding.bean?.team1Players?.forEach {
+            it?._id?.let { id -> invitedIds.add(id) }
+            it?.id?.let { id -> invitedIds.add(id) }
+        }
+        binding.bean?.team2Players?.forEach {
+            it?._id?.let { id -> invitedIds.add(id) }
+            it?.id?.let { id -> invitedIds.add(id) }
+        }
+        refereeId?.let { invitedIds.add(it) }
+
+        val mode = binding.bean?.mode ?: 1
+        val team1Size = binding.bean?.team1Players?.filterNotNull()?.size ?: 0
+        val team2Size = binding.bean?.team2Players?.filterNotNull()?.size ?: 0
+
+        val remainingSlots = if (isHomeTeam) {
+            mode - team1Size
+        } else {
+            mode - team2Size
+        }
+
         val intent = Intent(requireContext(), UserProfileActivity::class.java)
         intent.putExtra("userType", "invitePlayer")
         intent.putExtra("from", "gameDetail")
-        intent.putExtra("gameId" ,gameId)
+        intent.putExtra("gameId", gameId)
         intent.putExtra("isHomeTeam", isHomeTeam)
+        intent.putExtra("maxPlayer", if (remainingSlots > 0) remainingSlots else 1)
+        intent.putStringArrayListExtra("invitedPlayerIds", invitedIds)
+
         startActivity(intent)
         requireActivity().overridePendingTransition(
-            R.anim.slide_in_right,
-            R.anim.slide_out_left
+            R.anim.slide_in_right, R.anim.slide_out_left
         )
     }
 
     override fun onRemoveClick(
-        player: Player,
-        isHomeTeam: Boolean
+        player: Player, isHomeTeam: Boolean
     ) {
         if (player._id != null) {
-            playerId  = player.id
+            playerId = player.id
             removePlayerDialog.show()
         }
 
     }
 
+    override fun onPlayerClick(player: Player) {
+        if (player.id != null) {
+            val intent = Intent(requireContext(), PlayerProfileActivity::class.java)
+            intent.putExtra("playerProfile", player._id)
+            startActivity(intent)
+            requireActivity().overridePendingTransition(
+                R.anim.slide_in_right, R.anim.slide_out_left
+            )
+        }
+    }
+
 
     private fun prepareTeamList(
-        players: List<Player>,
-        totalSlots: Int,
-        isEditable: Boolean
+        players: List<Player>, totalSlots: Int, isEditable: Boolean
     ): List<TeamSlotModel> {
 
         val list = mutableListOf<TeamSlotModel>()
@@ -998,7 +1099,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
             list.add(TeamSlotModel(player = it))
         }
 
-        // ✅ Only add invite slots if editable
+        //  Only add invite slots if editable
         if (isEditable) {
             val remaining = totalSlots - players.size
             repeat(remaining.coerceAtLeast(0)) {
@@ -1042,7 +1143,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
             long = null,
             profilePicture = profilePicture,
             score = score,
-            username = null ,
+            username = null,
             accepted = accepted// not available in Team2Player
         )
     }
@@ -1050,14 +1151,10 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
 
     private fun configureGameState(state: GameState) {
 
-
-        Log.i("statua", "configureGameState: $state")
-
         when (state.status) {
 
-            GameState.Status.DONE,
-            GameState.Status.IN_PROGRESS -> {
-                binding.btnNext.text = "Game Score"
+            GameState.Status.DONE, GameState.Status.IN_PROGRESS -> {
+                binding.btnNext.text = getString(R.string.game_score)
                 binding.btnNext.visibility = View.VISIBLE
                 binding.btnRefuse.visibility = View.GONE
                 return
@@ -1066,6 +1163,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
             GameState.Status.WAITING -> {
 
             }
+
             GameState.Status.NONE -> return
         }
 
@@ -1073,13 +1171,15 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
 
 
             if (state.canStartGame) {
-                binding.btnNext.text = "Start game"
+                binding.btnNext.alpha = 1f
+                binding.btnNext.text = getString(R.string.start_game)
                 binding.btnNext.visibility = View.VISIBLE
                 binding.btnRefuse.visibility = View.GONE
             } else {
                 binding.btnNext.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.blue_00bef5)
-                binding.btnNext.text = "Waiting for the other players"
+                binding.btnNext.alpha = 0.4f
+                binding.btnNext.text = getString(R.string.waiting_for_the_other_players)
                 binding.btnNext.visibility = View.VISIBLE
                 binding.btnRefuse.visibility = View.GONE
             }
@@ -1090,13 +1190,13 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
         when (state.currentUserStatus) {
 
             GameState.UserStatus.JOINED -> {
-                binding.btnRefuse.text = "Leave"
+                binding.btnRefuse.text = getString(R.string.leave)
                 binding.btnNext.visibility = View.GONE
                 binding.btnRefuse.visibility = View.VISIBLE
             }
 
             GameState.UserStatus.INVITED -> {
-                binding.btnNext.text = "Accept"
+                binding.btnNext.text = getString(R.string.accept)
                 binding.btnNext.visibility = View.VISIBLE
                 binding.btnRefuse.visibility = View.VISIBLE
             }
@@ -1108,7 +1208,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
 
             GameState.UserStatus.NOT_JOINED -> {
                 binding.btnNext.visibility = View.VISIBLE
-                binding.btnNext.text = "Join"
+                binding.btnNext.text = getString(R.string.join)
                 binding.btnRefuse.visibility = View.GONE
             }
         }
@@ -1124,24 +1224,20 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
         val isOrganizer = organizerId == currentUserId
 
 
-        val normalizedStatus = game.status
-            ?.replace(Regex("([a-z])([A-Z])"), "$1_$2")  // inProgress → in_Progress
-            ?.uppercase()                                // → IN_PROGRESS
+        val normalizedStatus =
+            game.status?.replace(Regex("([a-z])([A-Z])"), "$1_$2")  // inProgress → in_Progress
+                ?.uppercase()                                // → IN_PROGRESS
         // Safe enum mapping
-        val status = GameState.Status.values()
-            .find { it.name.equals(normalizedStatus, ignoreCase = true) }
-            ?: GameState.Status.WAITING
-     //   val status = mapStatus(game.status)
+        val status =
+            GameState.Status.entries.find { it.name.equals(normalizedStatus, ignoreCase = true) }
+                ?: GameState.Status.WAITING
+        //   val status = mapStatus(game.status)
 
-        val team1Players = game.team1Players
-            ?.filterNotNull()
-            ?: emptyList()
+        val team1Players = game.team1Players?.filterNotNull() ?: emptyList()
 
-        val team2Players = game.team2Players
-            ?.filterNotNull()
-            ?: emptyList()
+        val team2Players = game.team2Players?.filterNotNull() ?: emptyList()
 
-        // ✅ Use accepted directly from API
+        //  Use accepted directly from API
         val team1HasAccepted = team1Players.any { it.accepted == true }
         val team2HasAccepted = team2Players.any { it.accepted == true }
 
@@ -1158,8 +1254,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
 
             team1Players.any { it._id == currentUserId } -> {
 
-                val currentPlayer =
-                    team1Players.first { it._id == currentUserId }
+                val currentPlayer = team1Players.first { it._id == currentUserId }
 
                 if (currentPlayer.accepted == true) {
                     GameState.UserStatus.JOINED
@@ -1170,8 +1265,7 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
 
             team2Players.any { it._id == currentUserId } -> {
 
-                val currentPlayer =
-                    team2Players.first { it._id == currentUserId }
+                val currentPlayer = team2Players.first { it._id == currentUserId }
 
                 if (currentPlayer.accepted == true) {
                     GameState.UserStatus.JOINED
@@ -1183,10 +1277,8 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
             else -> {
 
                 val isGameFull =
-                    team1Players.size >= maxPlayers &&
-                            team2Players.size >= maxPlayers &&
-                            ((game.isAutoRefereeing ?: false) ||
-                                    game.referee != null)
+                    team1Players.size >= maxPlayers && team2Players.size >= maxPlayers && ((game.isAutoRefereeing
+                        ?: false) || game.referee != null)
 
                 if (isGameFull) {
                     GameState.UserStatus.GAME_FULL
@@ -1213,16 +1305,5 @@ class GameDetailsFragment : BaseFragment<FragmentGameDetailsBinding>(), OnMapRea
         initData()
     }
 
-
-
-
-    private fun mapStatus(apiStatus: String?): GameState.Status {
-        return when (apiStatus?.trim()) {
-            "done", "DONE" -> GameState.Status.DONE
-            "inProgress", "IN_PROGRESS", "INPROGRESS" -> GameState.Status.IN_PROGRESS
-            "waiting", "WAITING" -> GameState.Status.WAITING
-            else -> GameState.Status.NONE
-        }
-    }
 
 }

@@ -281,16 +281,14 @@ class MultiViewAdapter(
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribed)
                 tvSubscribe.setTextColor(
                     ContextCompat.getColor(
-                        tvSubscribe.context,
-                        R.color.black_040404
+                        tvSubscribe.context, R.color.black_040404
                     )
                 )
             } else {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribe)
                 tvSubscribe.setTextColor(
                     ContextCompat.getColor(
-                        tvSubscribe.context,
-                        R.color.blue_00bef5
+                        tvSubscribe.context, R.color.blue_00bef5
                     )
                 )
             }
@@ -321,7 +319,6 @@ class MultiViewAdapter(
                 null
             }
 
-            Log.i("Fdsfdsfds", "bind: $imageUrl")
             Glide.with(ivCommonPostProfile.context).load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
                 .error(R.drawable.ic_round_account_circle_40)
@@ -412,16 +409,14 @@ class MultiViewAdapter(
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribed)
                 tvSubscribe.setTextColor(
                     ContextCompat.getColor(
-                        tvSubscribe.context,
-                        R.color.black_040404
+                        tvSubscribe.context, R.color.black_040404
                     )
                 )
             } else {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribe)
                 tvSubscribe.setTextColor(
                     ContextCompat.getColor(
-                        tvSubscribe.context,
-                        R.color.blue_00bef5
+                        tvSubscribe.context, R.color.blue_00bef5
                     )
                 )
             }
@@ -435,14 +430,12 @@ class MultiViewAdapter(
             } else {
                 Constants.IMAGE_URL + "/$url"
             }
-            Log.i("Fdsfdsfds", "Gamebind: $videoUrl")
-
             currentVideoUrl = videoUrl
             val profilePath = item?.publisherData?.profilePicture
 
             val imageUrl = profilePath?.takeIf { it.isNotBlank() }?.let {
-                    Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
-                }
+                Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
+            }
 
             Glide.with(ivCommonPostProfile.context).load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
@@ -545,6 +538,10 @@ class MultiViewAdapter(
                                     it.seekTo(0)
                                     it.playWhenReady = true
                                 }
+
+                                Player.STATE_IDLE -> {
+
+                                }
                             }
                         }
                     })
@@ -617,16 +614,14 @@ class MultiViewAdapter(
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribed)
                 tvSubscribe.setTextColor(
                     ContextCompat.getColor(
-                        tvSubscribe.context,
-                        R.color.black_040404
+                        tvSubscribe.context, R.color.black_040404
                     )
                 )
             } else {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribe)
                 tvSubscribe.setTextColor(
                     ContextCompat.getColor(
-                        tvSubscribe.context,
-                        R.color.blue_00bef5
+                        tvSubscribe.context, R.color.blue_00bef5
                     )
                 )
             }
@@ -724,16 +719,14 @@ class MultiViewAdapter(
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribed)
                 tvSubscribe.setTextColor(
                     ContextCompat.getColor(
-                        tvSubscribe.context,
-                        R.color.black_040404
+                        tvSubscribe.context, R.color.black_040404
                     )
                 )
             } else {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribe)
                 tvSubscribe.setTextColor(
                     ContextCompat.getColor(
-                        tvSubscribe.context,
-                        R.color.blue_00bef5
+                        tvSubscribe.context, R.color.blue_00bef5
                     )
                 )
             }
@@ -757,9 +750,6 @@ class MultiViewAdapter(
 
             val imageUrl = profilePath?.takeIf { it.isNotBlank() }
                 ?.let { Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/') }
-
-            Log.i("Fdsfdsfds", "Courtbind: $imageUrl")
-
 
             Glide.with(ivCommonPostProfile.context).load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
@@ -841,6 +831,7 @@ class MultiViewAdapter(
         private val tvGameMode: AppCompatTextView = itemView.findViewById(R.id.tvGameMode)
         private val tvGamePlayers: AppCompatTextView = itemView.findViewById(R.id.tvGamePlayers)
         private val tvGameStatus: AppCompatTextView = itemView.findViewById(R.id.tvGameStatus)
+        private val ivGameStatus: AppCompatImageView = itemView.findViewById(R.id.ivGameStatus)
         private val tvGameCity: AppCompatTextView = itemView.findViewById(R.id.tvGameCity)
         private val tvGameCountry: AppCompatTextView = itemView.findViewById(R.id.tvGameCountry)
         private val ivCommonLike: AppCompatImageView = itemView.findViewById(R.id.ivCommonLike)
@@ -871,16 +862,14 @@ class MultiViewAdapter(
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribed)
                 tvSubscribe.setTextColor(
                     ContextCompat.getColor(
-                        tvSubscribe.context,
-                        R.color.black_040404
+                        tvSubscribe.context, R.color.black_040404
                     )
                 )
             } else {
                 tvSubscribe.text = tvSubscribe.context.getString(R.string.subscribe)
                 tvSubscribe.setTextColor(
                     ContextCompat.getColor(
-                        tvSubscribe.context,
-                        R.color.blue_00bef5
+                        tvSubscribe.context, R.color.blue_00bef5
                     )
                 )
             }
@@ -900,7 +889,7 @@ class MultiViewAdapter(
             item?.let { game ->
 
                 //  1. Parse Date
-                val parsedDate = parseServerDate(game.date)
+                val parsedDate = parseServerDate(game.game?.date)
 
                 // 2. Calculate Invite Response
                 val team1 = game.game?.team1Players ?: emptyList()
@@ -922,38 +911,33 @@ class MultiViewAdapter(
 
                     if (display.iconRes != 0) {
 
+
                         val drawable = ContextCompat.getDrawable(
                             itemView.context, display.iconRes
                         )
 
                         drawable?.let {
-
-                            val sizeInDp = 16
-                            val scale = itemView.context.resources.displayMetrics.density
-                            val sizeInPx = (sizeInDp * scale).toInt()
-
-                            it.setBounds(0, 0, sizeInPx, sizeInPx)
-
-                            tvGameStatus.setCompoundDrawables(
-                                null, it, null, null
-                            )
+                            ivGameStatus.setImageDrawable(drawable)
                         }
 
                     } else {
-                        tvGameStatus.setCompoundDrawables(null, null, null, null)
+                        ivGameStatus.setImageDrawable(null)
                     }
                 }
             }
 
 
 
-            if (item?.game?.totalJoinedPlayers != null) {
-                tvGamePlayers.text = item.game.totalJoinedPlayers + " players"
-
+            item?.game?.let { game ->
+                tvGamePlayers.text = BindingUtils.formattedGameParticipantsText(
+                    game.mode,
+                    game.team1Players?.size,
+                    game.team2Players?.size
+                )
             }
 
             tvGameCity.text = item?.game?.field?.name
-            tvGameCountry.text = item?.game?.field?.country
+            tvGameCountry.text = item?.game?.field?.city
             val uri = item?.publisherData?.profilePicture
 
             val imageUrl = uri?.takeIf { it.isNotBlank() }?.let {
@@ -970,8 +954,8 @@ class MultiViewAdapter(
             val photoList = item?.game?.field?.photos
 
             val gameImageUrl = photoList?.firstOrNull()?.takeIf { it.isNotBlank() }?.let {
-                    Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
-                }
+                Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
+            }
 
             Glide.with(ivGame.context).load(gameImageUrl)
                 .placeholder(R.drawable.progress_animation_small)
@@ -1045,7 +1029,6 @@ class MultiViewAdapter(
                 item?.publisherData?.firstName?.takeIf { it.isNotBlank() },
                 item?.publisherData?.lastName?.takeIf { it.isNotBlank() }).joinToString(" ")
                 .ifBlank { item?.publisherData?.username }
-            Log.i("fsfssdf", "bind: $fullName ")
             tvName.text = fullName
 
 
@@ -1079,7 +1062,6 @@ class MultiViewAdapter(
                 eventImage.setImageResource(R.drawable.progress_animation_small)
             }
 
-            Log.i("Fdsfdsfds", "bind: $imageUrl")
             Glide.with(profileImage.context).load(imageUrl)
                 .placeholder(R.drawable.progress_animation_small)
                 .error(R.drawable.ic_round_account_circle_40)
@@ -1122,7 +1104,6 @@ class MultiViewAdapter(
     }
 
     fun TextView.setIfNotEmpty(value: String?) {
-        Log.i("fdsfds", "setIfNotEmpty: $value ")
         if (!value.isNullOrEmpty()) {
             text = value
             visibility = View.VISIBLE

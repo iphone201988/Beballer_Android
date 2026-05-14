@@ -13,6 +13,7 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.format.DateUtils
@@ -47,7 +48,6 @@ import com.beballer.beballer.data.model.GameData
 import com.beballer.beballer.data.model.GameStatusDisplay
 import com.beballer.beballer.data.model.MapCourt
 import com.beballer.beballer.data.model.MyGame
-import com.beballer.beballer.data.model.MyGamesApiResponse
 import com.beballer.beballer.data.model.SuggestedUser
 import com.beballer.beballer.data.model.TournamentsEvent
 import com.bumptech.glide.Glide
@@ -222,58 +222,75 @@ object BindingUtils {
                 .placeholder(R.drawable.progress_animation_small).error(R.drawable.iv_event)
                 .diskCacheStrategy(DiskCacheStrategy.ALL).into(image)
 
+
         } else {
             image.setImageResource(R.drawable.iv_event)
         }
     }
 
     @SuppressLint("SetTextI18n")
-    @BindingAdapter(value = ["myGameStatus", "currentUserId"], requireAll = false)
+    @BindingAdapter(value = ["myGameStatus", "currentUserId", "statusIconView"], requireAll = false)
     @JvmStatic
-    fun setMyGameStatus(textView: AppCompatTextView, game: MyGame?, userId: String?) {
+    fun setMyGameStatus(
+        textView: AppCompatTextView, game: MyGame?, userId: String?, iconView: AppCompatImageView?
+    ) {
         if (game == null) {
             textView.text = ""
             textView.setCompoundDrawables(null, null, null, null)
+            iconView?.setImageDrawable(null)
             return
         }
 
-        // 1. Parse Date
-        val parsedDate = parseServerDate(game.date)
-
-        // 2. Calculate Invite Response
+        // 1. Calculate Invite Response
         val team1 = game.team1Players ?: emptyList()
         val team2 = game.team2Players ?: emptyList()
 
-        val needsInviteResponse = userId != null && (
-                team1.any { it.id == userId && it.accepted == false } ||
-                        team2.any { it.id == userId && it.accepted == false }
-                )
+        val needsInviteResponse =
+            userId != null && (team1.any { it.id == userId && it.accepted == false } || team2.any {
+                it.id == userId && it.accepted == false
+            })
 
-        // 3. Apply Status Display
+        // 2. Apply Status Display
+        applyStatus(textView, game.date, game.status, needsInviteResponse, iconView)
+    }
+
+    private fun applyStatus(
+        textView: AppCompatTextView,
+        date: String?,
+        status: String?,
+        needsInviteResponse: Boolean,
+        iconView: AppCompatImageView?
+    ) {
+        val parsedDate = parseServerDate(date)
         if (parsedDate != null) {
             val display = gameStatusDisplay(
-                parsedDate,
-                game.status,
-                needsInviteResponse
+                parsedDate, status, needsInviteResponse
             )
 
             textView.text = display.text
 
             if (display.iconRes != 0) {
-                val drawable = ContextCompat.getDrawable(textView.context, display.iconRes)
-                drawable?.let {
-                    val sizeInDp = 16
-                    val scale = textView.context.resources.displayMetrics.density
-                    val sizeInPx = (sizeInDp * scale).toInt()
-                    it.setBounds(0, 0, sizeInPx, sizeInPx)
-                    textView.setCompoundDrawables(null, it, null, null)
+                if (iconView != null) {
+                    iconView.setImageResource(display.iconRes)
+                    textView.setCompoundDrawables(null, null, null, null)
+                } else {
+                    val drawable = ContextCompat.getDrawable(textView.context, display.iconRes)
+                    drawable?.let {
+                        val sizeInDp = 16
+                        val scale = textView.context.resources.displayMetrics.density
+                        val sizeInPx = (sizeInDp * scale).toInt()
+                        it.setBounds(0, 0, sizeInPx, sizeInPx)
+                        textView.setCompoundDrawables(null, it, null, null)
+                    }
                 }
             } else {
                 textView.setCompoundDrawables(null, null, null, null)
+                iconView?.setImageDrawable(null)
             }
         } else {
             textView.text = ""
             textView.setCompoundDrawables(null, null, null, null)
+            iconView?.setImageDrawable(null)
         }
     }
 
@@ -524,22 +541,9 @@ object BindingUtils {
                 "-"
             }
 
-            val text = "By @$fullName"
+            val text = "@$fullName"
             val spannable = SpannableString(text)
 
-            spannable.setSpan(
-                ForegroundColorSpan(ContextCompat.getColor(textView.context, R.color.black)),
-                0,
-                2,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-
-            spannable.setSpan(
-                ForegroundColorSpan(ContextCompat.getColor(textView.context, R.color.blue)),
-                3,
-                text.length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
             spannable.setSpan(
                 UnderlineSpan(), 3, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
             )
@@ -781,6 +785,10 @@ object BindingUtils {
     }
 
 
+
+
+
+
     @BindingAdapter("formattedTime")
     @JvmStatic
     fun TextView.setFormattedTime(dateString: String?) {
@@ -796,10 +804,9 @@ object BindingUtils {
 
             val date = inputFormat.parse(dateString)
 
-            // ✅ 12-hour format -> 07:00 PM
             val outputFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
 
-            text = date?.let { outputFormat.format(it) } ?: ""
+            text = date?.let { outputFormat.format(it).uppercase(Locale.getDefault()) } ?: ""
 
         } catch (_: Exception) {
             text = ""
@@ -809,55 +816,55 @@ object BindingUtils {
     var gameUserid: String? = null
 
     @SuppressLint("SetTextI18n")
-    @BindingAdapter("gameStatus")
+    @BindingAdapter(value = ["gameStatus", "currentUserId", "statusIconView"], requireAll = false)
     @JvmStatic
-    fun gameStatus(textView: AppCompatTextView, mode: GameData?) {
+    fun gameStatus(
+        textView: AppCompatTextView, game: GameData?, userId: String?, iconView: AppCompatImageView?
+    ) {
         //game status
-        mode?.let { game ->
-            //  1. Parse Date
-            val parsedDate = parseServerDate(game.date)
-            // 2. Calculate Invite Response
-            val team1 = game.team1Players ?: emptyList()
-            val team2 = game.team2Players ?: emptyList()
+        game?.let { g ->
+            val uid = userId ?: gameUserid
+            //  2. Calculate Invite Response
+            val team1 = g.team1Players ?: emptyList()
+            val team2 = g.team2Players ?: emptyList()
 
             val needsInviteResponse =
-                team1.any { it.id == gameUserid && it.accepted == false } || team2.any {
-                    it.id == gameUserid && it.accepted == false
-                }
+                uid != null && (team1.any { it.id == uid && it.accepted == false } || team2.any {
+                    it.id == uid && it.accepted == false
+                })
 
-            //  3. Apply Status Display
-            if (parsedDate != null) {
-
-                val display = gameStatusDisplay(
-                    parsedDate, game.status, needsInviteResponse
-                )
-
-                textView.text = display.text
-
-                if (display.iconRes != 0) {
-
-                    val drawable = ContextCompat.getDrawable(
-                        textView.context, display.iconRes
-                    )
-
-                    drawable?.let {
-
-                        val sizeInDp = 16
-                        val scale = textView.context.resources.displayMetrics.density
-                        val sizeInPx = (sizeInDp * scale).toInt()
-
-                        it.setBounds(0, 0, sizeInPx, sizeInPx)
-
-                        textView.setCompoundDrawables(
-                            null, it, null, null
-                        )
-                    }
-
-                } else {
-                    textView.setCompoundDrawables(null, null, null, null)
-                }
-            }
+            applyStatus(textView, g.date, g.status, needsInviteResponse, iconView)
         }
+    }
+
+    @SuppressLint("SetTextI18n")
+    @BindingAdapter(
+        value = ["gameStatusAlt", "currentUserId", "statusIconView"],
+        requireAll = false
+    )
+    @JvmStatic
+    fun setGameStatusAlt(
+        textView: AppCompatTextView,
+        game: com.beballer.beballer.data.model.Game?,
+        userId: String?,
+        iconView: AppCompatImageView?
+    ) {
+        if (game == null) {
+            textView.text = ""
+            iconView?.setImageDrawable(null)
+            return
+        }
+
+        val uid = userId ?: gameUserid
+        val team1 = game.team1Players ?: emptyList()
+        val team2 = game.team2Players ?: emptyList()
+
+        val needsInviteResponse =
+            uid != null && (team1.any { it.id == uid && it.accepted == false } || team2.any {
+                it.id == uid && it.accepted == false
+            })
+
+        applyStatus(textView, game.date, game.status, needsInviteResponse, iconView)
     }
 
 
@@ -1015,38 +1022,20 @@ object BindingUtils {
             }
 
             "notStarted", "waiting", "processing", "scheduled" -> {
-
-                when {
-
-                    intervalSeconds <= -3600 -> {
+                if (intervalSeconds > -3600) {
+                    if (needsInviteResponse) {
                         GameStatusDisplay(
-                            text = "Starting soon", iconRes = R.drawable.iv_multiple_circle
+                            text = "Invitation received", iconRes = R.drawable.iv_down_arrow
+                        )
+                    } else {
+                        GameStatusDisplay(
+                            text = "Incoming", iconRes = R.drawable.iv_right_arrow
                         )
                     }
-
-                    intervalSeconds in -3600..1800 -> {
-                        if (needsInviteResponse) {
-                            GameStatusDisplay(
-                                text = "Invitation received", iconRes = R.drawable.iv_down_arrow
-                            )
-                        } else {
-                            GameStatusDisplay(
-                                text = "Starting soon", iconRes = R.drawable.iv_multiple_circle
-                            )
-                        }
-                    }
-
-                    else -> {
-                        if (needsInviteResponse) {
-                            GameStatusDisplay(
-                                text = "Invitation received", iconRes = R.drawable.iv_down_arrow
-                            )
-                        } else {
-                            GameStatusDisplay(
-                                text = "Incoming", iconRes = R.drawable.iv_right_arrow
-                            )
-                        }
-                    }
+                } else {
+                    GameStatusDisplay(
+                        text = "Starting soon", iconRes = R.drawable.iv_multiple_circle
+                    )
                 }
             }
 
@@ -1092,8 +1081,7 @@ object BindingUtils {
 
                 // ✅ Updated format
                 val outputFormat = SimpleDateFormat(
-                    "yyyy MMMM dd, EEEE",
-                    Locale.getDefault()
+                    "yyyy MMMM dd, EEEE", Locale.getDefault()
                 )
 
                 textView.text = outputFormat.format(calendar.time)
@@ -1120,7 +1108,7 @@ object BindingUtils {
 
             val date = inputFormat.parse(dateString)
 
-            val outputFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
             outputFormat.timeZone = TimeZone.getDefault()
 
             date?.let { outputFormat.format(it) } ?: ""
@@ -1133,10 +1121,7 @@ object BindingUtils {
     @BindingAdapter("capitalizeText")
     @JvmStatic
     fun setCapitalizeText(textView: AppCompatTextView, value: String?) {
-        textView.text = value
-            ?.lowercase()
-            ?.replaceFirstChar { it.uppercase() }
-            ?: ""
+        textView.text = value?.lowercase()?.replaceFirstChar { it.uppercase() } ?: ""
     }
 
     @BindingAdapter("setEventDate")
@@ -1175,6 +1160,32 @@ object BindingUtils {
     fun visibleIfNotEmpty(view: View, value: String?) {
         view.visibility = if (value.isNullOrEmpty()) View.GONE else View.VISIBLE
     }
+
+    @JvmStatic
+    fun formattedGameParticipantsText(
+        gameMode: Int?, team1PlayersCount: Int?, team2PlayersCount: Int?
+    ): String {
+        val mode = gameMode ?: 0
+        val t1 = team1PlayersCount ?: 0
+        val t2 = team2PlayersCount ?: 0
+
+        val totalPlayers = t1 + t2
+        val maxPlayers = if (mode > 5) 10 else mode * 2
+
+        return "$totalPlayers/$maxPlayers\nplayers"
+    }
+
+    @BindingAdapter(
+        value = ["gameModeCount", "team1PlayersCount", "team2PlayersCount"],
+        requireAll = false
+    )
+    @JvmStatic
+    fun setFormattedParticipants(
+        textView: TextView, mode: Int?, team1: List<*>?, team2: List<*>?
+    ) {
+        textView.text = formattedGameParticipantsText(mode, team1?.size, team2?.size)
+    }
+
     @BindingAdapter("waterPointStatus")
     @JvmStatic
     fun setWaterPointStatus(textView: AppCompatTextView, hasWaterPoint: Boolean?) {
@@ -1277,6 +1288,36 @@ object BindingUtils {
     fun setImageFromUrl(imageView: ImageView, url: String?) {
         Glide.with(imageView.context).load(url).placeholder(R.drawable.ic_beballer_grey_800)
             .error(R.drawable.ic_beballer_grey_800).into(imageView)
+    }
+
+    @JvmStatic
+    @BindingAdapter("setUsernameWithStyle")
+    fun setUsernameWithStyle(textView: TextView, username: String?) {
+        if (username.isNullOrEmpty()) {
+            textView.text = ""
+            return
+        }
+
+        val fullText = "@$username"
+        val spannable = SpannableString(fullText)
+
+        val start = fullText.indexOf("@$username")
+        val end = start + username.length + 1
+
+        // Color
+        spannable.setSpan(
+            ForegroundColorSpan(Color.parseColor("#1877F2")),
+            start,
+            end,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        // Underline
+        spannable.setSpan(
+            UnderlineSpan(), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        textView.text = spannable
     }
 }
 

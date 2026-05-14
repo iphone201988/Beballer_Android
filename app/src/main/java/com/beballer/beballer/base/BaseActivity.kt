@@ -91,19 +91,54 @@ abstract class BaseActivity<Binding : ViewDataBinding> : AppCompatActivity(),
     }
 
     override fun onStateChange(state: ConnectivityProvider.NetworkState) {
+
+        if (isFinishing || isDestroyed) return
+
         if (noInternetSheet == null) {
-            noInternetSheet = NoInternetSheet()
-            noInternetSheet?.isCancelable = false
+            noInternetSheet = NoInternetSheet().apply {
+                isCancelable = false
+            }
         }
+
         if (state.hasInternet()) {
-            if (noInternetSheet?.isVisible == true) noInternetSheet?.dismiss()
+
+            if (noInternetSheet?.isAdded == true) {
+                noInternetSheet?.dismissAllowingStateLoss()
+            }
+
         } else {
-            if (noInternetSheet?.isVisible == false) noInternetSheet?.show(
-                supportFragmentManager,
-                noInternetSheet?.tag
-            )
+
+            if (supportFragmentManager.isStateSaved) return
+
+            val alreadyShown =
+                supportFragmentManager.findFragmentByTag("NO_INTERNET")
+
+            if (alreadyShown == null &&
+                noInternetSheet?.isAdded == false
+            ) {
+                noInternetSheet?.show(
+                    supportFragmentManager,
+                    "NO_INTERNET"
+                )
+            }
         }
     }
+
+//    override fun onStateChange(state: ConnectivityProvider.NetworkState) {
+//        if (noInternetSheet == null) {
+//            noInternetSheet = NoInternetSheet()
+//            noInternetSheet?.isCancelable = false
+//        }
+//        if (state.hasInternet()) {
+//            if (noInternetSheet?.isVisible == true) noInternetSheet?.dismiss()
+//        } else {
+//            if (noInternetSheet?.isVisible == false)
+//                noInternetSheet?.show(
+//                supportFragmentManager,
+//                noInternetSheet?.tag
+//            )
+//        }
+//    }
 
     private fun ConnectivityProvider.NetworkState.hasInternet(): Boolean {
         return (this as? ConnectivityProvider.NetworkState.ConnectedState)?.hasInternet == true

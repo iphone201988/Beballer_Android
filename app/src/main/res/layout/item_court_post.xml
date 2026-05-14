@@ -129,10 +129,10 @@
         android:id="@+id/clMain"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_150sdp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="@dimen/_13sdp"
+        android:layout_marginVertical="@dimen/_8sdp"
         android:foreground="?android:attr/selectableItemBackground"
-        app:cardCornerRadius="10dp"
+        app:cardCornerRadius="@dimen/_8sdp"
         app:cardElevation="@dimen/_4sdp"
         app:layout_constraintTop_toBottomOf="@+id/tvCourtTextPost">
 
@@ -196,7 +196,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_4sdp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="@dimen/_13sdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/tvCourtCity"
                 app:layout_constraintTop_toBottomOf="@+id/tvCourtCity">
@@ -287,7 +287,7 @@
                 android:id="@+id/tvCourtKing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="@dimen/_13sdp"
                 android:ellipsize="end"
                 android:fontFamily="@font/inter_medium"
                 android:gravity="start|center"

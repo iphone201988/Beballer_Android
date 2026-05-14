@@ -34,6 +34,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class LoginFragment : BaseFragment<FragmentLoginBinding>(), OtpVerifyBottomSheet.OtpListener {
 
@@ -96,10 +97,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(), OtpVerifyBottomSheet
                                 bottomSheet = OtpVerifyBottomSheet(this)
                                 bottomSheet.show(parentFragmentManager, bottomSheet.tag)
                             },
-                            onComplete = { signInWithPhoneCredential(it) },
-                            onError = {
+                            onComplete = { complete -> signInWithPhoneCredential(complete) },
+                            onError = { error ->
                                 hideLoading()
-                                showErrorToast(it)
+                                showErrorToast(error)
                             })
                     } else {
                         showInfoToast("Please enter valid mobile number")
@@ -221,9 +222,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(), OtpVerifyBottomSheet
 
         resultLauncher.launch(intent)
 
-
     }
-
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -235,7 +234,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(), OtpVerifyBottomSheet
                         account.idToken!!,
                         onSuccess = { commonLogin(it.uid) },
                         onFailure = { showErrorToast("Google login failed") })
-                } catch (e: ApiException) {
+                } catch (_: ApiException) {
                     showErrorToast("Sign-in error")
                 }
             }

@@ -95,7 +95,7 @@
                     app:layout_constraintEnd_toEndOf="@+id/cardAddImage1"
                     app:layout_constraintStart_toEndOf="@+id/cardAddImage1"
                     app:layout_constraintTop_toBottomOf="@+id/cardAddImage1"
-                    app:maxImageSize="15dp"
+                    app:maxImageSize="@dimen/_5sdp"
                     app:shapeAppearanceOverlay="@style/RoundActionButton"
                     app:tint="@color/white" />
 
@@ -161,12 +161,12 @@
                     android:onClick="@{v->vm.onClick(v)}"
                     android:src="@drawable/ic_plus_sign"
                     app:backgroundTint="@color/blue_00bef5"
-                    app:fabCustomSize="25dp"
+                    app:fabCustomSize="@dimen/_5sdp"
                     app:layout_constraintBottom_toBottomOf="@+id/cardAddImage2"
                     app:layout_constraintEnd_toEndOf="@+id/cardAddImage2"
                     app:layout_constraintStart_toEndOf="@+id/cardAddImage2"
                     app:layout_constraintTop_toBottomOf="@+id/cardAddImage2"
-                    app:maxImageSize="15dp"
+                    app:maxImageSize="@dimen/_5sdp"
                     app:shapeAppearanceOverlay="@style/RoundActionButton"
                     app:tint="@color/white" />
 
@@ -229,12 +229,12 @@
                     android:onClick="@{v->vm.onClick(v)}"
                     android:src="@drawable/ic_plus_sign"
                     app:backgroundTint="@color/blue_00bef5"
-                    app:fabCustomSize="25dp"
+                    app:fabCustomSize="@dimen/_5sdp"
                     app:layout_constraintBottom_toBottomOf="@+id/cardAddImage3"
                     app:layout_constraintEnd_toEndOf="@+id/cardAddImage3"
                     app:layout_constraintStart_toEndOf="@+id/cardAddImage3"
                     app:layout_constraintTop_toBottomOf="@+id/cardAddImage3"
-                    app:maxImageSize="15dp"
+                    app:maxImageSize="@dimen/_5sdp"
                     app:shapeAppearanceOverlay="@style/RoundActionButton"
                     app:tint="@color/white" />
 
@@ -418,7 +418,7 @@
             android:id="@+id/nextBtnDivider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="@dimen/_5sdp"
             app:dividerColor="#D4D4D4"
             app:layout_constraintBottom_toTopOf="@id/btnNext"
             app:layout_constraintEnd_toEndOf="parent"

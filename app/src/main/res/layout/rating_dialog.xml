@@ -39,7 +39,7 @@
             app:iconFilled="@drawable/ic_basketball_filled"
             app:iconHalf="@drawable/ic_basketball_filled"
             android:layout_marginStart="@dimen/_2sdp"
-            app:iconSize="20dp"
+            app:iconSize="@dimen/_15sdp"
             app:stepSize="0.5"
             android:layout_marginTop="@dimen/_10sdp"
             app:layout_constraintStart_toStartOf="parent"

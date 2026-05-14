@@ -52,16 +52,15 @@
             android:id="@+id/ivGameVerification"
             android:layout_width="@dimen/_18sdp"
             android:layout_height="@dimen/_18sdp"
-            android:layout_marginEnd="13dp"
             android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginEnd="13dp"
             android:src="@drawable/ic_round_verified_24"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="@+id/tvCommonPostName"
             app:layout_constraintEnd_toStartOf="@+id/ivCommonMenu"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toEndOf="@id/tvCommonPostName"
-            app:layout_constraintTop_toTopOf="@+id/tvCommonPostName"
-            />
+            app:layout_constraintTop_toTopOf="@+id/tvCommonPostName" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvGameTypeUsername"
@@ -128,20 +127,18 @@
         tools:layout_editor_absoluteX="17dp" />
 
 
-
-
     <androidx.cardview.widget.CardView
         android:id="@+id/gameCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="@dimen/_13sdp"
+        android:layout_marginVertical="@dimen/_8sdp"
         android:foreground="?android:attr/selectableItemBackground"
-        app:cardCornerRadius="10dp"
+        app:cardCornerRadius="@dimen/_8sdp"
+        app:cardElevation="@dimen/_2sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCommonPostDesc"
-        app:cardElevation="@dimen/_2sdp">
+        app:layout_constraintTop_toBottomOf="@+id/tvCommonPostDesc">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -173,7 +170,7 @@
                 android:fontFamily="@font/inter_bold"
                 android:includeFontPadding="false"
                 android:maxLines="2"
-                android:text="Wednesday 14.06.2025"
+                android:text=""
                 android:textColor="@color/black_000000"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintEnd_toStartOf="@id/tvGameTime"
@@ -182,15 +179,15 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvGameTime"
+                formattedTime="@{bean.date}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginHorizontal="@dimen/_13sdp"
                 android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:fontFamily="@font/inter_bold"
                 android:includeFontPadding="false"
                 android:maxLines="2"
-                android:text="12:00"
                 android:textColor="@color/black_000000"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintBottom_toBottomOf="@+id/tvGameDate"
@@ -208,7 +205,7 @@
                 android:fontFamily="@font/inter_bold"
                 android:includeFontPadding="false"
                 android:maxLines="2"
-                android:text="Bruges 33520"
+                android:text="@{bean.field.address}"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -219,87 +216,159 @@
                 android:id="@+id/tvGameCountry"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginTop="@dimen/_3sdp"
                 android:ellipsize="end"
                 android:fontFamily="@font/inter_bold"
                 android:includeFontPadding="false"
                 android:maxLines="2"
-                android:text="City Stade Albert\nGalinier"
+                android:text="@{bean.field.name}"
                 android:textColor="@color/beballer_grey"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintEnd_toEndOf="@+id/tvGameCity"
                 app:layout_constraintStart_toStartOf="@+id/tvGameCity"
                 app:layout_constraintTop_toBottomOf="@+id/tvGameCity" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvGameMode"
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clGameMode"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginBottom="@dimen/_6sdp"
+                android:layout_marginHorizontal="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_25sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
                 android:background="@drawable/card_not_selected"
-                android:ellipsize="end"
-                android:fontFamily="@font/inter_bold"
-                android:gravity="center"
-                android:lines="1"
-                android:maxLines="1"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="10dp"
-                android:text="1x1"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_10ssp"
-                app:drawableTint="@color/games_dark_color"
-                app:drawableTopCompat="@drawable/circle_basketball_24"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/tvGamePlayers"
+                app:layout_constraintEnd_toStartOf="@+id/clGamePlayer"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="@+id/tvGameCity"
-                app:layout_constraintTop_toBottomOf="@id/tvGameCountry" />
+                app:layout_constraintTop_toBottomOf="@id/tvGameCountry">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvGamePlayers"
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivGameMode"
+                    android:layout_width="@dimen/_22sdp"
+                    android:layout_height="@dimen/_22sdp"
+                    android:layout_marginTop="@dimen/_6sdp"
+                    android:gravity="center"
+                    android:padding="@dimen/_2sdp"
+                    android:src="@drawable/basket_ball_fill"
+                    app:layout_constraintEnd_toEndOf="@id/tvGameMode"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="@id/tvGameMode"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/games_dark_color" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvGameMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_6sdp"
+                    android:fontFamily="@font/inter_bold"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/_8sdp"
+                    android:text="Done"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_8ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ivGameMode" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clGamePlayer"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginHorizontal="5dp"
+                android:layout_marginHorizontal="@dimen/_5sdp"
                 android:background="@drawable/card_not_selected"
-                android:fontFamily="@font/inter_bold"
-                android:gravity="center"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="10dp"
-                android:text="2x2 player"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_8ssp"
-                app:drawableTint="@color/games_dark_color"
-                app:drawableTopCompat="@drawable/round_people_24"
-                app:layout_constraintBottom_toBottomOf="@+id/tvGameMode"
-                app:layout_constraintEnd_toStartOf="@+id/tvGameStatus"
-                app:layout_constraintStart_toEndOf="@+id/tvGameMode"
-                app:layout_constraintTop_toTopOf="@id/tvGameMode" />
+                app:layout_constraintBottom_toBottomOf="@+id/clGameMode"
+                app:layout_constraintEnd_toStartOf="@+id/clGameStatus"
+                app:layout_constraintStart_toEndOf="@+id/clGameMode"
+                app:layout_constraintTop_toTopOf="@id/clGameMode">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvGameStatus"
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivGameOrganizer"
+                    android:layout_width="@dimen/_22sdp"
+                    android:layout_height="@dimen/_22sdp"
+                    android:layout_marginTop="@dimen/_6sdp"
+                    android:gravity="center"
+                    android:src="@drawable/ic_round_person_40"
+                    app:layout_constraintEnd_toEndOf="@id/tvGamePlayers"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="@id/tvGamePlayers"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/games_dark_color" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvGamePlayers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_6sdp"
+                    android:fontFamily="@font/inter_bold"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/_8sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_8ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ivGameOrganizer" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clGameStatus"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginStart="5dp"
+                android:layout_marginHorizontal="@dimen/_5sdp"
                 android:background="@drawable/card_not_selected"
-                android:ellipsize="end"
-                android:fontFamily="@font/inter_bold"
-                android:gravity="center"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="10dp"
-                android:text="Done"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_8ssp"
-                app:drawableTint="@color/games_dark_color"
-                app:drawableTopCompat="@drawable/round_call_received_24"
-                app:layout_constraintBottom_toBottomOf="@+id/tvGameMode"
+                app:layout_constraintBottom_toBottomOf="@+id/clGameMode"
                 app:layout_constraintEnd_toEndOf="@+id/tvGameCity"
-                app:layout_constraintStart_toEndOf="@+id/tvGamePlayers"
-                app:layout_constraintTop_toTopOf="@id/tvGameMode" />
+                app:layout_constraintStart_toEndOf="@+id/clGamePlayer"
+                app:layout_constraintTop_toTopOf="@id/clGameMode">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivGameStatus"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_6sdp"
+                    android:gravity="center"
+                    android:padding="@dimen/_2sdp"
+                    android:src="@drawable/round_call_received_24"
+                    app:layout_constraintEnd_toEndOf="@id/tvGameStatus"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="@id/tvGameStatus"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvGameStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_6sdp"
+                    android:fontFamily="@font/inter_bold"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/_8sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_8ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ivGameStatus" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
-
 
 
     <HorizontalScrollView

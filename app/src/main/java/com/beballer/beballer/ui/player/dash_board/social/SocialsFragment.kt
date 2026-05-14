@@ -26,7 +26,6 @@ import com.beballer.beballer.data.model.LocationScope
 import com.beballer.beballer.data.model.MapBounds
 import com.beballer.beballer.data.model.MpvModel
 import com.beballer.beballer.data.model.PlayerByBoundApiResponse
-import com.beballer.beballer.data.model.PlayerData
 import com.beballer.beballer.databinding.CreateProfileDialogItemDesignBinding
 import com.beballer.beballer.databinding.FragmentSocialsBinding
 import com.beballer.beballer.databinding.ReportOrDeletePostBottomItemBinding
@@ -60,10 +59,12 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 
+@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, CommonPostInterface,
     AddPostInterface {
     private val viewModel: SocialsFragmentVM by viewModels()
+
     //  Shared Activity ViewModel
     private val dashboardVM: DashboardActivityVM by activityViewModels()
 
@@ -110,7 +111,7 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
 
         dashboardVM.userLocation.observe(viewLifecycleOwner) { location ->
 
-            loadPlayers(location, LocationScope.CITY)
+            loadPlayers(location)
         }
 
         // observer
@@ -118,7 +119,8 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
         // click
         initOnClick()
         // adapter
-        val userId: String = sharedPrefManager.getLoginData()?.data?.user?._id.takeIf { !it.isNullOrEmpty() } ?: ""
+        val userId: String =
+            sharedPrefManager.getLoginData()?.data?.user?._id.takeIf { !it.isNullOrEmpty() } ?: ""
         initHomeAdapter(userId)
         initHomeSubAdapter(userId)
         // open dialog box
@@ -133,7 +135,6 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
         put["page"] = currentPage
         put["limit"] = 10
         viewModel.getPostApi(Constants.USER_GET_POST, put)
-
 
 
         // interFace
@@ -181,11 +182,11 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
     }
 
 
-    private fun loadPlayers(location: Location, scope: LocationScope) {
+    private fun loadPlayers(location: Location) {
 
         lifecycleScope.launch {
 
-            val bounds = boundsProvider.fetchBounds(location, scope)
+            val bounds = boundsProvider.fetchBounds(location, LocationScope.CITY)
 
             Log.d("BoundsDebug", "NE: ${bounds.northEastLat}, ${bounds.northEastLng}")
             Log.d("BoundsDebug", "SW: ${bounds.southWestLat}, ${bounds.southWestLng}")
@@ -196,9 +197,9 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
 
     }
 
-    private fun getTopPlayer(bounds: MapBounds) {
-        if (bounds != null){
-            val data  = HashMap<String, Any>()
+    private fun getTopPlayer(bounds: MapBounds?) {
+        if (bounds != null) {
+            val data = HashMap<String, Any>()
             data["northEastLng"] = bounds.northEastLng
             data["southWestLng"] = bounds.southWestLng
             data["northEastLat"] = bounds.northEastLat
@@ -260,11 +261,10 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
      * play video handel rv adapter
      */
     private fun playCenterVideoRvAdapter(recyclerView: RecyclerView) {
-        recyclerView.layoutManager as? LinearLayoutManager ?: return
+        if (recyclerView.layoutManager !is LinearLayoutManager) return
         val center = recyclerView.height / 2
 
         var closestDistance = Int.MAX_VALUE
-        var centerView: View? = null
         var centerPosition = -1
 
         for (i in 0 until recyclerView.childCount) {
@@ -274,7 +274,6 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
 
             if (distance < closestDistance) {
                 closestDistance = distance
-                centerView = child
                 centerPosition = recyclerView.getChildAdapterPosition(child)
             }
         }
@@ -295,9 +294,7 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                 val post = adapter.getPostAt(centerPosition)
                 val videoPath = post?.video
 
-                val videoUrl = videoPath
-                    ?.takeIf { it.isNotBlank() }
-                    ?.let {
+                val videoUrl = videoPath?.takeIf { it.isNotBlank() }?.let {
                         Constants.IMAGE_URL.trimEnd('/') + "/" + it.trimStart('/')
                     }
 
@@ -317,11 +314,10 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
      * play video handel sub adapter
      */
     private fun playCenterVideoSubAdapter(recyclerView: RecyclerView) {
-        recyclerView.layoutManager as? LinearLayoutManager ?: return
+        if (recyclerView.layoutManager !is LinearLayoutManager) return
         val center = recyclerView.height / 2
 
         var closestDistance = Int.MAX_VALUE
-        var centerView: View? = null
         var centerPosition = -1
 
         for (i in 0 until recyclerView.childCount) {
@@ -331,7 +327,6 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
 
             if (distance < closestDistance) {
                 closestDistance = distance
-                centerView = child
                 centerPosition = recyclerView.getChildAdapterPosition(child)
             }
         }
@@ -581,8 +576,8 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                                     } else {
                                         binding.rvHome.visibility = View.VISIBLE
                                     }
-                                    myDataModel.data.let {
-                                        homePostAdapter.setList(it, getList())
+                                    myDataModel.data.let { post ->
+                                        homePostAdapter.setList(post, getList())
                                     }
                                 } else {
                                     homePostAdapter.addToList(myDataModel.data)
@@ -594,11 +589,12 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                             }
                         }
 
-                        "getTopRanking" ->{
-                            val myDataModel : PlayerByBoundApiResponse ? = BindingUtils.parseJson(it.data.toString())
-                            if (myDataModel != null){
-                                if (myDataModel.data != null){
-                                    mvpList = myDataModel.data.players
+                        "getTopRanking" -> {
+                            val myDataModel: PlayerByBoundApiResponse? =
+                                BindingUtils.parseJson(it.data.toString())
+                            if (myDataModel != null) {
+                                if (myDataModel.data != null) {
+                                    mvpList = myDataModel.data.players as List<BoundPlayer>
 
                                 }
                             }
@@ -681,8 +677,8 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                                         } else {
                                             binding.rvHomeSub.visibility = View.VISIBLE
                                         }
-                                        myDataModel.data.let {
-                                            homeSubPostAdapter.setList(it, getList())
+                                        myDataModel.data.let { data ->
+                                            homeSubPostAdapter.setList(data, getList())
                                         }
                                     } else {
                                         homeSubPostAdapter.addToList(myDataModel.data)
@@ -705,6 +701,7 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                                 hideLoading()
                             }
                         }
+
                         "postLikeSubApi" -> {
                             try {
                                 val myDataModel: CommonResponse? =
@@ -726,6 +723,7 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                                 hideLoading()
                             }
                         }
+
                         "postSubscribeSubApi" -> {
                             try {
                                 val myDataModel: CommonResponse? =
@@ -745,6 +743,7 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                                 hideLoading()
                             }
                         }
+
                         "reportOrDeletePostSubApi" -> {
                             try {
                                 val myDataModel: CommonResponse? =
@@ -896,16 +895,11 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
     private fun getList(): ArrayList<MpvModel> {
         return arrayListOf(
             MpvModel("Elliot Le Gall", "Camaret-sur-Mer", "131pts"),
-            MpvModel("Leo Florentin", "Forcalquier", "175pts"),
-            MpvModel("Elliot Le Gall", "Camaret-sur-Mer", "11pts"),
-            MpvModel("Leo Florentin", "Forcalquier", "75pts"),
-            MpvModel("Elliot Le Gall", "Camaret-sur-Mer", "131pts"),
-            MpvModel("Leo Florentin", "Forcalquier", "120pts"),
-            MpvModel("Elliot Le Gall", "Camaret-sur-Mer", "131pts"),
-            MpvModel("Leo Florentin", "Forcalquier", "100pts"),
+
 
             )
     }
+
     /***
      * add like interface
      */
@@ -921,9 +915,10 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
 
         }
     }
-     /**
-      * add comment interface
-      */
+
+    /**
+     * add comment interface
+     */
     override fun commentCount(commentCount: Int, position: Int) {
         if (position != -1) {
             if (userType == 2) {
@@ -933,9 +928,10 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
             }
         }
     }
-     /**
-      *  add post interface
-      */
+
+    /**
+     *  add post interface
+     */
     override fun addPost(isChecked: Boolean) {
         if (userType == 2) {
             isProgressSub = false
@@ -970,18 +966,18 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                         subscribeBottomItem.dismiss()
                         val subscribeUser = subscribe == true
                         val data = HashMap<String, Any>()
-                        userId?.let {
+                        userId?.let { id ->
                             if (type == 1) {
                                 isProgress = false
                                 data["subscribed"] = !subscribeUser
                                 viewModel.postSubscribeApi(
-                                    Constants.USER_SUBSCRIBE + "?id=$it", data
+                                    Constants.USER_SUBSCRIBE + "?id=$id", data
                                 )
                             } else {
                                 isProgressSub = false
                                 data["subscribed"] = !subscribeUser
                                 viewModel.postSubscribeSubApi(
-                                    Constants.USER_SUBSCRIBE + "?id=$it", data
+                                    Constants.USER_SUBSCRIBE + "?id=$id", data
                                 )
                             }
                         }
@@ -996,7 +992,7 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
         subscribeBottomItem.show()
 
         if (subscribe == true) {
-            subscribeBottomItem.binding.tvSubscribe.text = "Unsubscribe"
+            subscribeBottomItem.binding.tvSubscribe.text = getString(R.string.unsubscribe)
             subscribeBottomItem.binding.tvSubscribe.setTextColor(
                 ContextCompat.getColor(
                     requireContext(), R.color.red_F27070
@@ -1011,6 +1007,7 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
         }
 
     }
+
     /***
      * report or delete bottom sheet
      */
@@ -1025,17 +1022,17 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                     R.id.tvReport -> {
                         reportOrDeleteBottomItem.dismiss()
                         val data = HashMap<String, Any>()
-                        postId?.let {
+                        postId?.let { id ->
                             if (type == 1) {
                                 isProgress = false
-                                data["postId"] = it
+                                data["postId"] = id
                                 data["type"] = "report"
                                 viewModel.reportOrDeletePostApi(
                                     Constants.REPORT_OR_DELETE_POST, data
                                 )
                             } else {
                                 isProgressSub = false
-                                data["postId"] = it
+                                data["postId"] = id
                                 data["type"] = "report"
                                 viewModel.reportOrDeletePostSubApi(
                                     Constants.REPORT_OR_DELETE_POST, data
@@ -1048,17 +1045,17 @@ class SocialsFragment : BaseFragment<FragmentSocialsBinding>(), VideoHandler, Co
                     R.id.tvDelete -> {
                         reportOrDeleteBottomItem.dismiss()
                         val data = HashMap<String, Any>()
-                        postId?.let {
+                        postId?.let { id ->
                             if (type == 1) {
                                 isProgress = false
-                                data["postId"] = it
+                                data["postId"] = id
                                 data["type"] = "delete"
                                 viewModel.reportOrDeletePostApi(
                                     Constants.REPORT_OR_DELETE_POST, data
                                 )
                             } else {
                                 isProgressSub = false
-                                data["postId"] = it
+                                data["postId"] = id
                                 data["type"] = "delete"
                                 viewModel.reportOrDeletePostSubApi(
                                     Constants.REPORT_OR_DELETE_POST, data

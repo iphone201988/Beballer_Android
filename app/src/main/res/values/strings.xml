@@ -21,7 +21,7 @@
     <string name="subscriptions">Subscriptions</string>
     <string name="beballer">@BEBALLER</string>
     <string name="findCourts_SurCeTerrain">On this court:</string>
-    <string name="findCourts_DeviensKingDuTerrain">Become King of the court</string>
+    <string name="become_king"><u>Become King of the court</u></string>
     <string name="subscribe">Subscribe</string>
     <string name="welcome">Welcome 🙌</string>
     <string name="congrats">Congrats 🙌</string>
@@ -47,8 +47,8 @@
     <string name="ball">🏀</string>
     <string name="accountSettings_DateDeNaissance">Birthdate</string>
     <string name="done">Done</string>
-    <string name="findCourts_CeTerrainABesoinDUnePhoto">This court needs a photo</string>
-    <string name="findCourts_AccessibleATous">Accessible to everyone</string>
+    <string name="this_court_need_a_photo">This court needs a photo</string>
+    <string name="accessible_to_everyone">Accessible to everyone</string>
     <string name="add_a_courts">Add a courts</string>
     <string name="findCourts_Paniers">1 Hoop</string>
 
@@ -239,5 +239,27 @@
     <string name="done_games">Done Games</string>
     <string name="public_games">Public games</string>
     <string name="understood">Understood</string>
+    <string name="incoming_games">Incoming Games</string>
+    <string name="join">Join</string>
+    <string name="accept">Accept</string>
+    <string name="leave">Leave</string>
+    <string name="start_game">Start game</string>
+    <string name="waiting_for_the_other_players">Waiting for the other players</string>
+    <string name="self_refereeing">Self - \nRefereeing</string>
+    <string name="refuse">Refuse</string>
+    <string name="about">About</string>
+    <string name="chat">Chat</string>
+    <string name="game_info">Game Info</string>
+    <string name="created_by">Created by</string>
+    <string name="home_team">Home team</string>
+    <string name="outside_team">Outside team</string>
+    <string name="by">By</string>
+    <string name="n_a">N/A</string>
+    <string name="go_to_the_court">Go to the court</string>
+    <string name="details_about_this_court">Details about this court</string>
+    <string name="dimensions_standard">Dimensions standard</string>
+    <string name="comment">Comment:</string>
+    <string name="location_of_the_court">Location of the court:</string>
+    <string name="is_private_game">Is Private Game</string>
 
 </resources>

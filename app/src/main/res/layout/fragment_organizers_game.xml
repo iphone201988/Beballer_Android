@@ -83,10 +83,10 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/tournamentCardView"
-                android:layout_width="85dp"
+                android:layout_width="@dimen/_8sdp"
                 android:layout_height="match_parent"
                 app:cardBackgroundColor="@color/tournaments_light_color"
-                app:cardCornerRadius="10dp"
+                app:cardCornerRadius="@dimen/_8sdp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -102,7 +102,7 @@
                 android:id="@+id/tvTournament"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="85dp"
+                android:layout_marginStart="@dimen/_8sdp"
                 android:fontFamily="@font/inter_bold"
                 android:gravity="center"
                 android:text="Tournament"
@@ -127,10 +127,10 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/CampsCardView"
-                android:layout_width="85dp"
+                android:layout_width="@dimen/_8sdp"
                 android:layout_height="match_parent"
                 app:cardBackgroundColor="@color/camps_light_color"
-                app:cardCornerRadius="10dp"
+                app:cardCornerRadius="@dimen/_8sdp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -145,7 +145,7 @@
                 android:id="@+id/tvCamps"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="85dp"
+                android:layout_marginStart="@dimen/_8sdp"
                 android:fontFamily="@font/inter_bold"
                 android:gravity="center"
                 android:text="Camps"

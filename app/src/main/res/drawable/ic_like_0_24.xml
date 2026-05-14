@@ -19,16 +19,16 @@
         android:drawable="@drawable/ic_like_background_black_24" />
 
     <item
-        android:top="11.5dp"
-        android:bottom="11.5dp">
+        android:top="@dimen/_5sdp"
+        android:bottom="@dimen/_5sdp">
         <shape
             android:shape="rectangle"
             android:tint="@color/black" />
     </item>
 
     <item
-        android:left="11.5dp"
-        android:right="11.5dp">
+        android:left="@dimen/_5sdp"
+        android:right="@dimen/_5sdp">
         <shape
             android:shape="rectangle"
             android:tint="@color/black" />

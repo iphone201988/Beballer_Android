@@ -17,7 +17,7 @@
         android:background="@drawable/green_btn_bg"
         android:backgroundTint="@color/white"
         android:paddingHorizontal="@dimen/_10sdp"
-        android:paddingBottom="@dimen/_30sdp">
+        android:paddingBottom="@dimen/_20sdp">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvCrown"
@@ -38,7 +38,7 @@
             android:layout_width="@dimen/_65sdp"
             android:layout_height="@dimen/_65sdp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_round_local_fire_department_40"
+            android:src="@drawable/flame"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/tvCrown"
             app:layout_constraintEnd_toEndOf="parent"
@@ -77,7 +77,7 @@
             android:id="@+id/tvDetail2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/_8sdp"
             android:fontFamily="@font/inter_bold"
             android:text="How does it work"
             android:textColor="@color/black"
@@ -89,7 +89,7 @@
             android:id="@+id/tvDetail3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/_8sdp"
             android:fontFamily="@font/inter_medium"
             android:text="On BEBALLER you can create public or\nprivate games."
             android:textColor="@color/beballer_medium_grey"
@@ -102,7 +102,7 @@
             android:id="@+id/tvDetail4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/_8sdp"
             android:fontFamily="@font/inter_medium"
             android:text="Invite other users and once the game played, enter the score to validate the game. You will earn points for the BEBALLER individual ranking."
             android:textColor="@color/beballer_medium_grey"
@@ -115,7 +115,7 @@
             android:id="@+id/tvDetail5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/_8sdp"
             android:fontFamily="@font/inter_medium"
             android:text="The player who earns the most points thanks to the games played on that court becomes King of the court."
             android:textColor="@color/beballer_medium_grey"

@@ -32,23 +32,24 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import dagger.hilt.android.AndroidEntryPoint
 
+
+@Suppress("UNCHECKED_CAST", "DEPRECATION")
 @AndroidEntryPoint
 class MyGameFragment : BaseFragment<FragmentMyGameBinding>(), OnMapReadyCallback {
     private val viewModel: MyGameFragmentVm by viewModels()
-
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
     private var mMap: GoogleMap? = null
-
     private var currentPage = 1
     private var isLoading = false
     private var isLastPage = false
     private var isProgress = false
-
+    private var mCurrentPage = 1
+    private var mIsLoading = false
+    private var mIsLastPage = false
     private var fullList = ArrayList<MyGame?>()
     private lateinit var gameAdapter: GameAdapter
-
     private lateinit var publicGameAdapter: GameAdapter
+
     override fun getLayoutResource(): Int {
         return R.layout.fragment_my_game
     }
@@ -59,55 +60,31 @@ class MyGameFragment : BaseFragment<FragmentMyGameBinding>(), OnMapReadyCallback
 
     override fun onCreateView(view: View) {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        // map
+        // map fra
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
         // set block pos
-        binding.pos = 1
+        binding.pos = 2
         binding.tvFeed.typeface = ResourcesCompat.getFont(requireContext(), R.font.inter_medium)
         binding.tvSubscriptions.typeface =
             ResourcesCompat.getFont(requireContext(), R.font.inter_regular)
         // click
         initOnClick()
         //  api call
-        getMyGames()
+        getAllGames()
         // observer
         initGameAdapter()
         // adapter
         setObserver()
         // pagination
         pagination()
-
-        /** Refresh **/
-        binding.ssPullRefresh.setColorSchemeResources(
-            ContextCompat.getColor(requireContext(), R.color.organize_color)
-        )
-        binding.ssPullRefresh.setOnRefreshListener {
-            Handler().postDelayed({
-                binding.ssPullRefresh.isRefreshing = false
-                isProgress = true
-                // api call
-                getMyGames()
-            }, 2000)
-        }
-
-
-        binding.ssRefreshPublicGames.setColorSchemeResources(
-            ContextCompat.getColor(requireContext(), R.color.organize_color)
-        )
-        binding.ssRefreshPublicGames.setOnRefreshListener {
-            Handler().postDelayed({
-                binding.ssRefreshPublicGames.isRefreshing = false
-                isProgress = true
-                // api call
-                getAllGames()
-            }, 2000)
-        }
+        // refresh
+        initRefresh()
     }
 
+
     /**
-     * set observer
+     * all api observer
      */
     private fun setObserver() {
         viewModel.commonObserver.observe(viewLifecycleOwner, Observer {
@@ -165,11 +142,11 @@ class MyGameFragment : BaseFragment<FragmentMyGameBinding>(), OnMapReadyCallback
                                     val pastSessionData = myDataModel.data.games
                                     val feedItems: List<GameViewItem> =
                                         pastSessionData.map { list -> GameViewItem.Post(list) }
-                                    isLoading = false
-                                    isLastPage = false
+                                    mIsLoading = false
+                                    mIsLastPage = false
                                     isProgress = false
 
-                                    if (currentPage == 1) {
+                                    if (mCurrentPage == 1) {
                                         myDataModel.data.games.let { list ->
                                             fullList = list as ArrayList<MyGame?>
                                             publicGameAdapter.setList(feedItems)
@@ -178,14 +155,14 @@ class MyGameFragment : BaseFragment<FragmentMyGameBinding>(), OnMapReadyCallback
                                     } else {
                                         publicGameAdapter.addToList(feedItems)
                                     }
-                                    isLastPage =
-                                        currentPage == myDataModel.data.pagination?.totalPages
+                                    mIsLastPage =
+                                        mCurrentPage == myDataModel.data.pagination?.totalPages
                                 } else {
-                                    if (currentPage == 1) {
+                                    if (mCurrentPage == 1) {
                                         binding.tvPublicNoData.visibility = View.VISIBLE
                                         publicGameAdapter.setList(emptyList())
                                     }
-                                    isLoading = false
+                                    mIsLoading = false
                                     isProgress = false
                                 }
                             }
@@ -194,7 +171,7 @@ class MyGameFragment : BaseFragment<FragmentMyGameBinding>(), OnMapReadyCallback
                 }
 
                 Status.ERROR -> {
-
+                    hideLoading()
                 }
 
                 else -> {
@@ -211,7 +188,7 @@ class MyGameFragment : BaseFragment<FragmentMyGameBinding>(), OnMapReadyCallback
         currentPage = 1
         binding.tvNoData.visibility = View.GONE
         val data = HashMap<String, Any>()
-        data["limit"] = 20
+        data["limit"] = 10
         data["page"] = 1
         data["getAll"] = false
         viewModel.getMyGames(Constants.MY_GAMES, data)
@@ -224,7 +201,7 @@ class MyGameFragment : BaseFragment<FragmentMyGameBinding>(), OnMapReadyCallback
         currentPage = 1
         binding.tvPublicNoData.visibility = View.GONE
         val data = HashMap<String, Any>()
-        data["limit"] = 20
+        data["limit"] = 10
         data["page"] = 1
         data["getAll"] = true
         viewModel.getAllGames(Constants.MY_GAMES, data)
@@ -250,6 +227,21 @@ class MyGameFragment : BaseFragment<FragmentMyGameBinding>(), OnMapReadyCallback
             }
 
         })
+        binding.rvPublicGames.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                if (!mIsLoading && !mIsLastPage) {
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
+                        mLoadMoreItems()
+                    }
+                }
+            }
+
+        })
     }
 
     /**
@@ -263,7 +255,23 @@ class MyGameFragment : BaseFragment<FragmentMyGameBinding>(), OnMapReadyCallback
         val params = HashMap<String, Any>()
         params["page"] = currentPage
         params["limit"] = 10
+        params["getAll"] = false
         viewModel.getMyGames(Constants.MY_GAMES, params)
+    }
+
+    /**
+     *  load more function call
+     **/
+    private fun mLoadMoreItems() {
+        publicGameAdapter.showLoader()
+        isProgress = true
+        mIsLoading = true
+        mCurrentPage++
+        val params = HashMap<String, Any>()
+        params["page"] = mCurrentPage
+        params["limit"] = 10
+        params["getAll"] = true
+        viewModel.getAllGames(Constants.MY_GAMES, params)
     }
 
 
@@ -281,7 +289,7 @@ class MyGameFragment : BaseFragment<FragmentMyGameBinding>(), OnMapReadyCallback
                     )
 
                 }
-
+                // card view click handel
                 R.id.cardView -> {
                     val intent = Intent(requireContext(), UserProfileActivity::class.java)
                     intent.putExtra("userType", "createGame")
@@ -290,29 +298,37 @@ class MyGameFragment : BaseFragment<FragmentMyGameBinding>(), OnMapReadyCallback
                         R.anim.slide_in_right, R.anim.slide_out_left
                     )
                 }
-
+                // cancel Image click handel
                 R.id.cancelImage -> {
                     requireActivity().finish()
                 }
-                // tvFeed button click
+                // MyGameFragment.kt -> inside initOnClick()
                 R.id.tvFeed -> {
-                    binding.pos = 1
-                    binding.tvFeed.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.inter_medium)
-                    binding.tvSubscriptions.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.inter_regular)
-
+                    if (binding.pos != 1) {
+                        binding.pos = 1
+                        if (gameAdapter.itemCount == 0) {
+                            getMyGames()
+                        }
+                        binding.tvFeed.typeface =
+                            ResourcesCompat.getFont(requireContext(), R.font.inter_medium)
+                        binding.tvSubscriptions.typeface =
+                            ResourcesCompat.getFont(requireContext(), R.font.inter_regular)
+                    }
                 }
                 // tvSubscriptions  button click
                 R.id.tvSubscriptions -> {
-                    getAllGames()
-                    binding.pos = 2
-                    binding.tvFeed.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.inter_regular)
-                    binding.tvSubscriptions.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.inter_medium)
+                    if (binding.pos != 2) {
+                        binding.pos = 2
+                        if (publicGameAdapter.itemCount == 0) {
+                            getAllGames()
+                        }
+                        binding.tvFeed.typeface =
+                            ResourcesCompat.getFont(requireContext(), R.font.inter_regular)
+                        binding.tvSubscriptions.typeface =
+                            ResourcesCompat.getFont(requireContext(), R.font.inter_medium)
+                    }
                 }
-
+                // game Map Card
                 R.id.courtsMapCard, R.id.view -> {
                     val intent = Intent(requireContext(), UserProfileActivity::class.java)
                     intent.putExtra("userType", "showMapFragment")
@@ -402,5 +418,34 @@ class MyGameFragment : BaseFragment<FragmentMyGameBinding>(), OnMapReadyCallback
         }
     }
 
+    /**
+     * refresh function
+     */
+    private fun initRefresh() {
+        binding.ssPullRefresh.setColorSchemeResources(
+            ContextCompat.getColor(requireContext(), R.color.organize_color)
+        )
+        binding.ssPullRefresh.setOnRefreshListener {
+            Handler().postDelayed({
+                binding.ssPullRefresh.isRefreshing = false
+                isProgress = true
+                // api call
+                getMyGames()
+            }, 2000)
+        }
+
+
+        binding.ssRefreshPublicGames.setColorSchemeResources(
+            ContextCompat.getColor(requireContext(), R.color.organize_color)
+        )
+        binding.ssRefreshPublicGames.setOnRefreshListener {
+            Handler().postDelayed({
+                binding.ssRefreshPublicGames.isRefreshing = false
+                isProgress = true
+                // api call
+                getAllGames()
+            }, 2000)
+        }
+    }
 
 }

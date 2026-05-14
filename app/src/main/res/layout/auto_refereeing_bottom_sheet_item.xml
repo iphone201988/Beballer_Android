@@ -58,6 +58,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:gravity="center"
                 android:textStyle="bold"
+                android:onClick="@{v->callback.onViewClick(v)}"
                 android:text="Auto-refereeing"
                 android:textColor="@color/blue"
                 android:textSize="@dimen/_11ssp"

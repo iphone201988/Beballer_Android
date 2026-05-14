@@ -65,7 +65,7 @@
         <androidx.appcompat.widget.SearchView
             android:id="@+id/teamSearchView"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_26sdp"
+            android:layout_height="@dimen/_32sdp"
             android:layout_marginHorizontal="@dimen/_14sdp"
             android:layout_marginTop="@dimen/_20sdp"
             android:background="@drawable/search_view_background"
@@ -99,7 +99,7 @@
             android:id="@+id/nextBtnDivider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="@dimen/_5sdp"
             app:dividerColor="#D4D4D4"
             app:layout_constraintBottom_toTopOf="@id/btnNext"
             app:layout_constraintEnd_toEndOf="parent"

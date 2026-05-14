@@ -111,7 +111,7 @@
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/mapSearchView"
                 android:layout_width="0dp"
-                android:layout_height="45dp"
+                android:layout_height="@dimen/_32sdp"
                 android:layout_marginHorizontal="@dimen/_14sdp"
                 android:layout_marginVertical="@dimen/_10sdp"
                 android:background="@drawable/search_view_background"

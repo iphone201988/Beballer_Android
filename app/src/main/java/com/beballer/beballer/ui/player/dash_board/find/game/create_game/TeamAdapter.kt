@@ -28,6 +28,7 @@ class TeamAdapter(
     interface OnInviteClickListener {
         fun onInviteClick(isHomeTeam: Boolean)
         fun onRemoveClick(player: Player, isHomeTeam: Boolean)
+        fun onPlayerClick(player: Player)
     }
 
     fun submitList(newList: List<TeamSlotModel>) {
@@ -57,16 +58,12 @@ class TeamAdapter(
             val binding = RvTeamItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
-
+                false)
             PlayerViewHolder(binding)
 
         } else {
-
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_invite_player, parent, false)
-
             InviteViewHolder(view)
         }
     }
@@ -90,7 +87,7 @@ class TeamAdapter(
             binding.bean = player
             binding.executePendingBindings()
 
-            // ✅ Status Text Logic
+            //  Status Text Logic
             binding.tvStatus.apply {
 
                 if (isHomeTeam && adapterPosition == 0) {
@@ -104,7 +101,7 @@ class TeamAdapter(
                     setTextColor(ContextCompat.getColor(context, android.R.color.black))
                 }
             }
-            // 👇 Only show cross if editable
+            //  Only show cross if editable
             if (!isEditable) {
                 binding.ivCross.visibility = View.GONE
             } else {
@@ -120,6 +117,10 @@ class TeamAdapter(
                     listener.onRemoveClick(player, isHomeTeam)
 
                 }
+            }
+
+            binding.root.setOnClickListener {
+                listener.onPlayerClick(player)
             }
         }
     }

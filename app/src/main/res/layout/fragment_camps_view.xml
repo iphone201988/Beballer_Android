@@ -52,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_28sdp"
             android:layout_marginHorizontal="@dimen/_12sdp"
-            android:layout_marginBottom="-25dp"
+            android:layout_marginBottom="@dimen/_5sdp"
             android:background="@drawable/tab_bg"
             android:backgroundTint="@color/e9e9ea"
             android:elevation="@dimen/_2sdp"
